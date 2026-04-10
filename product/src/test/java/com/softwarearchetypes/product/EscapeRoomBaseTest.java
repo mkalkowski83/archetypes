@@ -31,12 +31,16 @@ public abstract class EscapeRoomBaseTest {
     static final String CITY_LODZ = "Łódź";
     static final String CITY_WROCLAW = "Wrocław";
     static final String VR_YES = "tak";
-    static final String VR_NO = "nie";
 
-    protected ProductFeatureType difficultyFeature;
-    protected ProductFeatureType durationFeature;
+    /** Stały poziom trudności przypisany do typu pokoju (metadane, nie wybór przy rezerwacji). */
+    static final String DIFFICULTY_METADATA_KEY = "poziom trudności";
+
+    /** Stały czas sesji przypisany do typu pokoju (metadane, nie wybór przy rezerwacji). */
+    static final String DURATION_METADATA_KEY = "czas trwania";
+
     protected ProductFeatureType cityFeature;
-    protected ProductFeatureType vrFeature;
+    /** Statyczna cecha pokoju Cyberpunk — zawsze VR (nie wybór przy rezerwacji). */
+    protected ProductMetadata cyberpunkVrMetadata;
     protected ProductFeatureType cateringVariantFeature;
 
     // Participant count features (each room has its own range)
@@ -63,30 +67,22 @@ public abstract class EscapeRoomBaseTest {
 
     // Packages
     protected PackageType escapeRoomExperience;
-    protected PackageType partyPackage;
     protected PackageType birthdayPackage;
     protected PackageType teamBuildingPackage;
     protected PackageType hardcorePackage;
 
     @BeforeEach
     void setUp() {
-        difficultyFeature =
-                ProductFeatureType.withAllowedValues(
-                        "poziom trudności",
-                        DIFFICULTY_EASY,
-                        DIFFICULTY_MEDIUM,
-                        DIFFICULTY_HARD,
-                        DIFFICULTY_EXTREME);
-
-        durationFeature =
-                ProductFeatureType.withAllowedValues(
-                        "czas trwania", DURATION_45, DURATION_60, DURATION_75, DURATION_90);
-
         cityFeature =
-                ProductFeatureType.withAllowedValues(
-                        "miasto", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW);
+            ProductFeatureType.withAllowedValues(
+            "miasto", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW
+            );
 
-        vrFeature = ProductFeatureType.withAllowedValues("VR", VR_YES, VR_NO);
+        cyberpunkVrMetadata =
+            ProductMetadata.empty()
+                .with("VR", VR_YES)
+                .with(DIFFICULTY_METADATA_KEY, DIFFICULTY_EXTREME)
+                .with(DURATION_METADATA_KEY, DURATION_90);
 
         participantsLab = ProductFeatureType.withNumericRange("liczba uczestników", 2, 5);
         participantsAlcatraz = ProductFeatureType.withNumericRange("liczba uczestników", 3, 6);
@@ -95,33 +91,31 @@ public abstract class EscapeRoomBaseTest {
 
         cateringVariantFeature =
                 ProductFeatureType.withAllowedValues(
-                        "rodzaj cateringu",
-                        CATERING_PIZZA,
-                        CATERING_SUSHI,
-                        CATERING_VEGETARIAN);
+                        "rodzaj cateringu", CATERING_PIZZA, CATERING_SUSHI, CATERING_VEGETARIAN);
 
         // Rooms - individually tracked (each session is a unique booking)
-        // Difficulty, duration and participant count are mandatory features of each room
+        // Participant count and city are mandatory features; difficulty and duration are fixed on the type (metadata).
 
         labSzalonegoNaukowca =
-                ProductType.builder(
-                                UuidProductIdentifier.random(),
-                                ProductName.of("Laboratorium szalonego naukowca"),
-                                ProductDescription.of(
-                                        "Odkryj sekrety szalonego naukowca zanim jego eksperyment wymknie się spod kontroli. 2-5 graczy, 60 minut."),
-                                Unit.pieces(),
-                                INDIVIDUALLY_TRACKED)
-                        .withMandatoryFeature(difficultyFeature)
-                        .withMandatoryFeature(durationFeature)
-                        .withMandatoryFeature(cityFeature)
-                        .withMandatoryFeature(participantsLab)
-                        .withOptionalFeature(vrFeature)
-                        .withApplicabilityConstraint(
-                                and(
-                                        between("participants", 2, 5),
-                                        in("city", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW),
-                                        or(not(equalsTo("VR", VR_YES)), equalsTo("city", CITY_WARSAW))))
-                        .build();
+            ProductType.builder(
+                UuidProductIdentifier.random(),
+                ProductName.of("Laboratorium szalonego naukowca"),
+                ProductDescription.of("Odkryj sekrety szalonego naukowca zanim jego eksperyment wymknie się spod kontroli. 2-5 graczy, 60 minut."),
+                Unit.pieces(),
+                INDIVIDUALLY_TRACKED
+            )
+            .withMetadata(DIFFICULTY_METADATA_KEY, DIFFICULTY_MEDIUM)
+            .withMetadata(DURATION_METADATA_KEY, DURATION_60)
+            .withMandatoryFeature(cityFeature)
+            .withMandatoryFeature(participantsLab)
+            .withApplicabilityConstraint(
+                and(
+                    between("participants", 2, 5),
+                    in("city", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW),
+                    or(
+                            not(equalsTo("VR", VR_YES)),
+                            equalsTo("city", CITY_WARSAW))))
+            .build();
 
         wiezienieAlcatraz =
                 ProductType.builder(
@@ -131,16 +125,17 @@ public abstract class EscapeRoomBaseTest {
                                         "Ucieknij z najsłynniejszego więzienia na świecie. 3-6 graczy, 75 minut."),
                                 Unit.pieces(),
                                 INDIVIDUALLY_TRACKED)
-                        .withMandatoryFeature(difficultyFeature)
-                        .withMandatoryFeature(durationFeature)
+                        .withMetadata(DIFFICULTY_METADATA_KEY, DIFFICULTY_HARD)
+                        .withMetadata(DURATION_METADATA_KEY, DURATION_75)
                         .withMandatoryFeature(cityFeature)
                         .withMandatoryFeature(participantsAlcatraz)
-                        .withOptionalFeature(vrFeature)
                         .withApplicabilityConstraint(
                                 and(
                                         between("participants", 3, 6),
                                         in("city", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW),
-                                        or(not(equalsTo("VR", VR_YES)), equalsTo("city", CITY_WARSAW)),
+                                        or(
+                                                not(equalsTo("VR", VR_YES)),
+                                                equalsTo("city", CITY_WARSAW)),
                                         not(equalsTo("claustrophobia", "yes"))))
                         .build();
 
@@ -152,16 +147,17 @@ public abstract class EscapeRoomBaseTest {
                                         "Odkryj skarby faraona i wydostań się z grobowca przed uruchomieniem pułapek. 2-4 graczy, 45 minut."),
                                 Unit.pieces(),
                                 INDIVIDUALLY_TRACKED)
-                        .withMandatoryFeature(difficultyFeature)
-                        .withMandatoryFeature(durationFeature)
+                        .withMetadata(DIFFICULTY_METADATA_KEY, DIFFICULTY_EASY)
+                        .withMetadata(DURATION_METADATA_KEY, DURATION_45)
                         .withMandatoryFeature(cityFeature)
                         .withMandatoryFeature(participantsEgypt)
-                        .withOptionalFeature(vrFeature)
                         .withApplicabilityConstraint(
                                 and(
                                         between("participants", 2, 4),
                                         in("city", CITY_WARSAW, CITY_LODZ, CITY_WROCLAW),
-                                        or(not(equalsTo("VR", VR_YES)), equalsTo("city", CITY_WARSAW))))
+                                        or(
+                                                not(equalsTo("VR", VR_YES)),
+                                                equalsTo("city", CITY_WARSAW))))
                         .build();
 
         cyberpunk2077 =
@@ -172,11 +168,9 @@ public abstract class EscapeRoomBaseTest {
                                         "Zhakuj system korporacji i ucieknij z Night City. 4-6 graczy, 90 minut."),
                                 Unit.pieces(),
                                 INDIVIDUALLY_TRACKED)
-                        .withMandatoryFeature(difficultyFeature)
-                        .withMandatoryFeature(durationFeature)
                         .withMandatoryFeature(cityFeature)
                         .withMandatoryFeature(participantsCyberpunk)
-                        .withMandatoryFeature(vrFeature)
+                        .withMetadata(cyberpunkVrMetadata)
                         .withApplicabilityConstraint(
                                 and(
                                         between("participants", 4, 6),
@@ -305,14 +299,15 @@ public abstract class EscapeRoomBaseTest {
                 Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Team building"),
-                                ProductDescription.of("2 pokoje (sekwencyjnie) + catering + dedykowany GM"))
+                                ProductDescription.of(
+                                        "2 pokoje (sekwencyjnie) + catering + dedykowany GM"))
                         .asPackageType()
                         .withTrackingStrategy(INDIVIDUALLY_TRACKED)
-                        .withSingleChoice("Pierwszy pokój", roomIds)
-                        .withSingleChoice("Drugi pokój", roomIds)
+                        .withChoice("Pokoje", 2, 2, roomIds)
                         .withSingleChoice("Catering", catering.id())
                         .withSingleChoice("Dedykowany GM", dedicatedGameMaster.id())
-                        // Reguły relacji (progresja trudności i zgodność osób)
+                        // Reguły relacji (progresja trudności) — warunki rozróżniają ścieżki,
+                        // bo „Lab + Egipt” ma inny sens niż samo „Lab” jako pierwszy krok do Alcatraz.
                         .withRule(
                                 SelectionRule.and(
                                         SelectionRule.ifThen(
@@ -321,14 +316,30 @@ public abstract class EscapeRoomBaseTest {
                                                                 "Egipt", egipskiGrobowiec.id())),
                                                 SelectionRule.single(afterEgypt)),
                                         SelectionRule.ifThen(
-                                                SelectionRule.single(
-                                                        ProductSet.of(
-                                                                "Lab", labSzalonegoNaukowca.id())),
+                                                SelectionRule.and(
+                                                        SelectionRule.single(
+                                                                ProductSet.of(
+                                                                        "Lab",
+                                                                        labSzalonegoNaukowca.id())),
+                                                        SelectionRule.not(
+                                                                SelectionRule.single(
+                                                                        ProductSet.of(
+                                                                                "Egipt",
+                                                                                egipskiGrobowiec
+                                                                                        .id())))),
                                                 SelectionRule.single(afterLab)),
                                         SelectionRule.ifThen(
-                                                SelectionRule.single(
-                                                        ProductSet.of(
-                                                                "Alcatraz", wiezienieAlcatraz.id())),
+                                                SelectionRule.and(
+                                                        SelectionRule.single(
+                                                                ProductSet.of(
+                                                                        "Alcatraz",
+                                                                        wiezienieAlcatraz.id())),
+                                                        SelectionRule.not(
+                                                                SelectionRule.single(
+                                                                        ProductSet.of(
+                                                                                "Lab",
+                                                                                labSzalonegoNaukowca
+                                                                                        .id())))),
                                                 SelectionRule.single(afterAlcatraz))))
                         .build();
     }

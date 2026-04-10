@@ -1,0 +1,11 @@
+---
+description: Zakaz edycji src/main; dozwolone zmiany tylko w testach
+alwaysApply: true
+---
+
+# Kod produkcyjny archetypu — zakaz zmian
+
+- **Nie modyfikuj** żadnych plików pod **`**/src/main/**`** (w tym **`src/main/java`**, `src/main/resources` i pozostałe podkatalogi `src/main`). To obowiązuje **bezwzględnie**.
+- **Możesz swobodnie modyfikować** pliki pod **`**/src/test/**`** (testy, scenariusze, fixtures).
+- Jeśli realizacja zadania **wymagałaby** zmian w `src/main`: **nie wprowadzaj ich** — napisz użytkownikowi, czego potrzeba, i zaproponuj np. samodzielną zmianę lub ogranicz się do testów / opisu.
+- **Jedyny wyjątek**: użytkownik w **tej samej wiadomości** wyraźnie poleci zmianę konkretnego pliku lub obszaru w `src/main` — wtedy możesz wykonać wyłącznie tę uzgodnioną zmianę.

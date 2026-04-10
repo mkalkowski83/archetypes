@@ -16,8 +16,6 @@ class EscapeRoomCityTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-LAB-WAW"))
                         .asProductInstance(labSzalonegoNaukowca)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                        .withFeature(durationFeature, DURATION_60)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsLab, 4)
                         .build();
@@ -32,8 +30,6 @@ class EscapeRoomCityTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-ALC-LDZ"))
                         .asProductInstance(wiezienieAlcatraz)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_HARD)
-                        .withFeature(durationFeature, DURATION_75)
                         .withFeature(cityFeature, CITY_LODZ)
                         .withFeature(participantsAlcatraz, 5)
                         .build();
@@ -48,8 +44,6 @@ class EscapeRoomCityTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-EGY-WRO"))
                         .asProductInstance(egipskiGrobowiec)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_EASY)
-                        .withFeature(durationFeature, DURATION_45)
                         .withFeature(cityFeature, CITY_WROCLAW)
                         .withFeature(participantsEgypt, 3)
                         .build();
@@ -66,8 +60,6 @@ class EscapeRoomCityTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-KRK"))
                                 .asProductInstance(labSzalonegoNaukowca)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                                .withFeature(durationFeature, DURATION_60)
                                 .withFeature(cityFeature, "Kraków")
                                 .withFeature(participantsLab, 3)
                                 .build(),
@@ -83,8 +75,6 @@ class EscapeRoomCityTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-NO-CITY"))
                                 .asProductInstance(labSzalonegoNaukowca)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                                .withFeature(durationFeature, DURATION_60)
                                 .withFeature(participantsLab, 4)
                                 .build(),
                 "Powinno wymagać ustawienia miasta jako obowiązkowej cechy pokoju");

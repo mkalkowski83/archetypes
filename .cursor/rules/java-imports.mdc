@@ -1,0 +1,23 @@
+---
+description: Importy Java — porządkowanie bez wildcardów
+globs: "**/*.java"
+alwaysApply: false
+---
+
+# Importy w Javie
+
+- **Porządkuj importy**: usuwaj nieużywane, grupuj logicznie (java → javax → reszta), zachowaj spójność z plikiem.
+- **Zabronione są importy z gwiazdką** (`import com.example.foo.*` oraz `import static ...*`). Zawsze wypisuj **konkretne typy** (pojedyncze klasy / statyczne składowe).
+- Nowy kod dodawaj z **jawnymi importami**; nie wprowadzaj ani nie utrwalaj `*`.
+
+```java
+// ❌ Źle
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.*;
+
+// ✅ Dobrze
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.Map;
+```

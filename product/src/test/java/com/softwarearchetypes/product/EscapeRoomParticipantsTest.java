@@ -16,8 +16,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-LAB-MIN"))
                         .asProductInstance(labSzalonegoNaukowca)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                        .withFeature(durationFeature, DURATION_60)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsLab, 2)
                         .build();
@@ -32,8 +30,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-LAB-MAX"))
                         .asProductInstance(labSzalonegoNaukowca)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                        .withFeature(durationFeature, DURATION_60)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsLab, 5)
                         .build();
@@ -50,8 +46,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-LAB-OVER"))
                                 .asProductInstance(labSzalonegoNaukowca)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                                .withFeature(durationFeature, DURATION_60)
                                 .withFeature(participantsLab, 6)
                                 .build(),
                 "Laboratorium szalonego naukowca nie powinno akceptować więcej niż 5 uczestników");
@@ -66,8 +60,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-LAB-UNDER"))
                                 .asProductInstance(labSzalonegoNaukowca)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                                .withFeature(durationFeature, DURATION_60)
                                 .withFeature(participantsLab, 1)
                                 .build(),
                 "Laboratorium szalonego naukowca wymaga minimum 2 uczestników");
@@ -80,8 +72,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-ALC-MIN"))
                         .asProductInstance(wiezienieAlcatraz)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_HARD)
-                        .withFeature(durationFeature, DURATION_75)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsAlcatraz, 3)
                         .build();
@@ -99,8 +89,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-ALC-UNDER"))
                                 .asProductInstance(wiezienieAlcatraz)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_HARD)
-                                .withFeature(durationFeature, DURATION_75)
                                 .withFeature(participantsAlcatraz, 2)
                                 .build(),
                 "Więzienie Alcatraz wymaga minimum 3 uczestników");
@@ -115,8 +103,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-ALC-OVER"))
                                 .asProductInstance(wiezienieAlcatraz)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_HARD)
-                                .withFeature(durationFeature, DURATION_75)
                                 .withFeature(participantsAlcatraz, 7)
                                 .build(),
                 "Więzienie Alcatraz nie powinno akceptować więcej niż 6 uczestników");
@@ -129,8 +115,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-EGY-MAX"))
                         .asProductInstance(egipskiGrobowiec)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_EASY)
-                        .withFeature(durationFeature, DURATION_45)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsEgypt, 4)
                         .build();
@@ -147,8 +131,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-EGY-OVER"))
                                 .asProductInstance(egipskiGrobowiec)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_EASY)
-                                .withFeature(durationFeature, DURATION_45)
                                 .withFeature(participantsEgypt, 5)
                                 .build(),
                 "Egipski grobowiec nie powinien akceptować więcej niż 4 uczestników");
@@ -161,8 +143,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-CYB-MIN"))
                         .asProductInstance(cyberpunk2077)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_EXTREME)
-                        .withFeature(durationFeature, DURATION_90)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsCyberpunk, 4)
                         .build();
@@ -179,8 +159,6 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-CYB-UNDER"))
                                 .asProductInstance(cyberpunk2077)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_EXTREME)
-                                .withFeature(durationFeature, DURATION_90)
                                 .withFeature(participantsCyberpunk, 3)
                                 .build(),
                 "Cyberpunk 2077 wymaga minimum 4 uczestników");
@@ -195,22 +173,9 @@ class EscapeRoomParticipantsTest extends EscapeRoomBaseTest {
                                 .withSerial(SerialNumber.of("BOOKING-NO-PART"))
                                 .asProductInstance(labSzalonegoNaukowca)
                                 .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                                .withFeature(durationFeature, DURATION_60)
+                                .withFeature(cityFeature, CITY_WARSAW)
                                 .build(),
                 "Powinno wymagać podania liczby uczestników");
     }
 
-    @Test
-    void shouldRequireDifficultyFeatureOnRoomInstance() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () ->
-                        new InstanceBuilder(InstanceId.newOne())
-                                .withSerial(SerialNumber.of("BOOKING-NO-DIFF"))
-                                .asProductInstance(labSzalonegoNaukowca)
-                                .withQuantity(Quantity.of(1, Unit.pieces()))
-                                .build(),
-                "Powinno wymagać ustawienia poziomu trudności jako obowiązkowej cechy pokoju");
-    }
 }

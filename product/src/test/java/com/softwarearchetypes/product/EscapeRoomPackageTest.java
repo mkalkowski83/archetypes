@@ -67,8 +67,6 @@ class EscapeRoomPackageTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-LAB-2026-04-10-18:00"))
                         .asProductInstance(labSzalonegoNaukowca)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_MEDIUM)
-                        .withFeature(durationFeature, DURATION_60)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsLab, 4)
                         .build();
@@ -101,15 +99,22 @@ class EscapeRoomPackageTest extends EscapeRoomBaseTest {
                         .withSerial(SerialNumber.of("BOOKING-CYBER-2026-04-10-20:00"))
                         .asProductInstance(cyberpunk2077)
                         .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_EXTREME)
-                        .withFeature(durationFeature, DURATION_90)
                         .withFeature(cityFeature, CITY_WARSAW)
                         .withFeature(participantsCyberpunk, 5)
                         .build();
 
         assertEquals(
                 DIFFICULTY_EXTREME,
-                roomInstance.features().get(difficultyFeature).orElseThrow().value());
+                roomInstance.product()
+                        .metadata()
+                        .get(DIFFICULTY_METADATA_KEY)
+                        .orElseThrow());
+        assertEquals(
+                DURATION_90,
+                roomInstance.product()
+                        .metadata()
+                        .get(DURATION_METADATA_KEY)
+                        .orElseThrow());
 
         PackageInstance experienceInstance =
                 new InstanceBuilder(InstanceId.newOne())
@@ -120,55 +125,5 @@ class EscapeRoomPackageTest extends EscapeRoomBaseTest {
 
         assertNotNull(experienceInstance);
         assertEquals(1, experienceInstance.selection().size());
-    }
-
-    @Test
-    void shouldCreatePartyPackageInstance() {
-        ProductInstance roomInstance =
-                new InstanceBuilder(InstanceId.newOne())
-                        .withSerial(SerialNumber.of("BOOKING-EGYPT-2026-04-12-16:00"))
-                        .asProductInstance(egipskiGrobowiec)
-                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(difficultyFeature, DIFFICULTY_EASY)
-                        .withFeature(durationFeature, DURATION_45)
-                        .withFeature(cityFeature, CITY_WARSAW)
-                        .withFeature(participantsEgypt, 4)
-                        .build();
-
-        ProductInstance cateringInstance =
-                new InstanceBuilder(InstanceId.newOne())
-                        .asProductInstance(catering)
-                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(cateringVariantFeature, CATERING_PIZZA)
-                        .build();
-
-        ProductInstance sushiInstance =
-                new InstanceBuilder(InstanceId.newOne())
-                        .asProductInstance(catering)
-                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .withFeature(cateringVariantFeature, CATERING_SUSHI)
-                        .build();
-
-        ProductInstance photoInstance =
-                new InstanceBuilder(InstanceId.newOne())
-                        .asProductInstance(photoAndVideoPackage)
-                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                        .build();
-
-        PackageInstance partyInstance =
-                new InstanceBuilder(InstanceId.newOne())
-                        .withSerial(SerialNumber.of("PARTY-2026-04-12-001"))
-                        .asPackageInstance(partyPackage)
-                        .withSelection(
-                                List.of(
-                                        new SelectedInstance(roomInstance, 1),
-                                        new SelectedInstance(cateringInstance, 1),
-                                        new SelectedInstance(sushiInstance, 1),
-                                        new SelectedInstance(photoInstance, 1)))
-                        .build();
-
-        assertNotNull(partyInstance);
-        assertEquals(4, partyInstance.selection().size());
-        assertTrue(partyInstance.serialNumber().isPresent());
     }
 }
