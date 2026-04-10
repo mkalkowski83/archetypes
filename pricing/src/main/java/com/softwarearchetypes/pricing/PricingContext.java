@@ -7,19 +7,20 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Unified context for pricing decisions — wraps both the time dimension (validity)
- * and the business dimension (applicability constraints).
- * <p>
- * Used in {@link SimpleComponentVersion#isApplicableFor(PricingContext)} to determine
- * whether a component version should fire in a given situation:
+ * Unified context for pricing decisions — wraps both the time dimension (validity) and the business
+ * dimension (applicability constraints).
+ *
+ * <p>Used in {@link SimpleComponentVersion#isApplicableFor(PricingContext)} to determine whether a
+ * component version should fire in a given situation:
+ *
  * <pre>
  *   return validity.isValidAt(context.timestamp())
  *          && applicability.isSatisfiedBy(context);
  * </pre>
- * <p>
- * Attributes are stored as Strings so that all constraint implementations
- * can work uniformly regardless of the original parameter type.
- * Numeric parameters (BigDecimal) are converted via {@code toPlainString()}.
+ *
+ * <p>Attributes are stored as Strings so that all constraint implementations can work uniformly
+ * regardless of the original parameter type. Numeric parameters (BigDecimal) are converted via
+ * {@code toPlainString()}.
  */
 public class PricingContext {
 
@@ -33,10 +34,9 @@ public class PricingContext {
 
     /**
      * Build a PricingContext from calculation Parameters.
-     * <p>
-     * String and numeric (BigDecimal / Number) values are included as-is.
-     * The timestamp is taken from the "timestamp" parameter if present,
-     * falling back to {@code LocalDateTime.now()}.
+     *
+     * <p>String and numeric (BigDecimal / Number) values are included as-is. The timestamp is taken
+     * from the "timestamp" parameter if present, falling back to {@code LocalDateTime.now()}.
      */
     public static PricingContext from(Parameters parameters) {
         LocalDateTime timestamp = parameters.timestamp().orElseGet(LocalDateTime::now);
@@ -59,17 +59,16 @@ public class PricingContext {
     }
 
     /**
-     * Returns the point in time at which this context was evaluated.
-     * Used by {@link Validity#isValidAt(LocalDateTime)}.
+     * Returns the point in time at which this context was evaluated. Used by {@link
+     * Validity#isValidAt(LocalDateTime)}.
      */
     public LocalDateTime timestamp() {
         return timestamp;
     }
 
     /**
-     * Returns an attribute value for constraint evaluation.
-     * Returns {@code Optional.empty()} if the key is absent,
-     * allowing constraints to safely return {@code false}.
+     * Returns an attribute value for constraint evaluation. Returns {@code Optional.empty()} if the
+     * key is absent, allowing constraints to safely return {@code false}.
      */
     public Optional<String> get(String key) {
         return Optional.ofNullable(attributes.get(key));

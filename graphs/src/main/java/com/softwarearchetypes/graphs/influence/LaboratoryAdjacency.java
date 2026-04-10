@@ -20,7 +20,8 @@ class LaboratoryAdjacency {
     }
 
     static class Builder {
-        private final Graph<Laboratory, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        private final Graph<Laboratory, DefaultEdge> graph =
+                new DefaultDirectedGraph<>(DefaultEdge.class);
 
         Builder adjacent(Laboratory from, Laboratory to) {
             graph.addVertex(from);

@@ -1,48 +1,46 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 class PartyRelationshipIdTest {
 
     @Test
     void twoPartyRelationshipIdsShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         PartyRelationshipId firstPartyRelationshipId = PartyRelationshipId.of(UUID.randomUUID());
         PartyRelationshipId secondPartyRelationshipId = PartyRelationshipId.of(UUID.randomUUID());
 
-        //expect
+        // expect
         assertNotEquals(firstPartyRelationshipId, secondPartyRelationshipId);
     }
 
     @Test
     void twoPartyRelationshipIdsShouldBeEqualWhenCreatedForTheSameValue() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
 
-        //expect
+        // expect
         assertEquals(PartyRelationshipId.of(value), PartyRelationshipId.of(value));
     }
 
     @Test
     void partyRelationshipIdIsConvertibleToTheValueItWasCreatedFrom() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
         PartyRelationshipId partyRelationshipId = PartyRelationshipId.of(value);
 
-        //expect
+        // expect
         assertEquals(value.toString(), partyRelationshipId.asString());
     }
 
     @Test
     void shouldNotAllowToCreatePartyRelationshipIdForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> PartyRelationshipId.of(null));
     }
-
 }

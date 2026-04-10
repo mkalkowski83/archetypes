@@ -1,12 +1,12 @@
 package com.softwarearchetypes.party;
 
-import java.util.regex.Pattern;
-
 import static java.util.Optional.ofNullable;
 
+import java.util.regex.Pattern;
+
 /**
- * Passport as a RegisteredIdentifier.
- * Unlike PESEL or NIP, passports have expiration dates and must be renewed.
+ * Passport as a RegisteredIdentifier. Unlike PESEL or NIP, passports have expiration dates and must
+ * be renewed.
  */
 record Passport(String number, Validity validity) implements RegisteredIdentifier {
 

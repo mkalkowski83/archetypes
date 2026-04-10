@@ -17,7 +17,8 @@ class InMemoryPartyRepository implements PartyRepository {
 
     @Override
     public Optional<Party> findBy(PartyId partyId, Class<? extends Party> partyType) {
-        return Optional.ofNullable(map.get(partyId)).filter(it -> partyType.isAssignableFrom(it.getClass()));
+        return Optional.ofNullable(map.get(partyId))
+                .filter(it -> partyType.isAssignableFrom(it.getClass()));
     }
 
     @Override
@@ -33,14 +34,12 @@ class InMemoryPartyRepository implements PartyRepository {
     @Override
     public List<Party> findBy(RegisteredIdentifier registeredIdentifier) {
         return map.values().parallelStream()
-                  .filter(party -> party.registeredIdentifiers().contains(registeredIdentifier))
-                  .collect(Collectors.toList());
+                .filter(party -> party.registeredIdentifiers().contains(registeredIdentifier))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Party> findMatching(Predicate<Party> predicate) {
-        return map.values().parallelStream()
-                  .filter(predicate)
-                  .collect(Collectors.toList());
+        return map.values().parallelStream().filter(predicate).collect(Collectors.toList());
     }
 }

@@ -1,14 +1,14 @@
 package com.softwarearchetypes.product;
 
-import java.util.regex.Pattern;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
+import java.util.regex.Pattern;
+
 /**
- * Validates text values against a regular expression pattern.
- * Example: product code must match pattern "^[A-Z]{2}-\d{4}$"
+ * Validates text values against a regular expression pattern. Example: product code must match
+ * pattern "^[A-Z]{2}-\d{4}$"
  *
- * Persistence config example: {"pattern": "^[A-Z]{2}-\\d{4}$"}
+ * <p>Persistence config example: {"pattern": "^[A-Z]{2}-\\d{4}$"}
  */
 class RegexConstraint implements FeatureValueConstraint {
 

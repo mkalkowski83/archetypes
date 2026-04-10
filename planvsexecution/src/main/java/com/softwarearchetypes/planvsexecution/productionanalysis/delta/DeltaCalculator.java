@@ -1,17 +1,16 @@
 package com.softwarearchetypes.planvsexecution.productionanalysis.delta;
 
+import com.softwarearchetypes.planvsexecution.productionanalysis.ActualProduction;
 import com.softwarearchetypes.planvsexecution.productionanalysis.PlannedProduction;
 import com.softwarearchetypes.planvsexecution.productionanalysis.ProductionPlan;
-import com.softwarearchetypes.planvsexecution.productionanalysis.ActualProduction;
 import com.softwarearchetypes.planvsexecution.productionanalysis.tolerance.MatchResult;
 import com.softwarearchetypes.planvsexecution.productionanalysis.tolerance.ToleranceStrategy;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Calculates the delta between production plan and actual execution.
- * Pure numerical comparison using algebra of delta.
+ * Calculates the delta between production plan and actual execution. Pure numerical comparison
+ * using algebra of delta.
  */
 public class DeltaCalculator {
 
@@ -41,11 +40,11 @@ public class DeltaCalculator {
                 matched,
                 unmatchedPlanned,
                 unmatchedActual,
-                DeltaStatistics.calculate(matched, unmatchedPlanned, unmatchedActual)
-        );
+                DeltaStatistics.calculate(matched, unmatchedPlanned, unmatchedActual));
     }
 
-    private ProductionMatch findBestMatch(PlannedProduction planned, List<ActualProduction> candidates) {
+    private ProductionMatch findBestMatch(
+            PlannedProduction planned, List<ActualProduction> candidates) {
         // Try matching with single production batch
         for (ActualProduction candidate : candidates) {
             if (!candidate.productId().equals(planned.productId())) {
@@ -58,9 +57,8 @@ public class DeltaCalculator {
         }
 
         // Try matching with multiple batches (split production scenarios)
-        List<ActualProduction> sameProductCandidates = candidates.stream()
-                .filter(c -> c.productId().equals(planned.productId()))
-                .toList();
+        List<ActualProduction> sameProductCandidates =
+                candidates.stream().filter(c -> c.productId().equals(planned.productId())).toList();
 
         for (int size = 2; size <= Math.min(5, sameProductCandidates.size()); size++) {
             for (int start = 0; start <= sameProductCandidates.size() - size; start++) {

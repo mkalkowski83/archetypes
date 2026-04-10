@@ -1,50 +1,58 @@
 package com.softwarearchetypes.pricing;
 
+import static com.softwarearchetypes.pricing.ApplicabilityConstraint.*;
+import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
+import static java.time.Clock.fixed;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-
-import com.softwarearchetypes.quantity.money.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static com.softwarearchetypes.pricing.ApplicabilityConstraint.*;
-import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
-import static java.time.Clock.fixed;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests for ApplicabilityConstraint on CompositeComponent — tested through PricingFacade.
  *
- * Key behaviours verified:
- * - CompositeComponent with unsatisfied constraint returns 0 (not its children's sum)
- * - CompositeComponent with satisfied constraint calculates normally
- * - Sibling composites with different constraints are independent
- * - Nested composites: outer constraint gates the entire subtree
- * - Children's own constraints still apply when outer composite is active
- * - Temporal validity and applicability constraint are both required
+ * <p>Key behaviours verified: - CompositeComponent with unsatisfied constraint returns 0 (not its
+ * children's sum) - CompositeComponent with satisfied constraint calculates normally - Sibling
+ * composites with different constraints are independent - Nested composites: outer constraint gates
+ * the entire subtree - Children's own constraints still apply when outer composite is active -
+ * Temporal validity and applicability constraint are both required
  */
 class CompositeComponentApplicabilityTest {
 
-    static final Instant NOW = LocalDateTime.of(2025, 6, 1, 12, 0).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2025, 6, 1, 12, 0).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
 
     private PricingFacade facade = PricingConfiguration.inMemory(clock).pricingFacade();
 
     @BeforeEach
     void setUp() {
-        facade.addCalculator("fixed-100", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "fixed-100",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(100))));
-        facade.addCalculator("fixed-50", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "fixed-50",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(50))));
-        facade.addCalculator("fixed-30", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "fixed-30",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(30))));
-        facade.addCalculator("fixed-20", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "fixed-20",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(20))));
-        facade.addCalculator("pct-10", CalculatorType.PERCENTAGE,
+        facade.addCalculator(
+                "pct-10",
+                CalculatorType.PERCENTAGE,
                 Parameters.of("percentageRate", BigDecimal.valueOf(10)));
     }
 
@@ -67,20 +75,22 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("premium-feature", "fixed-50");
         facade.createSimpleComponent("loyalty-bonus", "fixed-30");
 
-        facade.createCompositeComponent("premium-bundle",
+        facade.createCompositeComponent(
+                "premium-bundle",
                 Map.of(),
                 equalsTo("customer-type", "premium"),
-                "premium-feature", "loyalty-bonus");
+                "premium-feature",
+                "loyalty-bonus");
 
-        facade.createCompositeComponent("total",
-                Map.of(),
-                "base-fee", "premium-bundle");
+        facade.createCompositeComponent("total", Map.of(), "base-fee", "premium-bundle");
 
         Parameters standard = Parameters.of("customer-type", "standard");
-        Parameters premium  = Parameters.of("customer-type", "premium");
+        Parameters premium = Parameters.of("customer-type", "premium");
 
-        assertEquals(Money.pln(BigDecimal.valueOf(100)), facade.calculateComponent("total", standard));
-        assertEquals(Money.pln(BigDecimal.valueOf(180)), facade.calculateComponent("total", premium));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(100)), facade.calculateComponent("total", standard));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(180)), facade.calculateComponent("total", premium));
     }
 
     @Test
@@ -89,14 +99,14 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("premium-feature", "fixed-50");
         facade.createSimpleComponent("loyalty-bonus", "fixed-30");
 
-        facade.createCompositeComponent("premium-bundle",
+        facade.createCompositeComponent(
+                "premium-bundle",
                 Map.of(),
                 equalsTo("customer-type", "premium"),
-                "premium-feature", "loyalty-bonus");
+                "premium-feature",
+                "loyalty-bonus");
 
-        facade.createCompositeComponent("total",
-                Map.of(),
-                "base-fee", "premium-bundle");
+        facade.createCompositeComponent("total", Map.of(), "base-fee", "premium-bundle");
 
         Parameters standard = Parameters.of("customer-type", "standard");
         ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total", standard);
@@ -122,25 +132,24 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("light-fee", "fixed-20");
         facade.createSimpleComponent("heavy-fee", "fixed-50");
 
-        facade.createCompositeComponent("light-delivery",
-                Map.of(),
-                lessThan("weight", 5),
-                "light-fee");
+        facade.createCompositeComponent(
+                "light-delivery", Map.of(), lessThan("weight", 5), "light-fee");
 
-        facade.createCompositeComponent("heavy-delivery",
-                Map.of(),
-                greaterThanOrEqualTo("weight", 5),
-                "heavy-fee");
+        facade.createCompositeComponent(
+                "heavy-delivery", Map.of(), greaterThanOrEqualTo("weight", 5), "heavy-fee");
 
-        facade.createCompositeComponent("delivery-cost",
-                Map.of(),
-                "light-delivery", "heavy-delivery");
+        facade.createCompositeComponent(
+                "delivery-cost", Map.of(), "light-delivery", "heavy-delivery");
 
         Parameters light = Parameters.of("weight", BigDecimal.valueOf(3));
         Parameters heavy = Parameters.of("weight", BigDecimal.valueOf(10));
 
-        assertEquals(Money.pln(BigDecimal.valueOf(20)), facade.calculateComponent("delivery-cost", light));
-        assertEquals(Money.pln(BigDecimal.valueOf(50)), facade.calculateComponent("delivery-cost", heavy));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(20)),
+                facade.calculateComponent("delivery-cost", light));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(50)),
+                facade.calculateComponent("delivery-cost", heavy));
     }
 
     @Test
@@ -149,15 +158,17 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("light-fee", "fixed-20");
         facade.createSimpleComponent("heavy-fee", "fixed-50");
 
-        facade.createCompositeComponent("light-delivery",
-                Map.of(), lessThan("weight", 5), "light-fee");
-        facade.createCompositeComponent("heavy-delivery",
-                Map.of(), greaterThanOrEqualTo("weight", 5), "heavy-fee");
-        facade.createCompositeComponent("delivery-cost",
-                Map.of(), "light-delivery", "heavy-delivery");
+        facade.createCompositeComponent(
+                "light-delivery", Map.of(), lessThan("weight", 5), "light-fee");
+        facade.createCompositeComponent(
+                "heavy-delivery", Map.of(), greaterThanOrEqualTo("weight", 5), "heavy-fee");
+        facade.createCompositeComponent(
+                "delivery-cost", Map.of(), "light-delivery", "heavy-delivery");
 
         Parameters boundary = Parameters.of("weight", BigDecimal.valueOf(5));
-        assertEquals(Money.pln(BigDecimal.valueOf(50)), facade.calculateComponent("delivery-cost", boundary));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(50)),
+                facade.calculateComponent("delivery-cost", boundary));
     }
 
     // ================================================================
@@ -176,25 +187,29 @@ class CompositeComponentApplicabilityTest {
     @Test
     void shouldGateEntireSubtreeWithOuterCompositeConstraint() {
         facade.createSimpleComponent("handling-fee", "fixed-100");
-        facade.createSimpleComponent("inspection-fee", "fixed-50",
-                equalsTo("zone", "restricted"));
+        facade.createSimpleComponent("inspection-fee", "fixed-50", equalsTo("zone", "restricted"));
 
-        facade.createCompositeComponent("hazmat-package",
+        facade.createCompositeComponent(
+                "hazmat-package",
                 Map.of(),
                 equalsTo("cargo", "hazmat"),
-                "handling-fee", "inspection-fee");
+                "handling-fee",
+                "inspection-fee");
 
-        facade.createCompositeComponent("contract",
-                Map.of(),
-                "hazmat-package");
+        facade.createCompositeComponent("contract", Map.of(), "hazmat-package");
 
         Parameters hazmatRestricted = Parameters.of("cargo", "hazmat", "zone", "restricted");
-        Parameters hazmatStandard   = Parameters.of("cargo", "hazmat",   "zone", "standard");
-        Parameters normalCargo      = Parameters.of("cargo", "standard", "zone", "restricted");
+        Parameters hazmatStandard = Parameters.of("cargo", "hazmat", "zone", "standard");
+        Parameters normalCargo = Parameters.of("cargo", "standard", "zone", "restricted");
 
-        assertEquals(Money.pln(BigDecimal.valueOf(150)), facade.calculateComponent("contract", hazmatRestricted));
-        assertEquals(Money.pln(BigDecimal.valueOf(100)), facade.calculateComponent("contract", hazmatStandard));
-        assertEquals(Money.pln(BigDecimal.ZERO),         facade.calculateComponent("contract", normalCargo));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(150)),
+                facade.calculateComponent("contract", hazmatRestricted));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(100)),
+                facade.calculateComponent("contract", hazmatStandard));
+        assertEquals(
+                Money.pln(BigDecimal.ZERO), facade.calculateComponent("contract", normalCargo));
     }
 
     // ================================================================
@@ -220,26 +235,28 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("promo-fee", "fixed-50");
         facade.createSimpleComponent("bonus-fee", "fixed-30");
 
-        facade.createCompositeComponent("promo-bundle",
+        facade.createCompositeComponent(
+                "promo-bundle",
                 Map.of(),
                 equalsTo("member", "gold"),
                 Validity.between(
-                        LocalDateTime.of(2025, 1, 1, 0, 0),
-                        LocalDateTime.of(2025, 7, 1, 0, 0)),
-                "promo-fee", "bonus-fee");
+                        LocalDateTime.of(2025, 1, 1, 0, 0), LocalDateTime.of(2025, 7, 1, 0, 0)),
+                "promo-fee",
+                "bonus-fee");
 
-        facade.createCompositeComponent("total",
-                Map.of(),
-                "promo-bundle");
+        facade.createCompositeComponent("total", Map.of(), "promo-bundle");
 
         // within validity + gold member — both conditions satisfied
-        Parameters withinGold = Parameters.of("member", "gold")
-                .with("timestamp", LocalDateTime.of(2025, 6, 15, 10, 0));
-        assertEquals(Money.pln(BigDecimal.valueOf(80)), facade.calculateComponent("total", withinGold));
+        Parameters withinGold =
+                Parameters.of("member", "gold")
+                        .with("timestamp", LocalDateTime.of(2025, 6, 15, 10, 0));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(80)), facade.calculateComponent("total", withinGold));
 
         // within validity + silver member — validity ok, constraint fails
-        Parameters withinSilver = Parameters.of("member", "silver")
-                .with("timestamp", LocalDateTime.of(2025, 6, 15, 10, 0));
+        Parameters withinSilver =
+                Parameters.of("member", "silver")
+                        .with("timestamp", LocalDateTime.of(2025, 6, 15, 10, 0));
         assertEquals(Money.pln(BigDecimal.ZERO), facade.calculateComponent("total", withinSilver));
     }
 
@@ -266,21 +283,28 @@ class CompositeComponentApplicabilityTest {
         facade.createSimpleComponent("base-service", "fixed-100");
         facade.createSimpleComponent("surcharge", "pct-10");
 
-        facade.createCompositeComponent("surcharge-bundle",
-                Map.of(),                              // no internal deps — baseAmount comes from outer params
+        facade.createCompositeComponent(
+                "surcharge-bundle",
+                Map.of(), // no internal deps — baseAmount comes from outer params
                 equalsTo("tier", "enterprise"),
                 "surcharge");
 
-        facade.createCompositeComponent("service-cost",
+        facade.createCompositeComponent(
+                "service-cost",
                 Map.of("surcharge-bundle", Map.of("baseAmount", new ValueOf("base-service"))),
-                "base-service", "surcharge-bundle");   // base-service computed first
+                "base-service",
+                "surcharge-bundle"); // base-service computed first
 
         Parameters enterprise = Parameters.of("tier", "enterprise");
-        Parameters standard   = Parameters.of("tier", "standard");
+        Parameters standard = Parameters.of("tier", "standard");
 
         // enterprise: base 100 + surcharge 10% of 100 = 110
-        assertEquals(Money.pln(BigDecimal.valueOf(110)), facade.calculateComponent("service-cost", enterprise));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(110)),
+                facade.calculateComponent("service-cost", enterprise));
         // standard:   base 100 + surcharge-bundle returns 0 (constraint not satisfied)
-        assertEquals(Money.pln(BigDecimal.valueOf(100)), facade.calculateComponent("service-cost", standard));
+        assertEquals(
+                Money.pln(BigDecimal.valueOf(100)),
+                facade.calculateComponent("service-cost", standard));
     }
 }

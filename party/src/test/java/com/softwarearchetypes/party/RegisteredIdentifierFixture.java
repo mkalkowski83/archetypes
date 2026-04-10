@@ -1,10 +1,10 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.stream.IntStream;
-
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+
+import java.util.Set;
+import java.util.stream.IntStream;
 
 final class RegisteredIdentifierFixture {
 
@@ -42,5 +42,4 @@ final class RegisteredIdentifierFixture {
     static Set<RegisteredIdentifier> someIdentifierSetOfSize(int size) {
         return IntStream.range(0, size).mapToObj(it -> someRegisteredIdentifier()).collect(toSet());
     }
-
 }

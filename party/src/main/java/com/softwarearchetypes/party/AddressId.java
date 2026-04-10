@@ -1,8 +1,8 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
 import static com.softwarearchetypes.common.Preconditions.checkNotNull;
+
+import java.util.UUID;
 
 public record AddressId(UUID value) {
 

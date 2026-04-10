@@ -1,10 +1,9 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.modification;
 
-import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.PaymentSchedule;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.delta.DeltaResult;
-
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -33,9 +32,9 @@ public class SpreadRemainingAmountModifier implements PaymentScheduleModifier {
         PaymentSchedule remaining = current.skip(paidInstallmentsCount);
 
         Money remainingAmount = remaining.totalAmount();
-        Money[] div = remainingAmount.divideAndRemainder(
-                java.math.BigDecimal.valueOf(newInstallmentCount)
-        );
+        Money[] div =
+                remainingAmount.divideAndRemainder(
+                        java.math.BigDecimal.valueOf(newInstallmentCount));
         Money baseInstallmentAmount = div[0];
         Money remainder = div[1];
 
@@ -53,9 +52,10 @@ public class SpreadRemainingAmountModifier implements PaymentScheduleModifier {
         List<Payment> newPayments = new ArrayList<>(before.payments());
         for (int i = 0; i < newInstallmentCount; i++) {
             Instant date = firstRemainingDate.plus(intervalBetween.multipliedBy(i));
-            Money installmentAmount = (i == newInstallmentCount - 1)
-                    ? baseInstallmentAmount.add(remainder)
-                    : baseInstallmentAmount;
+            Money installmentAmount =
+                    (i == newInstallmentCount - 1)
+                            ? baseInstallmentAmount.add(remainder)
+                            : baseInstallmentAmount;
             newPayments.add(Payment.of(date, installmentAmount));
         }
 

@@ -1,23 +1,20 @@
 package com.softwarearchetypes.product;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
 import java.time.LocalDate;
 import java.util.*;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * CatalogEntry - commercial offering position.
- * Represents what the organization currently offers to customers.
+ * CatalogEntry - commercial offering position. Represents what the organization currently offers to
+ * customers.
  *
- * Product (ProductType or PackageType) says what something IS (business/operational definition).
+ * <p>Product (ProductType or PackageType) says what something IS (business/operational definition).
  * CatalogEntry says that something is FOR SALE (commercial availability).
  *
- * Key differences from Product:
- * - displayName: marketing name (vs technical name)
- * - description: sales copy (vs technical description)
- * - categories: for navigation/search
- * - validity: when it's available for purchase
- * - metadata: flexible attributes (featured, badges, promotions, etc.)
+ * <p>Key differences from Product: - displayName: marketing name (vs technical name) - description:
+ * sales copy (vs technical description) - categories: for navigation/search - validity: when it's
+ * available for purchase - metadata: flexible attributes (featured, badges, promotions, etc.)
  */
 class CatalogEntry {
 
@@ -29,15 +26,17 @@ class CatalogEntry {
     private final Validity validity;
     private final Map<String, String> metadata;
 
-    private CatalogEntry(CatalogEntryId id,
-                        String displayName,
-                        String description,
-                        Product product,
-                        Set<String> categories,
-                        Validity validity,
-                        Map<String, String> metadata) {
+    private CatalogEntry(
+            CatalogEntryId id,
+            String displayName,
+            String description,
+            Product product,
+            Set<String> categories,
+            Validity validity,
+            Map<String, String> metadata) {
         checkArgument(id != null, "CatalogEntryId must be defined");
-        checkArgument(displayName != null && !displayName.isBlank(), "Display name must be defined");
+        checkArgument(
+                displayName != null && !displayName.isBlank(), "Display name must be defined");
         checkArgument(description != null && !description.isBlank(), "Description must be defined");
         checkArgument(product != null, "Product must be defined");
         checkArgument(validity != null, "Validity must be defined");
@@ -83,69 +82,41 @@ class CatalogEntry {
         return metadata;
     }
 
-    /**
-     * Checks if entry is available for purchase at given date.
-     */
+    /** Checks if entry is available for purchase at given date. */
     boolean isAvailableAt(LocalDate date) {
         return validity.isValidAt(date);
     }
 
-    /**
-     * Checks if entry belongs to given category.
-     */
+    /** Checks if entry belongs to given category. */
     boolean isInCategory(String category) {
         return categories.contains(category);
     }
 
-    /**
-     * Returns metadata value for given key.
-     */
+    /** Returns metadata value for given key. */
     Optional<String> getMetadata(String key) {
         return Optional.ofNullable(metadata.get(key));
     }
 
-    /**
-     * Returns metadata value or default if not present.
-     */
+    /** Returns metadata value or default if not present. */
     String getMetadataOrDefault(String key, String defaultValue) {
         return metadata.getOrDefault(key, defaultValue);
     }
 
-    /**
-     * Checks if metadata key exists.
-     */
+    /** Checks if metadata key exists. */
     boolean hasMetadata(String key) {
         return metadata.containsKey(key);
     }
 
-    /**
-     * Creates a copy with updated validity (for discontinuation).
-     */
+    /** Creates a copy with updated validity (for discontinuation). */
     CatalogEntry withValidity(Validity newValidity) {
         return new CatalogEntry(
-            id,
-            displayName,
-            description,
-            product,
-            categories,
-            newValidity,
-            metadata
-        );
+                id, displayName, description, product, categories, newValidity, metadata);
     }
 
-    /**
-     * Creates a copy with updated metadata.
-     */
+    /** Creates a copy with updated metadata. */
     CatalogEntry withMetadata(Map<String, String> newMetadata) {
         return new CatalogEntry(
-            id,
-            displayName,
-            description,
-            product,
-            categories,
-            validity,
-            newMetadata
-        );
+                id, displayName, description, product, categories, validity, newMetadata);
     }
 
     @Override
@@ -164,7 +135,7 @@ class CatalogEntry {
     @Override
     public String toString() {
         return "CatalogEntry{id=%s, displayName='%s', product=%s, categories=%s, validity=%s}"
-            .formatted(id, displayName, product.name(), categories, validity);
+                .formatted(id, displayName, product.name(), categories, validity);
     }
 
     static class Builder {
@@ -223,14 +194,7 @@ class CatalogEntry {
 
         CatalogEntry build() {
             return new CatalogEntry(
-                id,
-                displayName,
-                description,
-                product,
-                categories,
-                validity,
-                metadata
-            );
+                    id, displayName, description, product, categories, validity, metadata);
         }
     }
 }

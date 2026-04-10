@@ -7,15 +7,13 @@ public record CapabilityView(
         PartyId partyId,
         CapabilityType type,
         List<OperatingScope> scopes,
-        Validity validity
-) {
+        Validity validity) {
     public static CapabilityView from(Capability capability) {
         return new CapabilityView(
                 capability.id(),
                 capability.partyId(),
                 capability.type(),
                 capability.scopes(),
-                capability.validity()
-        );
+                capability.validity());
     }
 }

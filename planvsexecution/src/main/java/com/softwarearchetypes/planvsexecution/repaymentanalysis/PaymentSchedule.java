@@ -1,7 +1,6 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis;
 
 import com.softwarearchetypes.quantity.money.Money;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -28,15 +27,12 @@ public record PaymentSchedule(List<Payment> payments) {
     }
 
     public static PaymentSchedule fromEvents(List<PaymentProcessed> events) {
-        return PaymentSchedule.of(events.stream()
-                .map(e -> Payment.of(e.when(), e.amount()))
-                .toList());
+        return PaymentSchedule.of(
+                events.stream().map(e -> Payment.of(e.when(), e.amount())).toList());
     }
 
     public Money totalAmount() {
-        return payments.stream()
-                .map(Payment::amount)
-                .reduce(Money.zeroPln(), Money::add);
+        return payments.stream().map(Payment::amount).reduce(Money.zeroPln(), Money::add);
     }
 
     public int size() {

@@ -1,27 +1,35 @@
 package com.softwarearchetypes.party;
 
-import java.util.Locale;
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
 import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
 import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
 import com.softwarearchetypes.party.events.GeoAddressDefined;
 import com.softwarearchetypes.party.events.GeoAddressRemoved;
 import com.softwarearchetypes.party.events.GeoAddressUpdated;
+import java.util.Locale;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 final class GeoAddress extends Address {
 
     private final GeoAddressDetails geoAddressDetails;
 
-    GeoAddress(AddressId id, PartyId partyId, GeoAddressDetails geoAddressDetails, Set<AddressUseType> useTypes) {
+    GeoAddress(
+            AddressId id,
+            PartyId partyId,
+            GeoAddressDetails geoAddressDetails,
+            Set<AddressUseType> useTypes) {
         super(id, partyId, useTypes);
         this.geoAddressDetails = geoAddressDetails;
     }
 
-    GeoAddress(AddressId id, PartyId partyId, GeoAddressDetails geoAddressDetails, Set<AddressUseType> useTypes, Validity validity) {
+    GeoAddress(
+            AddressId id,
+            PartyId partyId,
+            GeoAddressDetails geoAddressDetails,
+            Set<AddressUseType> useTypes,
+            Validity validity) {
         super(id, partyId, useTypes, validity);
         this.geoAddressDetails = geoAddressDetails;
     }
@@ -61,17 +69,32 @@ final class GeoAddress extends Address {
 
     @Override
     public AddressUpdateSucceeded toAddressUpdateSucceededEvent() {
-        return new GeoAddressUpdated(id().asString(), partyId().asString(), geoAddressDetails.name(),
-                geoAddressDetails.street(), geoAddressDetails.building(), geoAddressDetails.flat(),
-                geoAddressDetails.city(), geoAddressDetails.zip().asString(), geoAddressDetails.locale().toString(),
+        return new GeoAddressUpdated(
+                id().asString(),
+                partyId().asString(),
+                geoAddressDetails.name(),
+                geoAddressDetails.street(),
+                geoAddressDetails.building(),
+                geoAddressDetails.flat(),
+                geoAddressDetails.city(),
+                geoAddressDetails.zip().asString(),
+                geoAddressDetails.locale().toString(),
                 useTypesAsStringSet());
     }
 
     @Override
     public AddressDefinitionSucceeded toAddressDefinitionSucceededEvent() {
-        return new GeoAddressDefined(id().asString(), partyId().asString(), geoAddressDetails.name(), geoAddressDetails.street(), geoAddressDetails.building(),
-                geoAddressDetails.flat(), geoAddressDetails.city(), geoAddressDetails.zip().asString(), geoAddressDetails.locale()
-                                                                                                                         .toString(), useTypesAsStringSet());
+        return new GeoAddressDefined(
+                id().asString(),
+                partyId().asString(),
+                geoAddressDetails.name(),
+                geoAddressDetails.street(),
+                geoAddressDetails.building(),
+                geoAddressDetails.flat(),
+                geoAddressDetails.city(),
+                geoAddressDetails.zip().asString(),
+                geoAddressDetails.locale().toString(),
+                useTypesAsStringSet());
     }
 
     @Override
@@ -94,10 +117,24 @@ final class GeoAddress extends Address {
                 .toString();
     }
 
-    public record GeoAddressDetails(String name, String street, String building, String flat, String city, ZipCode zip,
-                                    Locale locale) implements AddressDetails {
+    public record GeoAddressDetails(
+            String name,
+            String street,
+            String building,
+            String flat,
+            String city,
+            ZipCode zip,
+            Locale locale)
+            implements AddressDetails {
 
-        static GeoAddressDetails from(String name, String street, String building, String flat, String city, ZipCode zip, Locale locale) {
+        static GeoAddressDetails from(
+                String name,
+                String street,
+                String building,
+                String flat,
+                String city,
+                ZipCode zip,
+                Locale locale) {
             return new GeoAddressDetails(name, street, building, flat, city, zip, locale);
         }
     }

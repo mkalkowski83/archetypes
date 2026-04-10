@@ -1,14 +1,10 @@
 package com.softwarearchetypes.inventory.availability;
 
-import com.softwarearchetypes.common.Result;
-import org.junit.jupiter.api.Test;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import com.softwarearchetypes.common.Result;
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
 
 class TemporalResourceAvailabilityTest {
 
@@ -49,7 +45,8 @@ class TemporalResourceAvailabilityTest {
         room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
 
         // when
-        Result<String, BlockadeId> result = room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, BOB));
+        Result<String, BlockadeId> result =
+                room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, BOB));
 
         // then
         assertThat(result.failure()).isTrue();
@@ -63,7 +60,8 @@ class TemporalResourceAvailabilityTest {
         room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
 
         // when
-        Result<String, BlockadeId> result = room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
+        Result<String, BlockadeId> result =
+                room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
 
         // then
         assertThat(result.success()).isTrue();
@@ -74,7 +72,8 @@ class TemporalResourceAvailabilityTest {
         // given
         TimeSlot jan15 = TimeSlot.ofDay(LocalDate.of(2024, 1, 15));
         TemporalResourceAvailability room = TemporalResourceAvailability.create(ROOM_101, jan15);
-        Result<String, BlockadeId> lockResult = room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
+        Result<String, BlockadeId> lockResult =
+                room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
         BlockadeId blockadeId = lockResult.getSuccess();
 
         // when
@@ -90,7 +89,8 @@ class TemporalResourceAvailabilityTest {
         // given
         TimeSlot jan15 = TimeSlot.ofDay(LocalDate.of(2024, 1, 15));
         TemporalResourceAvailability room = TemporalResourceAvailability.create(ROOM_101, jan15);
-        Result<String, BlockadeId> lockResult = room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
+        Result<String, BlockadeId> lockResult =
+                room.lock(TemporalLockRequest.indefinite(ROOM_101, jan15, ALICE));
         BlockadeId blockadeId = lockResult.getSuccess();
 
         // when

@@ -1,5 +1,3 @@
 package com.softwarearchetypes.party;
 
-interface AddressDetails {
-
-}
+interface AddressDetails {}

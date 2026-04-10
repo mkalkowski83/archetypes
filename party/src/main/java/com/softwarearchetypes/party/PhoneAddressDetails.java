@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Phone address details with validation.
- * Uses per-country patterns for known countries, falls back to a general pattern for others.
+ * Phone address details with validation. Uses per-country patterns for known countries, falls back
+ * to a general pattern for others.
  */
 record PhoneAddressDetails(String phoneNumber) implements AddressDetails {
 
@@ -37,8 +37,12 @@ record PhoneAddressDetails(String phoneNumber) implements AddressDetails {
 
         if (digitsOnly.length() < MIN_DIGITS || digitsOnly.length() > MAX_DIGITS) {
             throw new IllegalArgumentException(
-                    "Phone number must contain between " + MIN_DIGITS + " and " + MAX_DIGITS + " digits: " + phoneNumber
-            );
+                    "Phone number must contain between "
+                            + MIN_DIGITS
+                            + " and "
+                            + MAX_DIGITS
+                            + " digits: "
+                            + phoneNumber);
         }
 
         if (PATTERNS.stream().noneMatch(pattern -> pattern.matcher(stripped).matches())) {
@@ -50,9 +54,7 @@ record PhoneAddressDetails(String phoneNumber) implements AddressDetails {
         return new PhoneAddressDetails(phoneNumber);
     }
 
-    /**
-     * Returns normalized phone number (digits only, with optional + prefix).
-     */
+    /** Returns normalized phone number (digits only, with optional + prefix). */
     public String normalized() {
         String result = phoneNumber.replaceAll("[\\s.()-]", "");
         if (phoneNumber.startsWith("+") && !result.startsWith("+")) {

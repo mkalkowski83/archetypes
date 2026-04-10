@@ -31,9 +31,6 @@ class InMemoryPostingRuleRepository implements PostingRuleRepository {
 
     @Override
     public List<PostingRule> findEligibleRules(PostingContext context) {
-        return rules.values()
-                .stream()
-                .filter(rule -> rule.isEligible(context))
-                .toList();
+        return rules.values().stream().filter(rule -> rule.isEligible(context)).toList();
     }
 }

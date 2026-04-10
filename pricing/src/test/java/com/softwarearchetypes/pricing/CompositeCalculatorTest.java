@@ -1,17 +1,15 @@
 package com.softwarearchetypes.pricing;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.math.BigDecimal;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class CompositeCalculatorTest {
 
@@ -24,17 +22,16 @@ class CompositeCalculatorTest {
         // Add calculators for different ranges
         repository.save(new SimpleFixedCalculator("fixed-100", Money.pln(100)));
 
-        repository.save(new StepFunctionCalculator(
-            "step-calc",
-            Money.pln(200),
-            new BigDecimal("10"),
-            new BigDecimal("10")
-        ));
+        repository.save(
+                new StepFunctionCalculator(
+                        "step-calc", Money.pln(200), new BigDecimal("10"), new BigDecimal("10")));
 
-        repository.save(new DiscretePointsCalculator("discrete-calc", Map.of(
-            new BigDecimal("50"), Money.pln(500),
-            new BigDecimal("75"), Money.pln(700)
-        )));
+        repository.save(
+                new DiscretePointsCalculator(
+                        "discrete-calc",
+                        Map.of(
+                                new BigDecimal("50"), Money.pln(500),
+                                new BigDecimal("75"), Money.pln(700))));
     }
 
     @Test
@@ -44,16 +41,16 @@ class CompositeCalculatorTest {
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
         CalculatorId discreteId = repository.findByName("discrete-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
-            CalculatorRange.numeric(new BigDecimal("50"), new BigDecimal("100"), discreteId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("50"), new BigDecimal("100"), discreteId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "composite", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("composite", ranges, repository);
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("5")));
 
@@ -71,16 +68,16 @@ class CompositeCalculatorTest {
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
         CalculatorId discreteId = repository.findByName("discrete-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
-            CalculatorRange.numeric(new BigDecimal("50"), new BigDecimal("100"), discreteId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("50"), new BigDecimal("100"), discreteId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("15")));
 
@@ -98,16 +95,16 @@ class CompositeCalculatorTest {
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
         CalculatorId discreteId = repository.findByName("discrete-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
-            CalculatorRange.numeric(new BigDecimal("50"), new BigDecimal("100"), discreteId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("50"), new BigDecimal("100"), discreteId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("75")));
 
@@ -124,15 +121,15 @@ class CompositeCalculatorTest {
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), stepId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         // when & then - quantity 10 is in second range [10, 50) - inclusive lower bound
         Parameters params10 = new Parameters(Map.of("quantity", new BigDecimal("10")));
@@ -151,23 +148,21 @@ class CompositeCalculatorTest {
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), stepId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("100")));
 
         // when & then
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> calculator.calculate(params)
-        );
+        IllegalArgumentException exception =
+                assertThrows(IllegalArgumentException.class, () -> calculator.calculate(params));
 
         assertTrue(exception.getMessage().contains("No matching range"));
     }
@@ -177,16 +172,19 @@ class CompositeCalculatorTest {
         // given
         CalculatorId nonExistentId = CalculatorId.generate();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), nonExistentId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(
+                                new BigDecimal("0"), new BigDecimal("10"), nonExistentId));
 
         // when & then: should fail during construction due to validation
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new CompositeFunctionCalculator("piecewise-pricing", ranges, repository)
-        );
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () ->
+                                new CompositeFunctionCalculator(
+                                        "piecewise-pricing", ranges, repository));
 
         assertTrue(exception.getMessage().contains("not found"));
     }
@@ -196,14 +194,14 @@ class CompositeCalculatorTest {
         // given
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(
+                                new BigDecimal("0"), new BigDecimal("10"), fixedId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         Parameters params = Parameters.empty();
 
@@ -216,14 +214,14 @@ class CompositeCalculatorTest {
         // given
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(
+                                new BigDecimal("0"), new BigDecimal("10"), fixedId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         // when & then
         assertEquals(CalculatorType.COMPOSITE, calculator.getType());
@@ -235,15 +233,15 @@ class CompositeCalculatorTest {
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), stepId));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "piecewise-pricing", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("piecewise-pricing", ranges, repository);
 
         // when
         String description = calculator.describe();
@@ -258,16 +256,17 @@ class CompositeCalculatorTest {
         // given: non-existent calculator ID
         CalculatorId nonExistentId = CalculatorId.generate();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), nonExistentId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(
+                                new BigDecimal("0"), new BigDecimal("10"), nonExistentId));
 
         // when & then: should fail during construction, not during calculate()
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new CompositeFunctionCalculator("composite", ranges, repository)
-        );
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> new CompositeFunctionCalculator("composite", ranges, repository));
 
         assertTrue(exception.getMessage().contains("not found in repository"));
     }
@@ -275,23 +274,25 @@ class CompositeCalculatorTest {
     @Test
     void should_fail_when_component_calculators_have_different_interpretations() {
         // given: create calculators with different interpretations
-        repository.save(new SimpleFixedCalculator("total-calc", Money.pln(100), Interpretation.TOTAL));
+        repository.save(
+                new SimpleFixedCalculator("total-calc", Money.pln(100), Interpretation.TOTAL));
         repository.save(new SimpleFixedCalculator("unit-calc", Money.pln(10), Interpretation.UNIT));
 
         CalculatorId totalId = repository.findByName("total-calc").get().getId();
         CalculatorId unitId = repository.findByName("unit-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), totalId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), unitId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), totalId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), unitId));
 
         // when & then: should fail because interpretations don't match
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new CompositeFunctionCalculator("composite", ranges, repository)
-        );
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> new CompositeFunctionCalculator("composite", ranges, repository));
 
         assertTrue(exception.getMessage().contains("same interpretation"));
         assertTrue(exception.getMessage().contains("TOTAL"));
@@ -307,15 +308,15 @@ class CompositeCalculatorTest {
         CalculatorId unit1Id = repository.findByName("unit-1").get().getId();
         CalculatorId unit2Id = repository.findByName("unit-2").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), unit1Id),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), unit2Id)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), unit1Id),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), unit2Id));
 
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "composite", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("composite", ranges, repository);
 
         // when & then: composite should return UNIT interpretation
         assertEquals(Interpretation.UNIT, calculator.interpretation());
@@ -327,16 +328,16 @@ class CompositeCalculatorTest {
         CalculatorId fixedId = repository.findByName("fixed-100").get().getId();
         CalculatorId stepId = repository.findByName("step-calc").get().getId();
 
-        Ranges ranges = Ranges.of(
-            "quantity",
-            CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
-            CalculatorRange.numeric(new BigDecimal("10"), new BigDecimal("50"), stepId)
-        );
+        Ranges ranges =
+                Ranges.of(
+                        "quantity",
+                        CalculatorRange.numeric(new BigDecimal("0"), new BigDecimal("10"), fixedId),
+                        CalculatorRange.numeric(
+                                new BigDecimal("10"), new BigDecimal("50"), stepId));
 
         // when: create composite - should succeed
-        CompositeFunctionCalculator calculator = new CompositeFunctionCalculator(
-            "composite", ranges, repository
-        );
+        CompositeFunctionCalculator calculator =
+                new CompositeFunctionCalculator("composite", ranges, repository);
 
         // then: should have TOTAL interpretation
         assertEquals(Interpretation.TOTAL, calculator.interpretation());

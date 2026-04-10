@@ -4,10 +4,9 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 /**
- * Represents a time period during which something is valid (available, active, etc.).
- * Both boundaries are optional:
- * - No from date = valid since the beginning of time
- * - No to date = valid indefinitely
+ * Represents a time period during which something is valid (available, active, etc.). Both
+ * boundaries are optional: - No from date = valid since the beginning of time - No to date = valid
+ * indefinitely
  */
 class Validity {
 
@@ -22,37 +21,27 @@ class Validity {
         this.to = to;
     }
 
-    /**
-     * Creates validity period from given date (inclusive) with no end date.
-     */
+    /** Creates validity period from given date (inclusive) with no end date. */
     static Validity from(LocalDate from) {
         return new Validity(from, null);
     }
 
-    /**
-     * Creates validity period until given date (inclusive) with no start date.
-     */
+    /** Creates validity period until given date (inclusive) with no start date. */
     static Validity until(LocalDate to) {
         return new Validity(null, to);
     }
 
-    /**
-     * Creates validity period between two dates (both inclusive).
-     */
+    /** Creates validity period between two dates (both inclusive). */
     static Validity between(LocalDate from, LocalDate to) {
         return new Validity(from, to);
     }
 
-    /**
-     * Creates validity period with no boundaries (always valid).
-     */
+    /** Creates validity period with no boundaries (always valid). */
     static Validity always() {
         return new Validity(null, null);
     }
 
-    /**
-     * Checks if the given date falls within this validity period.
-     */
+    /** Checks if the given date falls within this validity period. */
     boolean isValidAt(LocalDate date) {
         if (date == null) {
             return false;

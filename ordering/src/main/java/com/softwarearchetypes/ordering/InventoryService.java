@@ -1,5 +1,8 @@
 package com.softwarearchetypes.ordering;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
+import com.softwarearchetypes.quantity.Quantity;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -7,89 +10,61 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.softwarearchetypes.quantity.Quantity;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * Service responsible for resource allocation and reservations.
- * Operates in generic "resource language" - doesn't know domain specifics like "doctor" or "courier".
+ * Service responsible for resource allocation and reservations. Operates in generic "resource
+ * language" - doesn't know domain specifics like "doctor" or "courier".
  */
 interface InventoryService {
 
-    /**
-     * Check availability without making a reservation.
-     */
+    /** Check availability without making a reservation. */
     AvailabilityResult checkAvailability(AvailabilityQuery query);
 
-    /**
-     * Reserve a resource (typically for PRE_ALLOCATED strategy).
-     */
+    /** Reserve a resource (typically for PRE_ALLOCATED strategy). */
     ReservationResponse reserve(ReservationRequest request);
 
-    /**
-     * Allocate resources for an order (typically for ORDER_DRIVEN strategy).
-     */
+    /** Allocate resources for an order (typically for ORDER_DRIVEN strategy). */
     AllocationResult allocate(AllocationRequest request);
 
-    /**
-     * Validate that a reservation is still valid.
-     */
+    /** Validate that a reservation is still valid. */
     void validateReservation(ReservationId reservationId, OrderId orderId);
 
-    /**
-     * Commit a reservation to an order (finalize it).
-     */
+    /** Commit a reservation to an order (finalize it). */
     void commitReservation(ReservationId reservationId, OrderId orderId);
 
-    /**
-     * Fulfill an order from waitlist when resource becomes available.
-     */
+    /** Fulfill an order from waitlist when resource becomes available. */
     void fulfillFromWaitlist(WaitlistId waitlistId);
 }
 
 /**
- * Defines WHAT TO DO when resource is not available.
- * This is typically defined at the Product level.
+ * Defines WHAT TO DO when resource is not available. This is typically defined at the Product
+ * level.
  */
 enum AllocationPolicy {
-    /**
-     * Reject order if resource unavailable (hard constraint, e.g., flight seat).
-     */
+    /** Reject order if resource unavailable (hard constraint, e.g., flight seat). */
     REJECT,
 
-    /**
-     * Reserve with timeout, customer must confirm within time limit (e.g., concert ticket).
-     */
+    /** Reserve with timeout, customer must confirm within time limit (e.g., concert ticket). */
     RESERVE_TIMEOUT,
 
-    /**
-     * Put on waitlist, fulfill when resource becomes available (e.g., specialist appointment).
-     */
+    /** Put on waitlist, fulfill when resource becomes available (e.g., specialist appointment). */
     WAITLIST,
 
-    /**
-     * Retry periodically to find resource (e.g., cloud VM).
-     */
+    /** Retry periodically to find resource (e.g., cloud VM). */
     POLL_RETRY,
 
-    /**
-     * Dynamically increase capacity (e.g., cloud storage, bank account numbers).
-     */
+    /** Dynamically increase capacity (e.g., cloud storage, bank account numbers). */
     ELASTIC
 }
 
 /**
- * Request for resource allocation.
- * Carries full allocation context in generic resource language.
+ * Request for resource allocation. Carries full allocation context in generic resource language.
  */
 record AllocationRequest(
         ProductIdentifier productId,
         Quantity quantity,
         OrderId orderId,
         AllocationPolicy policy,
-        Map<String, String> context
-) {
+        Map<String, String> context) {
     public static Builder builder() {
         return new Builder();
     }
@@ -132,15 +107,9 @@ record AllocationRequest(
     }
 }
 
-/**
- * Result of allocation attempt.
- * Generic response in resource language.
- */
+/** Result of allocation attempt. Generic response in resource language. */
 record AllocationResult(
-        AllocationStatus status,
-        ReservationId reservationId,
-        Map<String, String> attributes
-) {
+        AllocationStatus status, ReservationId reservationId, Map<String, String> attributes) {
     public static Builder builder() {
         return new Builder();
     }
@@ -171,66 +140,39 @@ record AllocationResult(
     }
 }
 
-/**
- * Status of allocation attempt.
- * Reported by Inventory, interpreted by Ordering.
- */
+/** Status of allocation attempt. Reported by Inventory, interpreted by Ordering. */
 enum AllocationStatus {
-    /**
-     * Resource successfully allocated.
-     */
+    /** Resource successfully allocated. */
     ALLOCATED,
 
-    /**
-     * Resource not available, order put on waitlist.
-     */
+    /** Resource not available, order put on waitlist. */
     WAITLISTED,
 
-    /**
-     * Partial allocation (some quantity allocated, some not).
-     */
+    /** Partial allocation (some quantity allocated, some not). */
     PARTIAL,
 
-    /**
-     * Resource completely unavailable.
-     */
+    /** Resource completely unavailable. */
     UNAVAILABLE
 }
 
-/**
- * Defines WHEN resource allocation happens.
- * This is typically defined at the Product level.
- */
+/** Defines WHEN resource allocation happens. This is typically defined at the Product level. */
 enum AllocationStrategy {
-    /**
-     * No allocation needed (e.g., e-book, digital product).
-     */
+    /** No allocation needed (e.g., e-book, digital product). */
     NONE,
 
-    /**
-     * Resource must be reserved BEFORE order is created (e.g., courier slot, concert ticket).
-     */
+    /** Resource must be reserved BEFORE order is created (e.g., courier slot, concert ticket). */
     PRE_ALLOCATED,
 
-    /**
-     * Resource is allocated DURING order confirmation (e.g., doctor appointment, bank account).
-     */
+    /** Resource is allocated DURING order confirmation (e.g., doctor appointment, bank account). */
     ORDER_DRIVEN,
 
-    /**
-     * Allocation is managed externally, outside the system (e.g., partner services).
-     */
+    /** Allocation is managed externally, outside the system (e.g., partner services). */
     EXTERNAL
 }
 
-/**
- * Query to check resource availability without making a reservation.
- */
+/** Query to check resource availability without making a reservation. */
 record AvailabilityQuery(
-        ProductIdentifier productId,
-        Quantity quantity,
-        Map<String, String> context
-) {
+        ProductIdentifier productId, Quantity quantity, Map<String, String> context) {
     public static Builder builder() {
         return new Builder();
     }
@@ -261,14 +203,9 @@ record AvailabilityQuery(
     }
 }
 
-/**
- * Result of availability check.
- */
+/** Result of availability check. */
 record AvailabilityResult(
-        boolean available,
-        Quantity availableQuantity,
-        Map<String, String> attributes
-) {
+        boolean available, Quantity availableQuantity, Map<String, String> attributes) {
     public static AvailabilityResult available(Quantity quantity) {
         return new AvailabilityResult(true, quantity, Map.of());
     }
@@ -315,8 +252,7 @@ record Reservation(
         OrderId orderId,
         OrderLineId orderLineId,
         BlockadeId blockadeId,
-        ResourceId resourceId
-) {
+        ResourceId resourceId) {
     public Reservation {
         checkArgument(id != null, "ReservationId must be defined");
         checkArgument(orderId != null, "OrderId must be defined");
@@ -336,15 +272,12 @@ record WaitlistId(String value) {
     }
 }
 
-/**
- * Request for resource reservation (PRE_ALLOCATED strategy).
- */
+/** Request for resource reservation (PRE_ALLOCATED strategy). */
 record ReservationRequest(
         ProductIdentifier productId,
         Quantity quantity,
         Duration timeout,
-        Map<String, String> context
-) {
+        Map<String, String> context) {
     public static Builder builder() {
         return new Builder();
     }
@@ -381,16 +314,13 @@ record ReservationRequest(
     }
 }
 
-/**
- * Represents a resource reservation response from inventory service.
- */
+/** Represents a resource reservation response from inventory service. */
 record ReservationResponse(
         ReservationId id,
         ProductIdentifier productId,
         Quantity quantity,
         LocalDateTime expiresAt,
-        Map<String, String> attributes
-) {
+        Map<String, String> attributes) {
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
     }
@@ -418,17 +348,16 @@ class FixableInventoryService implements InventoryService {
     }
 
     public void willFailOnAllocate() {
-        this.allocationResult = AllocationResult.builder()
-                                                .status(AllocationStatus.UNAVAILABLE)
-                                                .attributes(Map.of())
-                                                .build();
+        this.allocationResult =
+                AllocationResult.builder()
+                        .status(AllocationStatus.UNAVAILABLE)
+                        .attributes(Map.of())
+                        .build();
     }
 
     public void willReturnOnAllocate(AllocationStatus status) {
-        this.allocationResult = AllocationResult.builder()
-                                                .status(status)
-                                                .attributes(Map.of())
-                                                .build();
+        this.allocationResult =
+                AllocationResult.builder().status(status).attributes(Map.of()).build();
     }
 
     public void reset() {
@@ -452,8 +381,7 @@ class FixableInventoryService implements InventoryService {
                 request.productId(),
                 request.quantity(),
                 LocalDateTime.now().plus(Duration.ofHours(1)),
-                Map.of()
-        );
+                Map.of());
     }
 
     @Override
@@ -463,22 +391,19 @@ class FixableInventoryService implements InventoryService {
     }
 
     @Override
-    public void validateReservation(ReservationId reservationId, OrderId orderId) {
-    }
+    public void validateReservation(ReservationId reservationId, OrderId orderId) {}
 
     @Override
-    public void commitReservation(ReservationId reservationId, OrderId orderId) {
-    }
+    public void commitReservation(ReservationId reservationId, OrderId orderId) {}
 
     @Override
-    public void fulfillFromWaitlist(WaitlistId waitlistId) {
-    }
+    public void fulfillFromWaitlist(WaitlistId waitlistId) {}
 
     private static AllocationResult defaultAllocated() {
         return AllocationResult.builder()
-                               .status(AllocationStatus.ALLOCATED)
-                               .reservationId(ReservationId.generate())
-                               .attributes(Map.of())
-                               .build();
+                .status(AllocationStatus.ALLOCATED)
+                .reservationId(ReservationId.generate())
+                .attributes(Map.of())
+                .build();
     }
 }

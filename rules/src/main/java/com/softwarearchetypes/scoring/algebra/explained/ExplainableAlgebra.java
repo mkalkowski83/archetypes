@@ -4,7 +4,6 @@ import com.softwarearchetypes.scoring.algebra.Algebra;
 import com.softwarearchetypes.scoring.ast.CmpOp;
 import com.softwarearchetypes.scoring.ast.Metric;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +51,8 @@ public class ExplainableAlgebra implements Algebra<ExplainedScore> {
     }
 
     @Override
-    public ExplainedScore ifThenElse(ExplainedScore cond,
-                                     ExplainedScore thenV,
-                                     ExplainedScore elseV) {
+    public ExplainedScore ifThenElse(
+            ExplainedScore cond, ExplainedScore thenV, ExplainedScore elseV) {
         return cond.total() > 0 ? thenV : elseV;
     }
 

@@ -1,176 +1,195 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result;
-import com.softwarearchetypes.party.events.AddressRemovalSkipped;
-import com.softwarearchetypes.party.events.AddressUpdateSkipped;
-
 import static com.softwarearchetypes.party.GeoAddressFixture.someGeoAddressFor;
 import static com.softwarearchetypes.party.GeoAddressFixture.someGeoAddressWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.softwarearchetypes.common.Result;
+import com.softwarearchetypes.party.events.AddressRemovalSkipped;
+import com.softwarearchetypes.party.events.AddressUpdateSkipped;
+import org.junit.jupiter.api.Test;
+
 class AddressesTest {
 
     @Test
     void shouldAddAddressToParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeAdded = someGeoAddressFor(partyId);
         Addresses addresses = Addresses.emptyAddressesFor(partyId);
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.addOrUpdate(addressToBeAdded);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldGenerateProperAddressDefinedEventWhenSuccessfullyAddingAddressToParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeAdded = someGeoAddressFor(partyId);
         Addresses addresses = Addresses.emptyAddressesFor(partyId);
 
-        //when
+        // when
         addresses.addOrUpdate(addressToBeAdded);
 
-        //then
-        assertTrue(addresses.events().contains(addressToBeAdded.toAddressDefinitionSucceededEvent()));
+        // then
+        assertTrue(
+                addresses.events().contains(addressToBeAdded.toAddressDefinitionSucceededEvent()));
     }
 
     @Test
     void shouldUpdateAddressForParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeUpdated = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeUpdated).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeUpdated).getSuccess();
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.addOrUpdate(addressToBeUpdated);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldGenerateProperAddressUpdatedEventWhenSuccessfullyUpdatingAddressForParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeUpdated = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeUpdated).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeUpdated).getSuccess();
 
-        //and
+        // and
         Address newAddress = someGeoAddressWith(addressToBeUpdated.id(), partyId);
 
-        //when
+        // when
         addresses.addOrUpdate(newAddress);
 
-        //then
+        // then
         assertTrue(addresses.events().contains(newAddress.toAddressUpdateSucceededEvent()));
     }
 
     @Test
     void shouldRemoveAddressFromParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeRemoved = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeRemoved).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeRemoved).getSuccess();
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.removeAddressWith(addressToBeRemoved.id());
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldGenerateProperAddressRemovalEventWhenSuccessfullyRemovingAddressFromParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address addressToBeRemoved = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeRemoved).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(addressToBeRemoved).getSuccess();
 
-        //when
+        // when
         addresses.removeAddressWith(addressToBeRemoved.id());
 
-        //then
-        assertTrue(addresses.events().contains(addressToBeRemoved.toAddressRemovalSucceededEvent()));
+        // then
+        assertTrue(
+                addresses.events().contains(addressToBeRemoved.toAddressRemovalSucceededEvent()));
     }
 
     @Test
     void addressRemovalShouldBeIgnoredWhenItDoesNotExistForParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Addresses addresses = Addresses.emptyAddressesFor(partyId);
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.removeAddressWith(AddressId.random());
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldGenerateProperAddressRemovalSkippedEventWhenAddressDoesNotExistForParty() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Addresses addresses = Addresses.emptyAddressesFor(partyId);
         AddressId notExistingAddressId = AddressId.random();
 
-        //when
+        // when
         addresses.removeAddressWith(notExistingAddressId);
 
-        //then
-        assertTrue(addresses.events().contains(AddressRemovalSkipped.dueToAddressNotFoundFor(notExistingAddressId.asString(), partyId.asString())));
+        // then
+        assertTrue(
+                addresses
+                        .events()
+                        .contains(
+                                AddressRemovalSkipped.dueToAddressNotFoundFor(
+                                        notExistingAddressId.asString(), partyId.asString())));
     }
 
     @Test
     void addressUpdateShouldBeIgnoredWhenNoChangesHasBeenFound() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address address = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(address).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(address).getSuccess();
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.addOrUpdate(address);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldGenerateProperAddressUpdateSkippedEventWhenNoChangesHasBeenFound() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address address = someGeoAddressFor(partyId);
-        Addresses addresses = Addresses.emptyAddressesFor(partyId).addOrUpdate(address).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId).addOrUpdate(address).getSuccess();
 
-        //when
+        // when
         addresses.addOrUpdate(address);
 
-        //then
-        assertTrue(addresses.events().contains(AddressUpdateSkipped.dueToNoChangesIdentifiedFor(address.id().asString(), partyId.asString())));
+        // then
+        assertTrue(
+                addresses
+                        .events()
+                        .contains(
+                                AddressUpdateSkipped.dueToNoChangesIdentifiedFor(
+                                        address.id().asString(), partyId.asString())));
     }
 
     @Test
     void givenThereIsPolicyLimitingAddressCountAddingNewAddressShouldFail() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         Address address = someGeoAddressFor(partyId);
         AddressDefiningPolicy addressCountLimitingPolicy = ((ads, ad) -> ads.asSet().isEmpty());
-        Addresses addresses = Addresses.emptyAddressesFor(partyId, addressCountLimitingPolicy).addOrUpdate(address).getSuccess();
+        Addresses addresses =
+                Addresses.emptyAddressesFor(partyId, addressCountLimitingPolicy)
+                        .addOrUpdate(address)
+                        .getSuccess();
 
-        //and
+        // and
         Address newAddress = someGeoAddressFor(partyId);
 
-        //when
+        // when
         Result<String, Addresses> result = addresses.addOrUpdate(newAddress);
 
-        //then
+        // then
         assertEquals("POLICY_NOT_MET", result.getFailure());
     }
 }

@@ -1,21 +1,17 @@
 package com.softwarearchetypes.product;
 
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.quantity.Unit;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Tests for PackageType creation and selection validation.
- */
+import com.softwarearchetypes.quantity.Unit;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+/** Tests for PackageType creation and selection validation. */
 class PackageTypeTest {
 
     private ProductType laptop;
@@ -27,69 +23,65 @@ class PackageTypeTest {
 
     @BeforeEach
     void setUp() {
-        laptop = Product.builder(
+        laptop =
+                Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Business Laptop"),
                                 ProductDescription.of("Professional laptop"))
-                        .asProductType(
-                                Unit.pieces(),
-                                ProductTrackingStrategy.INDIVIDUALLY_TRACKED
-                        ).build();
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.INDIVIDUALLY_TRACKED)
+                        .build();
 
-        mouse = Product.builder(
-                               UuidProductIdentifier.random(),
-                               ProductName.of("Wireless Mouse"),
-                               ProductDescription.of("Ergonomic mouse"))
-                       .asProductType(
-                               Unit.pieces(),
-                               ProductTrackingStrategy.IDENTICAL
-                       ).build();
+        mouse =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Wireless Mouse"),
+                                ProductDescription.of("Ergonomic mouse"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.IDENTICAL)
+                        .build();
 
-        keyboard = Product.builder(
-                                  UuidProductIdentifier.random(),
-                                  ProductName.of("Mechanical Keyboard"),
-                                  ProductDescription.of("RGB keyboard"))
-                          .asProductType(
-                                  Unit.pieces(),
-                                  ProductTrackingStrategy.IDENTICAL
-                          ).build();
+        keyboard =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Mechanical Keyboard"),
+                                ProductDescription.of("RGB keyboard"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.IDENTICAL)
+                        .build();
 
-        monitor = Product.builder(
-                                 UuidProductIdentifier.random(),
-                                 ProductName.of("4K Monitor"),
-                                 ProductDescription.of("27-inch display"))
-                         .asProductType(
-                                 Unit.pieces(),
-                                 ProductTrackingStrategy.INDIVIDUALLY_TRACKED
-                         ).build();
+        monitor =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("4K Monitor"),
+                                ProductDescription.of("27-inch display"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.INDIVIDUALLY_TRACKED)
+                        .build();
 
-        warranty = Product.builder(
-                                  UuidProductIdentifier.random(),
-                                  ProductName.of("Extended Warranty"),
-                                  ProductDescription.of("3-year warranty"))
-                          .asProductType(
-                                  Unit.pieces(),
-                                  ProductTrackingStrategy.IDENTICAL
-                          ).build();
+        warranty =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Extended Warranty"),
+                                ProductDescription.of("3-year warranty"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.IDENTICAL)
+                        .build();
 
-        insurance = Product.builder(
-                                   UuidProductIdentifier.random(),
-                                   ProductName.of("Device Insurance"),
-                                   ProductDescription.of("Accidental damage coverage"))
-                           .asProductType(
-                                   Unit.pieces(),
-                                   ProductTrackingStrategy.IDENTICAL
-                           ).build();
+        insurance =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Device Insurance"),
+                                ProductDescription.of("Accidental damage coverage"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.IDENTICAL)
+                        .build();
     }
 
     @Test
     void shouldCreateSimplePackageWithRequiredProduct() {
-        PackageType bundle = Product.builder(UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop Bundle"),
-                                            ProductDescription.of("Basic laptop package"))
-                                    .asPackageType()
-                                    .withRequiredChoice("laptop", laptop.id())
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop Bundle"),
+                                ProductDescription.of("Basic laptop package"))
+                        .asPackageType()
+                        .withRequiredChoice("laptop", laptop.id())
+                        .build();
 
         assertNotNull(bundle);
         assertEquals(ProductName.of("Laptop Bundle"), bundle.name());
@@ -98,12 +90,14 @@ class PackageTypeTest {
 
     @Test
     void shouldValidateSelectionWithRequiredRule() {
-        PackageType bundle = Product.builder(UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop Bundle"),
-                                            ProductDescription.of("Basic laptop package"))
-                                    .asPackageType()
-                                    .withRequiredChoice("laptop", laptop.id())
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop Bundle"),
+                                ProductDescription.of("Basic laptop package"))
+                        .asPackageType()
+                        .withRequiredChoice("laptop", laptop.id())
+                        .build();
 
         // Valid: contains required laptop
         List<SelectedProduct> validSelection = List.of(new SelectedProduct(laptop.id(), 1));
@@ -120,13 +114,14 @@ class PackageTypeTest {
 
     @Test
     void shouldValidateSelectionWithOptionalRule() {
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop with Optional Warranty"),
-                                            ProductDescription.of("Laptop package"))
-                                    .asPackageType()
-                                    .withOptionalChoice("warranty", warranty.id())
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop with Optional Warranty"),
+                                ProductDescription.of("Laptop package"))
+                        .asPackageType()
+                        .withOptionalChoice("warranty", warranty.id())
+                        .build();
 
         // Valid: no warranty
         List<SelectedProduct> withoutWarranty = List.of();
@@ -139,21 +134,19 @@ class PackageTypeTest {
 
     @Test
     void shouldValidateSelectionWithAndRule() {
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop + Mouse Bundle"),
-                                            ProductDescription.of("Complete workstation")
-                                    )
-                                    .asPackageType()
-                                    .withRequiredChoice("laptop", laptop.id())
-                                    .withRequiredChoice("mouse", mouse.id())
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop + Mouse Bundle"),
+                                ProductDescription.of("Complete workstation"))
+                        .asPackageType()
+                        .withRequiredChoice("laptop", laptop.id())
+                        .withRequiredChoice("mouse", mouse.id())
+                        .build();
 
         // Valid: both laptop and mouse
-        List<SelectedProduct> validSelection = List.of(
-                new SelectedProduct(laptop.id(), 1),
-                new SelectedProduct(mouse.id(), 1)
-        );
+        List<SelectedProduct> validSelection =
+                List.of(new SelectedProduct(laptop.id(), 1), new SelectedProduct(mouse.id(), 1));
         assertTrue(bundle.validateSelection(validSelection).isValid());
 
         // Invalid: only laptop
@@ -170,20 +163,19 @@ class PackageTypeTest {
         ProductSet mouseSet = ProductSet.of("mouse", mouse.id());
         ProductSet keyboardSet = ProductSet.of("keyboard", keyboard.id());
 
-        SelectionRule rule = SelectionRule.or(
-                SelectionRule.required(mouseSet),
-                SelectionRule.required(keyboardSet)
-        );
+        SelectionRule rule =
+                SelectionRule.or(
+                        SelectionRule.required(mouseSet), SelectionRule.required(keyboardSet));
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Input Device Bundle"),
-                                            ProductDescription.of("Choose mouse or keyboard")
-                                    )
-                                    .asPackageType()
-                                    .withProductSets(mouseSet, keyboardSet)
-                                    .withRule(rule)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Input Device Bundle"),
+                                ProductDescription.of("Choose mouse or keyboard"))
+                        .asPackageType()
+                        .withProductSets(mouseSet, keyboardSet)
+                        .withRule(rule)
+                        .build();
 
         // Valid: mouse
         List<SelectedProduct> withMouse = List.of(new SelectedProduct(mouse.id(), 1));
@@ -194,10 +186,8 @@ class PackageTypeTest {
         assertTrue(bundle.validateSelection(withKeyboard).isValid());
 
         // Valid: both
-        List<SelectedProduct> withBoth = List.of(
-                new SelectedProduct(mouse.id(), 1),
-                new SelectedProduct(keyboard.id(), 1)
-        );
+        List<SelectedProduct> withBoth =
+                List.of(new SelectedProduct(mouse.id(), 1), new SelectedProduct(keyboard.id(), 1));
         assertTrue(bundle.validateSelection(withBoth).isValid());
 
         // Invalid: neither
@@ -209,19 +199,17 @@ class PackageTypeTest {
     void shouldValidateSelectionWithNotRule() {
         ProductSet insuranceSet = ProductSet.of("insurance", insurance.id());
 
-        SelectionRule rule = SelectionRule.not(
-                SelectionRule.required(insuranceSet)
-        );
+        SelectionRule rule = SelectionRule.not(SelectionRule.required(insuranceSet));
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("No Insurance Bundle"),
-                                            ProductDescription.of("Insurance not allowed")
-                                    )
-                                    .asPackageType()
-                                    .withProductSet(insuranceSet)
-                                    .withRule(rule)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("No Insurance Bundle"),
+                                ProductDescription.of("Insurance not allowed"))
+                        .asPackageType()
+                        .withProductSet(insuranceSet)
+                        .withRule(rule)
+                        .build();
 
         // Valid: no insurance
         List<SelectedProduct> withoutInsurance = List.of();
@@ -238,30 +226,27 @@ class PackageTypeTest {
         ProductSet warrantySet = ProductSet.of("warranty", warranty.id());
 
         // IF laptop THEN warranty required
-        SelectionRule rule = SelectionRule.ifThen(
-                SelectionRule.required(laptopSet),
-                SelectionRule.required(warrantySet)
-        );
+        SelectionRule rule =
+                SelectionRule.ifThen(
+                        SelectionRule.required(laptopSet), SelectionRule.required(warrantySet));
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop with Mandatory Warranty"),
-                                            ProductDescription.of("Warranty required for laptop")
-                                    )
-                                    .asPackageType()
-                                    .withProductSets(laptopSet, warrantySet)
-                                    .withRule(rule)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop with Mandatory Warranty"),
+                                ProductDescription.of("Warranty required for laptop"))
+                        .asPackageType()
+                        .withProductSets(laptopSet, warrantySet)
+                        .withRule(rule)
+                        .build();
 
         // Valid: no laptop, no warranty (condition not met)
         List<SelectedProduct> noLaptop = List.of();
         assertTrue(bundle.validateSelection(noLaptop).isValid());
 
         // Valid: laptop + warranty
-        List<SelectedProduct> laptopWithWarranty = List.of(
-                new SelectedProduct(laptop.id(), 1),
-                new SelectedProduct(warranty.id(), 1)
-        );
+        List<SelectedProduct> laptopWithWarranty =
+                List.of(new SelectedProduct(laptop.id(), 1), new SelectedProduct(warranty.id(), 1));
         assertTrue(bundle.validateSelection(laptopWithWarranty).isValid());
 
         // Invalid: laptop without warranty
@@ -276,36 +261,34 @@ class PackageTypeTest {
         ProductSet warrantySet = ProductSet.of("warranty", warranty.id());
 
         // Laptop required + at least one accessory + optional warranty
-        SelectionRule rule = SelectionRule.and(
-                SelectionRule.required(laptopSet),
-                SelectionRule.isSubsetOf(accessoriesSet, 1, 2),
-                SelectionRule.optional(warrantySet)
-        );
+        SelectionRule rule =
+                SelectionRule.and(
+                        SelectionRule.required(laptopSet),
+                        SelectionRule.isSubsetOf(accessoriesSet, 1, 2),
+                        SelectionRule.optional(warrantySet));
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Complete Workstation"),
-                                            ProductDescription.of("Laptop with accessories")
-                                    )
-                                    .asPackageType()
-                                    .withProductSets(laptopSet, accessoriesSet, warrantySet)
-                                    .withRule(rule)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Complete Workstation"),
+                                ProductDescription.of("Laptop with accessories"))
+                        .asPackageType()
+                        .withProductSets(laptopSet, accessoriesSet, warrantySet)
+                        .withRule(rule)
+                        .build();
 
         // Valid: laptop + mouse
-        List<SelectedProduct> laptopAndMouse = List.of(
-                new SelectedProduct(laptop.id(), 1),
-                new SelectedProduct(mouse.id(), 1)
-        );
+        List<SelectedProduct> laptopAndMouse =
+                List.of(new SelectedProduct(laptop.id(), 1), new SelectedProduct(mouse.id(), 1));
         assertTrue(bundle.validateSelection(laptopAndMouse).isValid());
 
         // Valid: laptop + mouse + keyboard + warranty
-        List<SelectedProduct> fullBundle = List.of(
-                new SelectedProduct(laptop.id(), 1),
-                new SelectedProduct(mouse.id(), 1),
-                new SelectedProduct(keyboard.id(), 1),
-                new SelectedProduct(warranty.id(), 1)
-        );
+        List<SelectedProduct> fullBundle =
+                List.of(
+                        new SelectedProduct(laptop.id(), 1),
+                        new SelectedProduct(mouse.id(), 1),
+                        new SelectedProduct(keyboard.id(), 1),
+                        new SelectedProduct(warranty.id(), 1));
         assertTrue(bundle.validateSelection(fullBundle).isValid());
 
         // Invalid: laptop only (missing accessories)
@@ -319,72 +302,71 @@ class PackageTypeTest {
 
     @Test
     void shouldValidateIsSubsetOfWithQuantityConstraints() {
-        ProductSet accessoriesSet = ProductSet.of("accessories", mouse.id(), keyboard.id(), monitor.id());
+        ProductSet accessoriesSet =
+                ProductSet.of("accessories", mouse.id(), keyboard.id(), monitor.id());
 
         // Select 2 to 3 accessories
         SelectionRule rule = SelectionRule.isSubsetOf(accessoriesSet, 2, 3);
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Accessories Bundle"),
-                                            ProductDescription.of("Choose 2-3 accessories")
-                                    )
-                                    .asPackageType()
-                                    .withProductSet(accessoriesSet)
-                                    .withRule(rule)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Accessories Bundle"),
+                                ProductDescription.of("Choose 2-3 accessories"))
+                        .asPackageType()
+                        .withProductSet(accessoriesSet)
+                        .withRule(rule)
+                        .build();
 
         // Invalid: too few (1)
         List<SelectedProduct> tooFew = List.of(new SelectedProduct(mouse.id(), 1));
         assertFalse(bundle.validateSelection(tooFew).isValid());
 
         // Valid: exactly 2
-        List<SelectedProduct> exactly2 = List.of(
-                new SelectedProduct(mouse.id(), 1),
-                new SelectedProduct(keyboard.id(), 1)
-        );
+        List<SelectedProduct> exactly2 =
+                List.of(new SelectedProduct(mouse.id(), 1), new SelectedProduct(keyboard.id(), 1));
         assertTrue(bundle.validateSelection(exactly2).isValid());
 
         // Valid: exactly 3
-        List<SelectedProduct> exactly3 = List.of(
-                new SelectedProduct(mouse.id(), 1),
-                new SelectedProduct(keyboard.id(), 1),
-                new SelectedProduct(monitor.id(), 1)
-        );
+        List<SelectedProduct> exactly3 =
+                List.of(
+                        new SelectedProduct(mouse.id(), 1),
+                        new SelectedProduct(keyboard.id(), 1),
+                        new SelectedProduct(monitor.id(), 1));
         assertTrue(bundle.validateSelection(exactly3).isValid());
 
         // Invalid: too many (4 - but we only have 3 products, so test with quantities)
-        List<SelectedProduct> tooMany = List.of(
-                new SelectedProduct(mouse.id(), 2),
-                new SelectedProduct(keyboard.id(), 1),
-                new SelectedProduct(monitor.id(), 1)
-        );
+        List<SelectedProduct> tooMany =
+                List.of(
+                        new SelectedProduct(mouse.id(), 2),
+                        new SelectedProduct(keyboard.id(), 1),
+                        new SelectedProduct(monitor.id(), 1));
         assertFalse(bundle.validateSelection(tooMany).isValid());
     }
 
     @Test
     void shouldCreateNestedPackage() {
         // Inner package: laptop + mouse
-        PackageType innerBundle = Product.builder(
-                                                 UuidProductIdentifier.random(),
-                                                 ProductName.of("Basic Bundle"),
-                                                 ProductDescription.of("Laptop and mouse")
-                                         )
-                                         .asPackageType()
-                                         .withRequiredChoice("laptop", laptop.id())
-                                         .withRequiredChoice("mouse", mouse.id())
-                                         .build();
+        PackageType innerBundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Basic Bundle"),
+                                ProductDescription.of("Laptop and mouse"))
+                        .asPackageType()
+                        .withRequiredChoice("laptop", laptop.id())
+                        .withRequiredChoice("mouse", mouse.id())
+                        .build();
 
         // Outer package: basic bundle + optional monitor
-        PackageType outerBundle = Product.builder(
-                                                 UuidProductIdentifier.random(),
-                                                 ProductName.of("Premium Bundle"),
-                                                 ProductDescription.of("Basic bundle with optional monitor")
-                                         )
-                                         .asPackageType()
-                                         .withRequiredChoice("inner", innerBundle.id())
-                                         .withOptionalChoice("monitor", monitor.id())
-                                         .build();
+        PackageType outerBundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Premium Bundle"),
+                                ProductDescription.of("Basic bundle with optional monitor"))
+                        .asPackageType()
+                        .withRequiredChoice("inner", innerBundle.id())
+                        .withOptionalChoice("monitor", monitor.id())
+                        .build();
 
         assertNotNull(outerBundle);
         assertEquals(ProductName.of("Premium Bundle"), outerBundle.name());
@@ -393,25 +375,27 @@ class PackageTypeTest {
 
     @Test
     void shouldRejectInvalidPackageTypeCreation() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Product.builder(
-                           null, // null ID
-                           ProductName.of("Invalid Package"),
-                           ProductDescription.of("Missing ID")
-                   )
-                   .asPackageType()
-                   .build();
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Product.builder(
+                                    null, // null ID
+                                    ProductName.of("Invalid Package"),
+                                    ProductDescription.of("Missing ID"))
+                            .asPackageType()
+                            .build();
+                });
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            Product.builder(
-                           UuidProductIdentifier.random(),
-                           null, // null name
-                           ProductDescription.of("Missing name")
-                   )
-                   .asPackageType()
-                   .build();
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Product.builder(
+                                    UuidProductIdentifier.random(),
+                                    null, // null name
+                                    ProductDescription.of("Missing name"))
+                            .asPackageType()
+                            .build();
+                });
     }
 
     @Test
@@ -420,16 +404,16 @@ class PackageTypeTest {
         SelectionRule rule1 = SelectionRule.required(laptopSet);
         SelectionRule rule2 = SelectionRule.optional(ProductSet.of("warranty", warranty.id()));
 
-        PackageType bundle = Product.builder(
-                                            UuidProductIdentifier.random(),
-                                            ProductName.of("Laptop Bundle"),
-                                            ProductDescription.of("Laptop with optional warranty")
-                                    )
-                                    .asPackageType()
-                                    .withProductSet(laptopSet)
-                                    .withRule(rule1)
-                                    .withRule(rule2)
-                                    .build();
+        PackageType bundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Laptop Bundle"),
+                                ProductDescription.of("Laptop with optional warranty"))
+                        .asPackageType()
+                        .withProductSet(laptopSet)
+                        .withRule(rule1)
+                        .withRule(rule2)
+                        .build();
 
         PackageStructure structure = bundle.structure();
         assertNotNull(structure);

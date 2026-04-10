@@ -4,8 +4,8 @@ import static com.softwarearchetypes.common.Preconditions.checkArgument;
 import static com.softwarearchetypes.common.StringUtils.isNotBlank;
 
 /**
- * Represents a type/category of capability.
- * Examples: "MedicalImaging", "GoodsDelivery", "SoftwareDevelopment"
+ * Represents a type/category of capability. Examples: "MedicalImaging", "GoodsDelivery",
+ * "SoftwareDevelopment"
  */
 record CapabilityType(String name) {
 

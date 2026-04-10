@@ -1,11 +1,10 @@
 package com.softwarearchetypes.pricing;
 
-import java.time.LocalDateTime;
-
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDateTime;
+import org.junit.jupiter.api.Test;
 
 class ValidityTest {
 
@@ -51,31 +50,30 @@ class ValidityTest {
     @Test
     void shouldCheckIfValidAt() {
         // given
-        Validity validity = Validity.between(
-                LocalDateTime.of(2024, 2, 1, 0, 0),
-                LocalDateTime.of(2024, 3, 1, 0, 0)
-        );
+        Validity validity =
+                Validity.between(
+                        LocalDateTime.of(2024, 2, 1, 0, 0), LocalDateTime.of(2024, 3, 1, 0, 0));
 
         // then
         assertThat(validity.isValidAt(LocalDateTime.of(2024, 1, 31, 23, 59))).isFalse(); // before
-        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 1, 0, 0))).isTrue();    // at start
-        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 15, 0, 0))).isTrue();   // middle
-        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 28, 23, 59))).isTrue(); // before end
-        assertThat(validity.isValidAt(LocalDateTime.of(2024, 3, 1, 0, 0))).isFalse();   // at end (exclusive)
-        assertThat(validity.isValidAt(LocalDateTime.of(2024, 3, 2, 0, 0))).isFalse();   // after
+        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 1, 0, 0))).isTrue(); // at start
+        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 15, 0, 0))).isTrue(); // middle
+        assertThat(validity.isValidAt(LocalDateTime.of(2024, 2, 28, 23, 59)))
+                .isTrue(); // before end
+        assertThat(validity.isValidAt(LocalDateTime.of(2024, 3, 1, 0, 0)))
+                .isFalse(); // at end (exclusive)
+        assertThat(validity.isValidAt(LocalDateTime.of(2024, 3, 2, 0, 0))).isFalse(); // after
     }
 
     @Test
     void shouldDetectOverlappingPeriods() {
         // given
-        Validity v1 = Validity.between(
-                LocalDateTime.of(2024, 1, 1, 0, 0),
-                LocalDateTime.of(2024, 3, 1, 0, 0)
-        );
-        Validity v2 = Validity.between(
-                LocalDateTime.of(2024, 2, 1, 0, 0),
-                LocalDateTime.of(2024, 4, 1, 0, 0)
-        );
+        Validity v1 =
+                Validity.between(
+                        LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 3, 1, 0, 0));
+        Validity v2 =
+                Validity.between(
+                        LocalDateTime.of(2024, 2, 1, 0, 0), LocalDateTime.of(2024, 4, 1, 0, 0));
 
         // then
         assertThat(v1.overlaps(v2)).isTrue();
@@ -85,14 +83,13 @@ class ValidityTest {
     @Test
     void shouldDetectNonOverlappingPeriods() {
         // given
-        Validity v1 = Validity.between(
-                LocalDateTime.of(2024, 1, 1, 0, 0),
-                LocalDateTime.of(2024, 2, 1, 0, 0)
-        );
-        Validity v2 = Validity.between(
-                LocalDateTime.of(2024, 2, 1, 0, 0), // starts where v1 ends
-                LocalDateTime.of(2024, 3, 1, 0, 0)
-        );
+        Validity v1 =
+                Validity.between(
+                        LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 2, 1, 0, 0));
+        Validity v2 =
+                Validity.between(
+                        LocalDateTime.of(2024, 2, 1, 0, 0), // starts where v1 ends
+                        LocalDateTime.of(2024, 3, 1, 0, 0));
 
         // then
         assertThat(v1.overlaps(v2)).isFalse();
@@ -103,10 +100,9 @@ class ValidityTest {
     void shouldHandleOpenEndedValidity() {
         // given
         Validity openEnded = Validity.from(LocalDateTime.of(2024, 1, 1, 0, 0));
-        Validity limited = Validity.between(
-                LocalDateTime.of(2024, 2, 1, 0, 0),
-                LocalDateTime.of(2024, 3, 1, 0, 0)
-        );
+        Validity limited =
+                Validity.between(
+                        LocalDateTime.of(2024, 2, 1, 0, 0), LocalDateTime.of(2024, 3, 1, 0, 0));
 
         // then: open-ended overlaps with limited period
         assertThat(openEnded.overlaps(limited)).isTrue();
@@ -119,10 +115,9 @@ class ValidityTest {
     @Test
     void shouldCheckIfExpired() {
         // given
-        Validity validity = Validity.between(
-                LocalDateTime.of(2024, 1, 1, 0, 0),
-                LocalDateTime.of(2024, 2, 1, 0, 0)
-        );
+        Validity validity =
+                Validity.between(
+                        LocalDateTime.of(2024, 1, 1, 0, 0), LocalDateTime.of(2024, 2, 1, 0, 0));
 
         // then
         assertThat(validity.hasExpired(LocalDateTime.of(2024, 1, 15, 0, 0))).isFalse();

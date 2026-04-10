@@ -22,16 +22,12 @@ class InMemoryResourceAvailabilityRepository implements ResourceAvailabilityRepo
 
     @Override
     public Optional<ResourceAvailability> findByBlockadeId(BlockadeId blockadeId) {
-        return storage.values().stream()
-                .filter(a -> a.hasBlockade(blockadeId))
-                .findFirst();
+        return storage.values().stream().filter(a -> a.hasBlockade(blockadeId)).findFirst();
     }
 
     @Override
     public List<ResourceAvailability> findByResourceId(ResourceId resourceId) {
-        return storage.values().stream()
-                .filter(a -> a.resourceId().equals(resourceId))
-                .toList();
+        return storage.values().stream().filter(a -> a.resourceId().equals(resourceId)).toList();
     }
 
     @Override
@@ -41,9 +37,7 @@ class InMemoryResourceAvailabilityRepository implements ResourceAvailabilityRepo
 
     @Override
     public List<ResourceAvailability> findWithExpiredBlockades() {
-        return storage.values().stream()
-                .filter(ResourceAvailability::hasExpiredBlockades)
-                .toList();
+        return storage.values().stream().filter(ResourceAvailability::hasExpiredBlockades).toList();
     }
 
     @Override

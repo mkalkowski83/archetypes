@@ -17,14 +17,29 @@ class PartyFixture {
     @SuppressWarnings("unchecked")
     static <T extends Party> PartyAbstractTestDataBuilder<T> somePartyOfType(Class<T> clazz) {
         try {
-            Class<?> testDataBuilder = Arrays.stream(PartyAbstractTestDataBuilder.class.getPermittedSubclasses()).filter(implementingClass -> {
-                if (implementingClass.getGenericSuperclass() instanceof ParameterizedType parameterizedType) {
-                    return clazz.getTypeName().equals(parameterizedType.getActualTypeArguments()[0].getTypeName());
-                } else {
-                    return false;
-                }
-            }).findFirst().orElseThrow(() -> new IllegalArgumentException("There is no party of type equal to " + clazz.getTypeName()));
-            return (PartyAbstractTestDataBuilder<T>) testDataBuilder.getDeclaredConstructor().newInstance();
+            Class<?> testDataBuilder =
+                    Arrays.stream(PartyAbstractTestDataBuilder.class.getPermittedSubclasses())
+                            .filter(
+                                    implementingClass -> {
+                                        if (implementingClass.getGenericSuperclass()
+                                                instanceof ParameterizedType parameterizedType) {
+                                            return clazz.getTypeName()
+                                                    .equals(
+                                                            parameterizedType
+                                                                    .getActualTypeArguments()[0]
+                                                                    .getTypeName());
+                                        } else {
+                                            return false;
+                                        }
+                                    })
+                            .findFirst()
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "There is no party of type equal to "
+                                                            + clazz.getTypeName()));
+            return (PartyAbstractTestDataBuilder<T>)
+                    testDataBuilder.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -47,5 +62,4 @@ class PartyFixture {
             return fixedValue != null ? fixedValue : PartyId.random();
         }
     }
-
 }

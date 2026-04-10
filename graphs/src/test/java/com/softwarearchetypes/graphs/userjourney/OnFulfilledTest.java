@@ -1,8 +1,8 @@
 package com.softwarearchetypes.graphs.userjourney;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class OnFulfilledTest {
 
@@ -13,10 +13,13 @@ class OnFulfilledTest {
         State afterPayment = State.of(Product.penalty());
         Condition paymentOnTime = Condition.paymentOnTime();
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-1"))
-            .from(newLoan).on(paymentOnTime).goto_(afterPayment)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-1"))
+                        .from(newLoan)
+                        .on(paymentOnTime)
+                        .goto_(afterPayment)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
         UserJourney updatedJourney = journey.onFulfilled(paymentOnTime);
@@ -35,11 +38,16 @@ class OnFulfilledTest {
         Condition step1 = Condition.paymentOnTime();
         Condition step2 = Condition.promotionApproved();
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-2"))
-            .from(state1).on(step1).goto_(state2)
-            .from(state2).on(step2).goto_(state3)
-            .withCurrentState(state1)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-2"))
+                        .from(state1)
+                        .on(step1)
+                        .goto_(state2)
+                        .from(state2)
+                        .on(step2)
+                        .goto_(state3)
+                        .withCurrentState(state1)
+                        .build();
 
         // when
         UserJourney afterStep1 = journey.onFulfilled(step1);
@@ -58,10 +66,13 @@ class OnFulfilledTest {
         Condition paymentOnTime = Condition.paymentOnTime();
         Condition nonExistentCondition = Condition.latePayments(5);
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-3"))
-            .from(newLoan).on(paymentOnTime).goto_(afterPayment)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-3"))
+                        .from(newLoan)
+                        .on(paymentOnTime)
+                        .goto_(afterPayment)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
         UserJourney result = journey.onFulfilled(nonExistentCondition);
@@ -80,11 +91,16 @@ class OnFulfilledTest {
         Condition latePayment = Condition.latePayments(1);
         Condition onTimePayment = Condition.paymentOnTime();
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-5"))
-            .from(newLoan).on(latePayment).goto_(penaltyState)
-            .from(newLoan).on(onTimePayment).goto_(discountState)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-5"))
+                        .from(newLoan)
+                        .on(latePayment)
+                        .goto_(penaltyState)
+                        .from(newLoan)
+                        .on(onTimePayment)
+                        .goto_(discountState)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
         UserJourney afterLatePayment = journey.onFulfilled(latePayment);
@@ -94,7 +110,6 @@ class OnFulfilledTest {
         assertEquals(penaltyState, afterLatePayment.currentState());
         assertEquals(discountState, afterOnTimePayment.currentState());
     }
-
 
     @Test
     void shouldBuildComplexJourneyWithTransitions() {
@@ -108,18 +123,22 @@ class OnFulfilledTest {
         Condition step2 = Condition.latePayments(1);
         Condition step3 = Condition.promotionApproved();
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-7"))
-            .from(newLoan).on(step1).goto_(afterPayment1)
-            .from(afterPayment1).on(step2).goto_(afterPayment2)
-            .from(afterPayment2).on(step3).goto_(discountState)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-7"))
+                        .from(newLoan)
+                        .on(step1)
+                        .goto_(afterPayment1)
+                        .from(afterPayment1)
+                        .on(step2)
+                        .goto_(afterPayment2)
+                        .from(afterPayment2)
+                        .on(step3)
+                        .goto_(discountState)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
-        UserJourney finalJourney = journey
-            .onFulfilled(step1)
-            .onFulfilled(step2)
-            .onFulfilled(step3);
+        UserJourney finalJourney = journey.onFulfilled(step1).onFulfilled(step2).onFulfilled(step3);
 
         // then
         assertEquals(discountState, finalJourney.currentState());

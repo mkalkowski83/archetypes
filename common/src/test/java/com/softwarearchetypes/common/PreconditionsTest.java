@@ -1,88 +1,88 @@
 package com.softwarearchetypes.common;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 class PreconditionsTest {
 
     @Test
     void shouldNotThrowExceptionWhenCheckArgumentWithTrueExpression() {
-        //given
+        // given
         boolean expression = true;
         String errorMessage = "This should not be thrown";
 
-        //when & then
+        // when & then
         assertDoesNotThrow(() -> Preconditions.checkArgument(expression, errorMessage));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCheckArgumentWithFalseExpression() {
-        //given
+        // given
         boolean expression = false;
         String errorMessage = "Expression must be true";
 
-        //when & then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> Preconditions.checkArgument(expression, errorMessage)
-        );
+        // when & then
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> Preconditions.checkArgument(expression, errorMessage));
 
-        //then
+        // then
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
     void shouldNotThrowExceptionWhenCheckNotNullWithNonNullValue() {
-        //given
+        // given
         Object value = "non-null value";
         String errorMessage = "This should not be thrown";
 
-        //when & then
+        // when & then
         assertDoesNotThrow(() -> Preconditions.checkNotNull(value, errorMessage));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCheckNotNullWithNullValue() {
-        //given
+        // given
         Object value = null;
         String errorMessage = "Value cannot be null";
 
-        //when & then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> Preconditions.checkNotNull(value, errorMessage)
-        );
+        // when & then
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> Preconditions.checkNotNull(value, errorMessage));
 
-        //then
+        // then
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionForComplexCondition() {
-        //given
+        // given
         int age = 15;
         String errorMessage = "Age must be at least 18";
 
-        //when & then
-        IllegalArgumentException exception = assertThrows(
-                IllegalArgumentException.class,
-                () -> Preconditions.checkArgument(age >= 18, errorMessage)
-        );
+        // when & then
+        IllegalArgumentException exception =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> Preconditions.checkArgument(age >= 18, errorMessage));
 
-        //then
+        // then
         assertEquals(errorMessage, exception.getMessage());
     }
 
     @Test
     void shouldNotThrowExceptionForComplexCondition() {
-        //given
+        // given
         int age = 25;
         String errorMessage = "Age must be at least 18";
 
-        //when & then
+        // when & then
         assertDoesNotThrow(() -> Preconditions.checkArgument(age >= 18, errorMessage));
     }
 }

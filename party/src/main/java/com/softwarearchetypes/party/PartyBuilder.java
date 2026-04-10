@@ -1,15 +1,15 @@
 package com.softwarearchetypes.party;
 
 import com.softwarearchetypes.common.Version;
-
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Fluent builder for creating Party instances.
- * Allows setting common party attributes before specializing to specific party type.
+ * Fluent builder for creating Party instances. Allows setting common party attributes before
+ * specializing to specific party type.
  *
- * Usage:
+ * <p>Usage:
+ *
  * <pre>
  * Person person = PartyBuilder.newParty()
  *     .withPartyId(partyId)
@@ -27,8 +27,7 @@ class PartyBuilder {
     private final Set<RegisteredIdentifier> registeredIdentifiers = new HashSet<>();
     private Version version = Version.initial();
 
-    private PartyBuilder() {
-    }
+    private PartyBuilder() {}
 
     public static PartyBuilder newParty() {
         return new PartyBuilder();
@@ -81,9 +80,7 @@ class PartyBuilder {
         return new OrganizationUnitBuilder(partyId, roles, registeredIdentifiers, version);
     }
 
-    /**
-     * Builder for Person instances.
-     */
+    /** Builder for Person instances. */
     public static class PersonBuilder {
         private final PartyId partyId;
         private final Set<Role> roles;
@@ -91,7 +88,11 @@ class PartyBuilder {
         private final Version version;
         private PersonalData personalData = PersonalData.empty();
 
-        private PersonBuilder(PartyId partyId, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
+        private PersonBuilder(
+                PartyId partyId,
+                Set<Role> roles,
+                Set<RegisteredIdentifier> registeredIdentifiers,
+                Version version) {
             this.partyId = partyId;
             this.roles = roles;
             this.registeredIdentifiers = registeredIdentifiers;
@@ -108,9 +109,7 @@ class PartyBuilder {
         }
     }
 
-    /**
-     * Builder for Company instances.
-     */
+    /** Builder for Company instances. */
     public static class CompanyBuilder {
         private final PartyId partyId;
         private final Set<Role> roles;
@@ -118,7 +117,11 @@ class PartyBuilder {
         private final Version version;
         private OrganizationName organizationName;
 
-        private CompanyBuilder(PartyId partyId, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
+        private CompanyBuilder(
+                PartyId partyId,
+                Set<Role> roles,
+                Set<RegisteredIdentifier> registeredIdentifiers,
+                Version version) {
             this.partyId = partyId;
             this.roles = roles;
             this.registeredIdentifiers = registeredIdentifiers;
@@ -135,9 +138,7 @@ class PartyBuilder {
         }
     }
 
-    /**
-     * Builder for OrganizationUnit instances.
-     */
+    /** Builder for OrganizationUnit instances. */
     public static class OrganizationUnitBuilder {
         private final PartyId partyId;
         private final Set<Role> roles;
@@ -145,7 +146,11 @@ class PartyBuilder {
         private final Version version;
         private OrganizationName organizationName;
 
-        private OrganizationUnitBuilder(PartyId partyId, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
+        private OrganizationUnitBuilder(
+                PartyId partyId,
+                Set<Role> roles,
+                Set<RegisteredIdentifier> registeredIdentifiers,
+                Version version) {
             this.partyId = partyId;
             this.roles = roles;
             this.registeredIdentifiers = registeredIdentifiers;
@@ -158,7 +163,8 @@ class PartyBuilder {
         }
 
         public OrganizationUnit build() {
-            return new OrganizationUnit(partyId, organizationName, roles, registeredIdentifiers, version);
+            return new OrganizationUnit(
+                    partyId, organizationName, roles, registeredIdentifiers, version);
         }
     }
 }

@@ -1,14 +1,12 @@
 package com.softwarearchetypes.graphs.cycles;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static com.softwarearchetypes.graphs.cycles.BatchReservationResult.Status.FAILURE;
 import static com.softwarearchetypes.graphs.cycles.BatchReservationResult.Status.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class BatchReservationUseCaseTest {
 
@@ -28,10 +26,16 @@ class BatchReservationUseCaseTest {
         thereIsSlotOwnedBy(slotB, userY);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userX), // UserX chce przenieść się ze SlotA do SlotB
-                new ReservationChangeRequest(slotB, slotA, userY)  // UserY chce przenieść się ze SlotB do SlotA
-        ));
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(
+                                        slotA, slotB,
+                                        userX), // UserX chce przenieść się ze SlotA do SlotB
+                                new ReservationChangeRequest(
+                                        slotB, slotA,
+                                        userY) // UserY chce przenieść się ze SlotB do SlotA
+                                ));
 
         // then
         assertEquals(SUCCESS, result.status());
@@ -58,11 +62,19 @@ class BatchReservationUseCaseTest {
         thereIsFreeSlot(slotD);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotB, slotA, userY), // UserY chce zająć slot UserX
-                new ReservationChangeRequest(slotA, slotB, userX), // UserX chce zająć slot UserY (kompensuje)
-                new ReservationChangeRequest(slotD, slotA, userZ)  // UserZ chce zająć slot A (nie ma swojego slotu - invalid)
-        ));
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(
+                                        slotB, slotA, userY), // UserY chce zająć slot UserX
+                                new ReservationChangeRequest(
+                                        slotA, slotB,
+                                        userX), // UserX chce zająć slot UserY (kompensuje)
+                                new ReservationChangeRequest(
+                                        slotD, slotA,
+                                        userZ) // UserZ chce zająć slot A (nie ma swojego slotu -
+                                // invalid)
+                                ));
 
         // then
         assertEquals(SUCCESS, result.status());
@@ -96,13 +108,20 @@ class BatchReservationUseCaseTest {
         thereIsSlotOwnedBy(slotE, userEve);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userAlice),   // Alice chce slot Boba
-                new ReservationChangeRequest(slotB, slotC, userBob),     // Bob chce slot Charlie
-                new ReservationChangeRequest(slotC, slotD, userCharlie), // Charlie chce slot Diany
-                new ReservationChangeRequest(slotD, slotE, userDiana),   // Diana chce slot Eve
-                new ReservationChangeRequest(slotE, slotA, userEve)      // Eve chce slot Alice - zamyka cykl!
-        ));
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(
+                                        slotA, slotB, userAlice), // Alice chce slot Boba
+                                new ReservationChangeRequest(
+                                        slotB, slotC, userBob), // Bob chce slot Charlie
+                                new ReservationChangeRequest(
+                                        slotC, slotD, userCharlie), // Charlie chce slot Diany
+                                new ReservationChangeRequest(
+                                        slotD, slotE, userDiana), // Diana chce slot Eve
+                                new ReservationChangeRequest(
+                                        slotE, slotA, userEve) // Eve chce slot Alice - zamyka cykl!
+                                ));
 
         // then
         assertEquals(SUCCESS, result.status());
@@ -127,9 +146,9 @@ class BatchReservationUseCaseTest {
         thereIsSlotOwnedBy(slotA, userX);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userX)
-        ));
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(new ReservationChangeRequest(slotA, slotB, userX)));
 
         // then
         assertEquals(FAILURE, result.status());

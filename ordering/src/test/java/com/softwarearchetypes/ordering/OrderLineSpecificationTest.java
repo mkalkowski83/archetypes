@@ -1,22 +1,22 @@
 package com.softwarearchetypes.ordering;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class OrderLineSpecificationTest {
 
     @Test
     void featuresShouldReturnOnlyPlainAttributes() {
         // given
-        OrderLineSpecification spec = OrderLineSpecification.of(Map.of(
-                "color", "black",
-                "size", "XL",
-                "component.cpu", "i7",
-                "_warehouse", "warsaw"
-        ));
+        OrderLineSpecification spec =
+                OrderLineSpecification.of(
+                        Map.of(
+                                "color", "black",
+                                "size", "XL",
+                                "component.cpu", "i7",
+                                "_warehouse", "warsaw"));
 
         // when
         Map<String, String> features = spec.features();
@@ -30,11 +30,12 @@ class OrderLineSpecificationTest {
     @Test
     void componentsShouldReturnComponentEntriesWithPrefixStripped() {
         // given
-        OrderLineSpecification spec = OrderLineSpecification.of(Map.of(
-                "component.laptop", "Dell-5540",
-                "component.mouse", "Logitech-MX3",
-                "color", "black"
-        ));
+        OrderLineSpecification spec =
+                OrderLineSpecification.of(
+                        Map.of(
+                                "component.laptop", "Dell-5540",
+                                "component.mouse", "Logitech-MX3",
+                                "color", "black"));
 
         // when
         Map<String, String> components = spec.components();
@@ -48,11 +49,12 @@ class OrderLineSpecificationTest {
     @Test
     void preferencesShouldReturnUnderscorePrefixedEntriesWithPrefixStripped() {
         // given
-        OrderLineSpecification spec = OrderLineSpecification.of(Map.of(
-                "_warehouse", "warsaw-central",
-                "_deliveryDate", "2025-01-16",
-                "color", "blue"
-        ));
+        OrderLineSpecification spec =
+                OrderLineSpecification.of(
+                        Map.of(
+                                "_warehouse", "warsaw-central",
+                                "_deliveryDate", "2025-01-16",
+                                "color", "blue"));
 
         // when
         Map<String, String> preferences = spec.preferences();
@@ -66,11 +68,12 @@ class OrderLineSpecificationTest {
     @Test
     void mixedAttributesShouldBeCorrectlySeparated() {
         // given
-        OrderLineSpecification spec = OrderLineSpecification.of(Map.of(
-                "color", "black",
-                "component.cpu", "i7",
-                "_warehouse", "warsaw"
-        ));
+        OrderLineSpecification spec =
+                OrderLineSpecification.of(
+                        Map.of(
+                                "color", "black",
+                                "component.cpu", "i7",
+                                "_warehouse", "warsaw"));
 
         // then
         assertEquals(1, spec.features().size());
@@ -81,10 +84,11 @@ class OrderLineSpecificationTest {
     @Test
     void componentFeaturesShouldBeExcludedFromPlainFeatures() {
         // given
-        OrderLineSpecification spec = OrderLineSpecification.of(Map.of(
-                "laptop.color", "black",
-                "ram", "16GB"
-        ));
+        OrderLineSpecification spec =
+                OrderLineSpecification.of(
+                        Map.of(
+                                "laptop.color", "black",
+                                "ram", "16GB"));
 
         // when
         Map<String, String> features = spec.features();

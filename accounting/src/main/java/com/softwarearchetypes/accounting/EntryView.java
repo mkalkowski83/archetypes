@@ -1,20 +1,21 @@
 package com.softwarearchetypes.accounting;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.Instant;
 
-import com.softwarearchetypes.quantity.money.Money;
+public record EntryView(
+        EntryId entryId,
+        EntryType type,
+        Money amount,
+        TransactionId transactionId,
+        AccountId accountId,
+        Instant occurredAt,
+        Instant appliesAt) {
 
-public record EntryView(EntryId entryId,
-                        EntryType type,
-                        Money amount,
-                        TransactionId transactionId,
-                        AccountId accountId,
-                        Instant occurredAt,
-                        Instant appliesAt) {
-
-    //intentionally left package-scoped
+    // intentionally left package-scoped
     static EntryView from(Entry entry) {
-        return new EntryView(entry.id(),
+        return new EntryView(
+                entry.id(),
                 EntryType.from(entry),
                 entry.amount(),
                 entry.transactionId(),

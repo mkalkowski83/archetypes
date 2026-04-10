@@ -15,8 +15,8 @@ record OrderLineSpecification(Map<String, String> attributes) {
         return new OrderLineSpecification(Map.of(key, value));
     }
 
-    public static OrderLineSpecification of(String key1, String value1,
-                                           String key2, String value2) {
+    public static OrderLineSpecification of(
+            String key1, String value1, String key2, String value2) {
         return new OrderLineSpecification(Map.of(key1, value1, key2, value2));
     }
 
@@ -40,28 +40,25 @@ record OrderLineSpecification(Map<String, String> attributes) {
 
     public Map<String, String> features() {
         return attributes.entrySet().stream()
-            .filter(e -> !e.getKey().startsWith("component."))
-            .filter(e -> !e.getKey().startsWith("_"))
-            .filter(e -> !e.getKey().contains("."))
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .filter(e -> !e.getKey().startsWith("component."))
+                .filter(e -> !e.getKey().startsWith("_"))
+                .filter(e -> !e.getKey().contains("."))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Map<String, String> components() {
         return attributes.entrySet().stream()
-            .filter(e -> e.getKey().startsWith("component."))
-            .collect(Collectors.toMap(
-                e -> e.getKey().substring("component.".length()),
-                Map.Entry::getValue
-            ));
+                .filter(e -> e.getKey().startsWith("component."))
+                .collect(
+                        Collectors.toMap(
+                                e -> e.getKey().substring("component.".length()),
+                                Map.Entry::getValue));
     }
 
     public Map<String, String> preferences() {
         return attributes.entrySet().stream()
-            .filter(e -> e.getKey().startsWith("_"))
-            .collect(Collectors.toMap(
-                e -> e.getKey().substring(1),
-                Map.Entry::getValue
-            ));
+                .filter(e -> e.getKey().startsWith("_"))
+                .collect(Collectors.toMap(e -> e.getKey().substring(1), Map.Entry::getValue));
     }
 
     @Override

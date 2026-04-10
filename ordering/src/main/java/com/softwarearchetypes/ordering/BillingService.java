@@ -1,18 +1,15 @@
 package com.softwarearchetypes.ordering;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.LocalDate;
 
-import com.softwarearchetypes.quantity.money.Money;
-
 /**
- * Service responsible for deferred billing.
- * Used in B2B scenarios where payment happens later (e.g., net 30).
+ * Service responsible for deferred billing. Used in B2B scenarios where payment happens later
+ * (e.g., net 30).
  */
 interface BillingService {
 
-    /**
-     * Record a charge that will be billed later.
-     */
+    /** Record a charge that will be billed later. */
     void recordCharge(BillingRecord record);
 }
 
@@ -21,8 +18,7 @@ record BillingRecord(
         PartyId customerId,
         Money amount,
         LocalDate dueDate,
-        boolean invoiceRequired
-) {
+        boolean invoiceRequired) {
     public static Builder builder() {
         return new Builder();
     }
@@ -68,6 +64,5 @@ record BillingRecord(
 class FixableBillingService implements BillingService {
 
     @Override
-    public void recordCharge(BillingRecord record) {
-    }
+    public void recordCharge(BillingRecord record) {}
 }

@@ -1,14 +1,13 @@
 package com.softwarearchetypes.quantity;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.math.BigDecimal;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
+import java.math.BigDecimal;
+import org.jetbrains.annotations.NotNull;
+
 /**
- * Quantity represents an amount with a unit of measurement.
- * Examples: 100 kg, 500 liters, 1000 pieces, 25.5 m²
+ * Quantity represents an amount with a unit of measurement. Examples: 100 kg, 500 liters, 1000
+ * pieces, 25.5 m²
  */
 public record Quantity(BigDecimal amount, Unit unit) implements Comparable<Quantity> {
 
@@ -31,14 +30,20 @@ public record Quantity(BigDecimal amount, Unit unit) implements Comparable<Quant
     }
 
     public Quantity add(Quantity other) {
-        checkArgument(this.unit.equals(other.unit),
-                String.format("Cannot add quantities with different units: %s and %s", this.unit, other.unit));
+        checkArgument(
+                this.unit.equals(other.unit),
+                String.format(
+                        "Cannot add quantities with different units: %s and %s",
+                        this.unit, other.unit));
         return new Quantity(this.amount.add(other.amount), this.unit);
     }
 
     public Quantity subtract(Quantity other) {
-        checkArgument(this.unit.equals(other.unit),
-                String.format("Cannot subtract quantities with different units: %s and %s", this.unit, other.unit));
+        checkArgument(
+                this.unit.equals(other.unit),
+                String.format(
+                        "Cannot subtract quantities with different units: %s and %s",
+                        this.unit, other.unit));
         return new Quantity(this.amount.subtract(other.amount), this.unit);
     }
 

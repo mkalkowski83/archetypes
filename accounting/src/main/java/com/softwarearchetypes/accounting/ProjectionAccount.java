@@ -1,14 +1,13 @@
 package com.softwarearchetypes.accounting;
 
-import java.util.function.Predicate;
-
 import com.softwarearchetypes.common.Version;
+import java.util.function.Predicate;
 
 class ProjectionAccount {
 
-    //lock
+    // lock
     private AccountId accountId;
-    //w bazie danych ten predicate to sql
+    // w bazie danych ten predicate to sql
     private Filter filter;
     private String name;
     private final Version version;
@@ -41,8 +40,7 @@ class ProjectionAccount {
     }
 }
 
-
-//wrzucone w jedna klase, zeby latwiej bylo tlumaczyc na sql
+// wrzucone w jedna klase, zeby latwiej bylo tlumaczyc na sql
 record Filter(Predicate<Entry> entryFilter, Predicate<Account> accountFilter) {
 
     static Filter just(Predicate<Entry> entryFilter) {

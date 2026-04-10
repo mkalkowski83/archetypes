@@ -1,18 +1,19 @@
 package com.softwarearchetypes.party;
 
+import com.softwarearchetypes.common.Pair;
+import com.softwarearchetypes.common.Result;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import com.softwarearchetypes.common.Pair;
-import com.softwarearchetypes.common.Result;
-
 class PartyRelationshipBuilder {
 
-    private static final BiFunction<String, String, String> ANY_FAILURE = (fromFailure, toFailure) -> fromFailure != null ? fromFailure : toFailure;
+    private static final BiFunction<String, String, String> ANY_FAILURE =
+            (fromFailure, toFailure) -> fromFailure != null ? fromFailure : toFailure;
     private PartyRoleDefiningPolicy partyRoleDefiningPolicy = PartyRoleDefiningPolicy.alwaysAllow();
-    private PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy = PartyRelationshipDefiningPolicy.alwaysAllow();
+    private PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy =
+            PartyRelationshipDefiningPolicy.alwaysAllow();
     private Supplier<PartyRelationshipId> partyRelationshipIdSupplier = PartyRelationshipId::random;
-    //can be replaced with partyQueries when moving away from Party
+    // can be replaced with partyQueries when moving away from Party
     private PartyRepository partyRepository;
 
     private RelationshipName name;
@@ -26,13 +27,18 @@ class PartyRelationshipBuilder {
         this.partyRepository = partyRepository;
     }
 
-    PartyRelationshipBuilder(PartyRepository partyRepository, Supplier<PartyRelationshipId> partyRelationshipIdSupplier) {
+    PartyRelationshipBuilder(
+            PartyRepository partyRepository,
+            Supplier<PartyRelationshipId> partyRelationshipIdSupplier) {
         this.partyRepository = partyRepository;
         this.partyRelationshipIdSupplier = partyRelationshipIdSupplier;
     }
 
-    PartyRelationshipBuilder(PartyRepository partyRepository, Supplier<PartyRelationshipId> partyRelationshipIdSupplier,
-                             PartyRoleDefiningPolicy partyRoleDefiningPolicy, PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy) {
+    PartyRelationshipBuilder(
+            PartyRepository partyRepository,
+            Supplier<PartyRelationshipId> partyRelationshipIdSupplier,
+            PartyRoleDefiningPolicy partyRoleDefiningPolicy,
+            PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy) {
         this.partyRepository = partyRepository;
         this.partyRelationshipIdSupplier = partyRelationshipIdSupplier;
         this.partyRoleDefiningPolicy = partyRoleDefiningPolicy;
@@ -78,12 +84,14 @@ class PartyRelationshipBuilder {
         return this;
     }
 
-    PartyRelationshipBuilder withRelationshipPolicy(PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy) {
+    PartyRelationshipBuilder withRelationshipPolicy(
+            PartyRelationshipDefiningPolicy partyRelationshipDefiningPolicy) {
         this.partyRelationshipDefiningPolicy = partyRelationshipDefiningPolicy;
         return this;
     }
 
-    PartyRelationshipBuilder withIdSupplier(Supplier<PartyRelationshipId> partyRelationshipIdSupplier) {
+    PartyRelationshipBuilder withIdSupplier(
+            Supplier<PartyRelationshipId> partyRelationshipIdSupplier) {
         this.partyRelationshipIdSupplier = partyRelationshipIdSupplier;
         return this;
     }
@@ -91,14 +99,19 @@ class PartyRelationshipBuilder {
     Result<String, PartyRelationship> build() {
         Result<String, PartyRole> fromParty = definePartyRoleFor(fromPartyId, fromRole);
         Result<String, PartyRole> toParty = definePartyRoleFor(toPartyId, toRole);
-        return fromParty.combine(toParty, ANY_FAILURE, Pair::of)
-                 .flatMap(rolesPair -> defineRelationFor(rolesPair.first(), rolesPair.second(), name, validity));
+        return fromParty
+                .combine(toParty, ANY_FAILURE, Pair::of)
+                .flatMap(
+                        rolesPair ->
+                                defineRelationFor(
+                                        rolesPair.first(), rolesPair.second(), name, validity));
     }
 
     private Result<String, PartyRole> definePartyRoleFor(PartyId toId, Role toRole) {
-        return partyRepository.findBy(toId)
-                              .map(party -> defineRoleFor(party, toRole))
-                              .orElse(Result.failure("PARTY_NOT_FOUND"));
+        return partyRepository
+                .findBy(toId)
+                .map(party -> defineRoleFor(party, toRole))
+                .orElse(Result.failure("PARTY_NOT_FOUND"));
     }
 
     private Result<String, PartyRole> defineRoleFor(Party party, Role role) {
@@ -109,9 +122,12 @@ class PartyRelationshipBuilder {
         }
     }
 
-    Result<String, PartyRelationship> defineRelationFor(PartyRole from, PartyRole to, RelationshipName name, Validity validity) {
+    Result<String, PartyRelationship> defineRelationFor(
+            PartyRole from, PartyRole to, RelationshipName name, Validity validity) {
         if (partyRelationshipDefiningPolicy.canDefineFor(from, to, name)) {
-            return Result.success(PartyRelationship.from(partyRelationshipIdSupplier.get(), from, to, name, validity));
+            return Result.success(
+                    PartyRelationship.from(
+                            partyRelationshipIdSupplier.get(), from, to, name, validity));
         } else {
             return Result.failure("Policies for defining party relationship not met");
         }

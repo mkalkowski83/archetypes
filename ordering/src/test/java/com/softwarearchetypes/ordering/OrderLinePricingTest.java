@@ -1,11 +1,10 @@
 package com.softwarearchetypes.ordering;
 
-import com.softwarearchetypes.quantity.money.Money;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 class OrderLinePricingTest {
 
@@ -24,10 +23,10 @@ class OrderLinePricingTest {
     @Test
     void shouldPreserveBreakdownComponentsInCalculatedPricing() {
         // given
-        List<PriceBreakdown> breakdown = List.of(
-                new PriceBreakdown("base", Money.pln(20)),
-                new PriceBreakdown("tax", Money.pln(10))
-        );
+        List<PriceBreakdown> breakdown =
+                List.of(
+                        new PriceBreakdown("base", Money.pln(20)),
+                        new PriceBreakdown("tax", Money.pln(10)));
 
         // when
         OrderLinePricing pricing = new CalculatedPricing(Money.pln(10), Money.pln(30), breakdown);
@@ -43,7 +42,8 @@ class OrderLinePricingTest {
     @Test
     void shouldBeDefinitiveForArbitraryPricingWithReason() {
         // given
-        ArbitraryPricing pricing = new ArbitraryPricing(Money.pln(50), Money.pln(150), "VIP discount");
+        ArbitraryPricing pricing =
+                new ArbitraryPricing(Money.pln(50), Money.pln(150), "VIP discount");
 
         // then
         assertTrue(pricing.isDefinitive());
@@ -117,12 +117,13 @@ class OrderLinePricingTest {
         OrderLinePricing pricing = new CalculatedPricing(Money.pln(10), Money.pln(30));
 
         // when
-        String result = switch (pricing) {
-            case CalculatedPricing c -> "calculated: " + c.totalPrice();
-            case ArbitraryPricing a -> "arbitrary: " + a.reason();
-            case EstimatedPricing e -> "estimated: " + e.totalPrice();
-            case NotPricedYet n -> "not priced";
-        };
+        String result =
+                switch (pricing) {
+                    case CalculatedPricing c -> "calculated: " + c.totalPrice();
+                    case ArbitraryPricing a -> "arbitrary: " + a.reason();
+                    case EstimatedPricing e -> "estimated: " + e.totalPrice();
+                    case NotPricedYet n -> "not priced";
+                };
 
         // then
         assertEquals("calculated: PLN 30", result);
@@ -131,10 +132,10 @@ class OrderLinePricingTest {
     @Test
     void shouldPreserveBreakdownInEstimatedPricing() {
         // given
-        List<PriceBreakdown> breakdown = List.of(
-                new PriceBreakdown("labor", Money.pln(400)),
-                new PriceBreakdown("materials", Money.pln(100))
-        );
+        List<PriceBreakdown> breakdown =
+                List.of(
+                        new PriceBreakdown("labor", Money.pln(400)),
+                        new PriceBreakdown("materials", Money.pln(100)));
 
         // when
         OrderLinePricing pricing = new EstimatedPricing(Money.pln(500), Money.pln(500), breakdown);

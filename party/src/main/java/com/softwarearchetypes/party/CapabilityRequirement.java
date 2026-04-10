@@ -1,15 +1,16 @@
 package com.softwarearchetypes.party;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * Represents a requirement for a capability with specific scopes.
- * Used to check if a party has the required capability to perform a task or assume a role.
+ * Represents a requirement for a capability with specific scopes. Used to check if a party has the
+ * required capability to perform a task or assume a role.
  */
-record CapabilityRequirement(CapabilityType requiredType, List<ScopeRequirement> scopeRequirements) {
+record CapabilityRequirement(
+        CapabilityType requiredType, List<ScopeRequirement> scopeRequirements) {
 
     public CapabilityRequirement {
         checkArgument(requiredType != null, "Required type cannot be null");

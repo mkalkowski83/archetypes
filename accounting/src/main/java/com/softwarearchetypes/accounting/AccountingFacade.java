@@ -1,5 +1,17 @@
 package com.softwarearchetypes.accounting;
 
+import static com.softwarearchetypes.accounting.TransactionType.INITIALIZATION;
+import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+
+import com.softwarearchetypes.accounting.events.AccountingEvent;
+import com.softwarearchetypes.common.Result;
+import com.softwarearchetypes.common.Result.CompositeSetResult;
+import com.softwarearchetypes.common.Version;
+import com.softwarearchetypes.common.events.EventPublisher;
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -10,24 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 
-import com.softwarearchetypes.accounting.events.AccountingEvent;
-import com.softwarearchetypes.common.Result;
-import com.softwarearchetypes.common.Result.CompositeSetResult;
-import com.softwarearchetypes.common.Version;
-import com.softwarearchetypes.common.events.EventPublisher;
-import com.softwarearchetypes.quantity.money.Money;
-
-import static com.softwarearchetypes.accounting.TransactionType.INITIALIZATION;
-import static java.lang.String.format;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-
-//todo wszedzie
-//db transacions
+// todo wszedzie
+// db transacions
 public class AccountingFacade {
 
     private final Clock clock;
@@ -37,7 +35,13 @@ public class AccountingFacade {
     private final TransactionBuilderFactory transactionBuilderFactory;
     private final EventPublisher eventPublisher;
 
-    AccountingFacade(Clock clock, AccountRepository accountRepository, AccountViewQueries accountViewQueries, TransactionRepository transactionRepository, TransactionBuilderFactory transactionBuilderFactory, EventPublisher eventPublisher) {
+    AccountingFacade(
+            Clock clock,
+            AccountRepository accountRepository,
+            AccountViewQueries accountViewQueries,
+            TransactionRepository transactionRepository,
+            TransactionBuilderFactory transactionBuilderFactory,
+            EventPublisher eventPublisher) {
         this.clock = clock;
         this.accountRepository = accountRepository;
         this.accountViewQueries = accountViewQueries;
@@ -52,17 +56,25 @@ public class AccountingFacade {
             return Result.failure(format("Some accounts already exists: %s", ids));
         }
         Set<AccountId> createdAccounts = new HashSet<>();
-        requests.forEach(req -> {
-            createAccount(req.accountId(), AccountType.valueOf(req.type()), AccountName.of(req.name()));
-        });
+        requests.forEach(
+                req -> {
+                    createAccount(
+                            req.accountId(),
+                            AccountType.valueOf(req.type()),
+                            AccountName.of(req.name()));
+                });
         return Result.success(createdAccounts);
     }
 
     public Result<String, AccountId> createAccount(CreateAccount request) {
-        return createAccount(request.accountId(), AccountType.valueOf(request.type()), AccountName.of(request.name()));
+        return createAccount(
+                request.accountId(),
+                AccountType.valueOf(request.type()),
+                AccountName.of(request.name()));
     }
 
-    private Result<String, AccountId> createAccount(AccountId accountId, AccountType type, AccountName name) {
+    private Result<String, AccountId> createAccount(
+            AccountId accountId, AccountType type, AccountName name) {
         if (accountRepository.find(accountId).isPresent()) {
             return Result.failure("Account with id " + accountId + " already exists");
         }
@@ -93,18 +105,23 @@ public class AccountingFacade {
         return balancesAsOf(accounts, clock.instant());
     }
 
-    public Result<String, Set<AccountId>> createAccountsWithInitialBalances(Set<CreateAccount> requests, AccountAmounts accountAmounts) {
+    public Result<String, Set<AccountId>> createAccountsWithInitialBalances(
+            Set<CreateAccount> requests, AccountAmounts accountAmounts) {
         Result<String, Set<AccountId>> creation = createAccounts(requests);
-        Result<String, TransactionId> txResult = creation.flatMap(it -> {
-            Transaction transaction = transactionBuilderFactory.transaction()
-                                                               .withTypeOf(INITIALIZATION)
-                                                               .occurredAt(clock.instant())
-                                                               .appliesAt(clock.instant())
-                                                               .executing()
-                                                               .entriesFor(accountAmounts)
-                                                               .build();
-            return execute(transaction);
-        });
+        Result<String, TransactionId> txResult =
+                creation.flatMap(
+                        it -> {
+                            Transaction transaction =
+                                    transactionBuilderFactory
+                                            .transaction()
+                                            .withTypeOf(INITIALIZATION)
+                                            .occurredAt(clock.instant())
+                                            .appliesAt(clock.instant())
+                                            .executing()
+                                            .entriesFor(accountAmounts)
+                                            .build();
+                            return execute(transaction);
+                        });
         if (txResult.success()) {
             return creation;
         } else {
@@ -118,12 +135,14 @@ public class AccountingFacade {
 
     public Result<String, TransactionId> handle(ExecuteTransactionCommand command) {
         try {
-            TransactionBuilder.TransactionEntriesBuilder entriesBuilder = transactionBuilderFactory.transaction()
-                    .occurredAt(command.occurredAt())
-                    .appliesAt(command.appliesAt())
-                    .withTypeOf(command.transactionType())
-                    .withMetadata(MetaData.of(command.metadata()))
-                    .executing();
+            TransactionBuilder.TransactionEntriesBuilder entriesBuilder =
+                    transactionBuilderFactory
+                            .transaction()
+                            .occurredAt(command.occurredAt())
+                            .appliesAt(command.appliesAt())
+                            .withTypeOf(command.transactionType())
+                            .withMetadata(MetaData.of(command.metadata()))
+                            .executing();
 
             for (ExecuteTransactionCommand.Entry entry : command.entries()) {
                 Validity validity = Validity.between(entry.validFrom(), entry.validTo());
@@ -145,36 +164,47 @@ public class AccountingFacade {
 
     public Result<String, TransactionId> handle(ReverseTransactionCommand command) {
         try {
-            Transaction transaction = transactionBuilderFactory.transaction()
-                    .occurredAt(command.occurredAt())
-                    .appliesAt(command.appliesAt())
-                    .reverting(TransactionId.of(command.refTransactionId()))
-                    .build();
+            Transaction transaction =
+                    transactionBuilderFactory
+                            .transaction()
+                            .occurredAt(command.occurredAt())
+                            .appliesAt(command.appliesAt())
+                            .reverting(TransactionId.of(command.refTransactionId()))
+                            .build();
             return execute(transaction);
         } catch (Exception ex) {
             return Result.failure(ex.getMessage());
         }
     }
 
-    public Result<String, TransactionId> transfer(AccountId from, AccountId to, Money amount, Instant occurredAt, Instant appliesAt) {
+    public Result<String, TransactionId> transfer(
+            AccountId from, AccountId to, Money amount, Instant occurredAt, Instant appliesAt) {
         return transfer(from, to, amount, occurredAt, appliesAt, MetaData.empty());
     }
 
-    //transactional
-    public Result<String, TransactionId> transfer(AccountId from, AccountId to, Money amount, Instant occurredAt, Instant appliesAt, MetaData metaData) {
+    // transactional
+    public Result<String, TransactionId> transfer(
+            AccountId from,
+            AccountId to,
+            Money amount,
+            Instant occurredAt,
+            Instant appliesAt,
+            MetaData metaData) {
         try {
-            Transaction transaction = transactionBuilderFactory.transaction()
-                                                               .occurredAt(occurredAt)
-                                                               .appliesAt(appliesAt)
-                                                               .withTypeOf("transfer")
-                                                               .withMetadata(metaData)
-                                                               .executing()
-                                                               .debitFrom(from, amount)
-                                                               .creditTo(to, amount)
-                                                               .build();
+            Transaction transaction =
+                    transactionBuilderFactory
+                            .transaction()
+                            .occurredAt(occurredAt)
+                            .appliesAt(appliesAt)
+                            .withTypeOf("transfer")
+                            .withMetadata(metaData)
+                            .executing()
+                            .debitFrom(from, amount)
+                            .creditTo(to, amount)
+                            .build();
             transaction.execute();
             transactionRepository.save(transaction);
-            //optimistic locking on every account involved in transaction
+            // optimistic locking on every account involved in transaction
             saveAccountsAndPublishEvents(transaction.accountsInvolved());
             return Result.success(transaction.id());
         } catch (Exception ex) {
@@ -182,7 +212,7 @@ public class AccountingFacade {
         }
     }
 
-    //db transaction
+    // db transaction
     public Result<String, Set<TransactionId>> execute(Transaction... transactions) {
         CompositeSetResult<String, TransactionId> result = Result.compositeSet();
         for (Transaction transaction : transactions) {
@@ -194,12 +224,12 @@ public class AccountingFacade {
         return result.toResult();
     }
 
-    //db transaction
+    // db transaction
     public Result<String, TransactionId> execute(Transaction transaction) {
         try {
             transaction.execute();
             transactionRepository.save(transaction);
-            //optimistic locking on every account involved in transaction
+            // optimistic locking on every account involved in transaction
             saveAccountsAndPublishEvents(transaction.accountsInvolved());
         } catch (Exception ex) {
             return Result.failure(ex.getMessage());
@@ -207,11 +237,13 @@ public class AccountingFacade {
         return Result.success(transaction.id());
     }
 
-    public Result<String, AccountId> createProjectingAccount(AccountId projecting, AccountEntryFilter accountEntryFilter, String description) {
+    public Result<String, AccountId> createProjectingAccount(
+            AccountId projecting, AccountEntryFilter accountEntryFilter, String description) {
         return createProjectingAccount(projecting, accountEntryFilter.toFilter(), description);
     }
 
-    Result<String, AccountId> createProjectingAccount(AccountId projecting, Filter filter, String name) {
+    Result<String, AccountId> createProjectingAccount(
+            AccountId projecting, Filter filter, String name) {
         accountRepository.save(new ProjectionAccount(projecting, filter, name));
         return Result.success(projecting);
     }
@@ -229,40 +261,46 @@ public class AccountingFacade {
     }
 
     public Optional<TransactionView> findTransactionBy(TransactionId transactionId) {
-        //transactions should not contain entries in db - entries are assigned to accounts
-        //therefore, to get transaction entries a SQL query is required to find entries with
-        //matching transactionId
-        return transactionRepository.find(transactionId)
-                                    .map(transaction -> new TransactionView(
-                                            transaction.id(),
-                                            transaction.refId().orElse(null),
-                                            transaction.type(),
-                                            transaction.occurredAt(),
-                                            transaction.appliesAt(),
-                                            entriesViewsFrom(transaction)));
+        // transactions should not contain entries in db - entries are assigned to accounts
+        // therefore, to get transaction entries a SQL query is required to find entries with
+        // matching transactionId
+        return transactionRepository
+                .find(transactionId)
+                .map(
+                        transaction ->
+                                new TransactionView(
+                                        transaction.id(),
+                                        transaction.refId().orElse(null),
+                                        transaction.type(),
+                                        transaction.occurredAt(),
+                                        transaction.appliesAt(),
+                                        entriesViewsFrom(transaction)));
     }
 
     public List<TransactionId> findTransactionIdsFor(AccountId accountId) {
-        //transactions should not contain entries in db - entries are assigned to accounts
-        //therefore, to get transaction entries a SQL query is required to find entries with
-        //matching transactionId
-        return accountRepository.find(accountId)
-                                .stream()
-                                .flatMap(acc -> acc.entries().stream())
-                                .map(Entry::transactionId)
-                                .collect(toList());
+        // transactions should not contain entries in db - entries are assigned to accounts
+        // therefore, to get transaction entries a SQL query is required to find entries with
+        // matching transactionId
+        return accountRepository.find(accountId).stream()
+                .flatMap(acc -> acc.entries().stream())
+                .map(Entry::transactionId)
+                .collect(toList());
     }
 
     @NotNull
     private static List<TransactionAccountEntriesView> entriesViewsFrom(Transaction transaction) {
-        return transaction.entries().entrySet().stream().map(
-                entry -> {
-                    Account account = entry.getKey();
-                    AccountMetadataView accountView = new AccountMetadataView(account.id(), account.name(), account.type().name());
-                    List<EntryView> entries = entry.getValue().stream().map(EntryView::from).toList();
-                    return new TransactionAccountEntriesView(accountView, entries);
-                }
-        ).collect(toList());
+        return transaction.entries().entrySet().stream()
+                .map(
+                        entry -> {
+                            Account account = entry.getKey();
+                            AccountMetadataView accountView =
+                                    new AccountMetadataView(
+                                            account.id(), account.name(), account.type().name());
+                            List<EntryView> entries =
+                                    entry.getValue().stream().map(EntryView::from).toList();
+                            return new TransactionAccountEntriesView(accountView, entries);
+                        })
+                .collect(toList());
     }
 
     private void saveAccountsAndPublishEvents(Collection<Account> accounts) {
@@ -288,46 +326,50 @@ class AccountViewQueries {
         this.entryRepository = entryRepository;
     }
 
-    //can be changed with SQL
+    // can be changed with SQL
     Optional<AccountView> find(AccountId accountId) {
-        return accountRepository.findProjectionAccount(accountId)
-                                .map(p -> projectionAccountViewFrom(accountId, p))
-                                .or(() -> accountRepository.find(accountId).map(this::accountViewFrom));
+        return accountRepository
+                .findProjectionAccount(accountId)
+                .map(p -> projectionAccountViewFrom(accountId, p))
+                .or(() -> accountRepository.find(accountId).map(this::accountViewFrom));
     }
 
-    //can be changed with SQL
+    // can be changed with SQL
     Map<AccountId, AccountView> find(Set<AccountId> accountIds) {
         return accountIds.stream()
-                         .flatMap(id -> find(id).stream())
-                         .collect(toMap(AccountView::id, it -> it));
+                .flatMap(id -> find(id).stream())
+                .collect(toMap(AccountView::id, it -> it));
     }
 
     List<AccountView> findAll() {
         List<AccountView> result = new ArrayList<>();
         result.addAll(accountRepository.findAll().stream().map(this::accountViewFrom).toList());
-        result.addAll(accountRepository.findAllProjectionAccounts().stream()
-                                       .map(p -> projectionAccountViewFrom(p.id(), p))
-                                       .toList());
+        result.addAll(
+                accountRepository.findAllProjectionAccounts().stream()
+                        .map(p -> projectionAccountViewFrom(p.id(), p))
+                        .toList());
         return result;
     }
 
     private AccountView accountViewFrom(Account acc) {
-        List<EntryView> entries = entryRepository.findAllFor(acc.id()).stream().map(EntryView::from).collect(toList());
+        List<EntryView> entries =
+                entryRepository.findAllFor(acc.id()).stream()
+                        .map(EntryView::from)
+                        .collect(toList());
         String type = acc.type() != null ? acc.type().name() : null;
         return new AccountView(acc.id(), acc.name(), type, acc.balance(), entries);
     }
 
-    private AccountView projectionAccountViewFrom(AccountId accountId, ProjectionAccount projection) {
-        List<EntryView> filteredEntries = entryRepository.findAllMatching(projection.filter().entryFilter())
-                                                         .stream()
-                                                         .map(EntryView::from)
-                                                         .collect(toList());
-        Money balance = filteredEntries.stream()
-                                       .map(EntryView::amount)
-                                       .reduce(Money.zeroPln(), Money::add);
+    private AccountView projectionAccountViewFrom(
+            AccountId accountId, ProjectionAccount projection) {
+        List<EntryView> filteredEntries =
+                entryRepository.findAllMatching(projection.filter().entryFilter()).stream()
+                        .map(EntryView::from)
+                        .collect(toList());
+        Money balance =
+                filteredEntries.stream().map(EntryView::amount).reduce(Money.zeroPln(), Money::add);
         return new AccountView(accountId, projection.desc(), null, balance, filteredEntries);
     }
-
 }
 
 interface AccountRepository {
@@ -379,10 +421,11 @@ class InMemoryAccountRepo implements AccountRepository {
 
     @Override
     public void save(Collection<Account> accounts) {
-        accounts.forEach(acc -> {
-            acc.entries().stream().forEach(entryRepository::save);
-            this.accounts.put(acc.id(), acc);
-        });
+        accounts.forEach(
+                acc -> {
+                    acc.entries().stream().forEach(entryRepository::save);
+                    this.accounts.put(acc.id(), acc);
+                });
     }
 
     @Override
@@ -393,11 +436,11 @@ class InMemoryAccountRepo implements AccountRepository {
     @Override
     public Map<AccountId, Account> find(Set<AccountId> accounts) {
         return accounts.stream()
-                       .filter(key -> this.accounts.containsKey(key) || this.projectionAccounts.containsKey(key))
-                       .collect(toMap(
-                               accountId -> accountId,
-                               this::getAccount)
-                       );
+                .filter(
+                        key ->
+                                this.accounts.containsKey(key)
+                                        || this.projectionAccounts.containsKey(key))
+                .collect(toMap(accountId -> accountId, this::getAccount));
     }
 
     @Override
@@ -408,11 +451,8 @@ class InMemoryAccountRepo implements AccountRepository {
     @Override
     public Map<AccountId, ProjectionAccount> findProjectionAccounts(Set<AccountId> accountIds) {
         return accountIds.stream()
-                         .filter(projectionAccounts::containsKey)
-                         .collect(toMap(
-                                 accountId -> accountId,
-                                 projectionAccounts::get)
-                         );
+                .filter(projectionAccounts::containsKey)
+                .collect(toMap(accountId -> accountId, projectionAccounts::get));
     }
 
     @Override
@@ -430,18 +470,27 @@ class InMemoryAccountRepo implements AccountRepository {
         return accounts.get(accountId);
     }
 
-    //TODO: przerobić na accountView
+    // TODO: przerobić na accountView
     private Account getProjection(AccountId accountId) {
         ProjectionAccount projectionAccount = projectionAccounts.get(accountId);
-        //sql z bazy - nie wyciagamy wszystkich kont do pamieci
-        Set<Account> filteredAccounts = accounts.values().stream().filter(account -> projectionAccount.filter().accountFilter().test(account)).collect(toSet());
+        // sql z bazy - nie wyciagamy wszystkich kont do pamieci
+        Set<Account> filteredAccounts =
+                accounts.values().stream()
+                        .filter(account -> projectionAccount.filter().accountFilter().test(account))
+                        .collect(toSet());
         Entries filteredEntries =
-                new Entries(filteredAccounts.stream().map(Account::entries)
-                                            .map(Entries::toList)
-                                            .flatMap(Collection::stream)
-                                            .filter(entry -> projectionAccount.filter().entryFilter().test(entry))
-                                            .toList());
+                new Entries(
+                        filteredAccounts.stream()
+                                .map(Account::entries)
+                                .map(Entries::toList)
+                                .flatMap(Collection::stream)
+                                .filter(
+                                        entry ->
+                                                projectionAccount
+                                                        .filter()
+                                                        .entryFilter()
+                                                        .test(entry))
+                                .toList());
         return new Account(accountId, null, null, projectionAccount.version());
     }
-
 }

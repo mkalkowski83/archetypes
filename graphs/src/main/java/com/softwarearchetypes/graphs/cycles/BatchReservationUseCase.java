@@ -1,14 +1,13 @@
 package com.softwarearchetypes.graphs.cycles;
 
+import static java.util.stream.Collectors.toSet;
+
 import com.softwarearchetypes.graphs.cycles.math.Edge;
 import com.softwarearchetypes.graphs.cycles.math.Graph;
 import com.softwarearchetypes.graphs.cycles.math.Node;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 class BatchReservationUseCase {
 
@@ -38,9 +37,12 @@ class BatchReservationUseCase {
         return BatchReservationResult.none();
     }
 
-    BatchReservationResult execute(List<ReservationChangeRequest> requests, Eligibility eligibility) {
-        Graph<OwnerId, ReservationChangeRequest> intersection = buildOwnerGraph(requests).intersection(eligibility.asGraph());
-        Set<ReservationChangeRequest> dependentRequests = findDependentRequestsInOwnerGraph(intersection);
+    BatchReservationResult execute(
+            List<ReservationChangeRequest> requests, Eligibility eligibility) {
+        Graph<OwnerId, ReservationChangeRequest> intersection =
+                buildOwnerGraph(requests).intersection(eligibility.asGraph());
+        Set<ReservationChangeRequest> dependentRequests =
+                findDependentRequestsInOwnerGraph(intersection);
 
         if (!dependentRequests.isEmpty()) {
             Map<SlotId, Slot> slots = loadAllSlots(dependentRequests);
@@ -58,7 +60,8 @@ class BatchReservationUseCase {
         return BatchReservationResult.none();
     }
 
-    private Graph<SlotId, ReservationChangeRequest> buildGraph(List<ReservationChangeRequest> requests) {
+    private Graph<SlotId, ReservationChangeRequest> buildGraph(
+            List<ReservationChangeRequest> requests) {
         Graph<SlotId, ReservationChangeRequest> graph = new Graph<>();
         for (ReservationChangeRequest request : requests) {
             Node<SlotId> fromNode = new Node<>(request.fromSlot());
@@ -70,19 +73,22 @@ class BatchReservationUseCase {
     }
 
     private Map<SlotId, Slot> loadAllSlots(Set<ReservationChangeRequest> dependentRequests) {
-        Set<SlotId> allSlotIds = dependentRequests.stream()
-                .flatMap(r -> Stream.of(r.fromSlot(), r.toSlot()))
-                .collect(Collectors.toSet());
+        Set<SlotId> allSlotIds =
+                dependentRequests.stream()
+                        .flatMap(r -> Stream.of(r.fromSlot(), r.toSlot()))
+                        .collect(Collectors.toSet());
         return slotRepository.findAll(allSlotIds);
     }
 
-    private Graph<OwnerId, ReservationChangeRequest> buildOwnerGraph(List<ReservationChangeRequest> requests) {
+    private Graph<OwnerId, ReservationChangeRequest> buildOwnerGraph(
+            List<ReservationChangeRequest> requests) {
         Graph<OwnerId, ReservationChangeRequest> graph = new Graph<>();
 
         // Ładujemy sloty żeby poznać ich ownerów
-        Set<SlotId> allSlotIds = requests.stream()
-                .flatMap(r -> Stream.of(r.fromSlot(), r.toSlot()))
-                .collect(Collectors.toSet());
+        Set<SlotId> allSlotIds =
+                requests.stream()
+                        .flatMap(r -> Stream.of(r.fromSlot(), r.toSlot()))
+                        .collect(Collectors.toSet());
         Map<SlotId, Slot> slots = slotRepository.findAll(allSlotIds);
 
         for (ReservationChangeRequest request : requests) {
@@ -93,7 +99,8 @@ class BatchReservationUseCase {
                 // Graf na OwnerId: od obecnego właściciela fromSlot do obecnego właściciela toSlot
                 Node<OwnerId> fromOwner = new Node<>(fromSlot.getOwner());
                 Node<OwnerId> toOwner = new Node<>(toSlot.getOwner());
-                Edge<OwnerId, ReservationChangeRequest> edge = new Edge<>(fromOwner, toOwner, request);
+                Edge<OwnerId, ReservationChangeRequest> edge =
+                        new Edge<>(fromOwner, toOwner, request);
                 graph.addEdge(edge);
             }
         }
@@ -101,23 +108,18 @@ class BatchReservationUseCase {
         return graph;
     }
 
-    private Set<ReservationChangeRequest> findDependentRequestsInOwnerGraph(Graph<OwnerId, ReservationChangeRequest> graph) {
-        return graph
-                .findFirstCycle()
-                .map(path -> path.edges()
-                        .stream()
-                        .map(Edge::property)
-                        .collect(toSet()))
+    private Set<ReservationChangeRequest> findDependentRequestsInOwnerGraph(
+            Graph<OwnerId, ReservationChangeRequest> graph) {
+        return graph.findFirstCycle()
+                .map(path -> path.edges().stream().map(Edge::property).collect(toSet()))
                 .orElseGet(Collections::emptySet);
     }
 
-    private Set<ReservationChangeRequest> findDependentRequests(Graph<SlotId, ReservationChangeRequest> graph, List<ReservationChangeRequest> requests) {
-        return graph
-                .findFirstCycle()
-                .map(path -> path.edges()
-                        .stream()
-                        .map(Edge::property)
-                        .collect(toSet()))
+    private Set<ReservationChangeRequest> findDependentRequests(
+            Graph<SlotId, ReservationChangeRequest> graph,
+            List<ReservationChangeRequest> requests) {
+        return graph.findFirstCycle()
+                .map(path -> path.edges().stream().map(Edge::property).collect(toSet()))
                 .orElseGet(Collections::emptySet);
     }
 }

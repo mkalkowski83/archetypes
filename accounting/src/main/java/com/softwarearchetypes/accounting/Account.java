@@ -1,17 +1,16 @@
 package com.softwarearchetypes.accounting;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 import com.softwarearchetypes.accounting.events.AccountingEvent;
 import com.softwarearchetypes.accounting.events.CreditEntryRegistered;
 import com.softwarearchetypes.accounting.events.DebitEntryRegistered;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.quantity.money.Money;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 class Account {
 
@@ -19,10 +18,10 @@ class Account {
     private final AccountType type;
     private final AccountName name;
     private Money balance;
-    //for optimistic locking
+    // for optimistic locking
     private final Version version;
-    //we do not load all accounts' entries when retrieving them from DB
-    //adding new entries requires optimistic lock
+    // we do not load all accounts' entries when retrieving them from DB
+    // adding new entries requires optimistic lock
     private final Entries newEntries;
     private final List<AccountingEvent> pendingEvents = new LinkedList<>();
 
@@ -34,7 +33,12 @@ class Account {
         this(accountId, type, name, Money.zeroPln(), version);
     }
 
-    Account(AccountId accountId, AccountType type, AccountName name, Money balance, Version version) {
+    Account(
+            AccountId accountId,
+            AccountType type,
+            AccountName name,
+            Money balance,
+            Version version) {
         checkArgument(accountId != null, "Account ID must be defined");
         checkArgument(type != null, "Account type must be defined");
         checkArgument(name != null, "Account name must be defined");
@@ -55,10 +59,11 @@ class Account {
 
     void addEntries(List<Entry> newEntries) {
         this.newEntries.addAll(newEntries);
-        newEntries.forEach(entry -> {
-            balance = balance.add(entry.amount());
-            recordEntryEvent(entry);
-        });
+        newEntries.forEach(
+                entry -> {
+                    balance = balance.add(entry.amount());
+                    recordEntryEvent(entry);
+                });
     }
 
     String name() {
@@ -66,26 +71,27 @@ class Account {
     }
 
     private void recordEntryEvent(Entry entry) {
-        AccountingEvent event = switch (entry) {
-            case AccountCredited credited -> new CreditEntryRegistered(
-                    UUID.randomUUID(),
-                    entry.occurredAt(),
-                    entry.appliesAt(),
-                    entry.id().value(),
-                    entry.accountId().uuid(),
-                    entry.transactionId().value(),
-                    entry.amount()
-            );
-            case AccountDebited debited -> new DebitEntryRegistered(
-                    UUID.randomUUID(),
-                    entry.occurredAt(),
-                    entry.appliesAt(),
-                    entry.id().value(),
-                    entry.accountId().uuid(),
-                    entry.transactionId().value(),
-                    entry.amount()
-            );
-        };
+        AccountingEvent event =
+                switch (entry) {
+                    case AccountCredited credited ->
+                            new CreditEntryRegistered(
+                                    UUID.randomUUID(),
+                                    entry.occurredAt(),
+                                    entry.appliesAt(),
+                                    entry.id().value(),
+                                    entry.accountId().uuid(),
+                                    entry.transactionId().value(),
+                                    entry.amount());
+                    case AccountDebited debited ->
+                            new DebitEntryRegistered(
+                                    UUID.randomUUID(),
+                                    entry.occurredAt(),
+                                    entry.appliesAt(),
+                                    entry.id().value(),
+                                    entry.accountId().uuid(),
+                                    entry.transactionId().value(),
+                                    entry.amount());
+                };
         pendingEvents.add(event);
     }
 
@@ -116,7 +122,4 @@ class Account {
     Version version() {
         return version;
     }
-
 }
-
-

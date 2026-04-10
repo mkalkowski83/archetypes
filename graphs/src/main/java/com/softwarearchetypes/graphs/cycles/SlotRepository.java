@@ -33,13 +33,16 @@ class InMemorySlotRepository implements SlotRepository {
 
     public Map<SlotId, Slot> findAll(Set<SlotId> allSlotIds) {
         return allSlotIds.stream()
-                .collect(Collectors.toMap(
-                        slotId -> slotId,
-                        slotId -> {
-                            Slot original = findById(slotId).orElse(null);
-                            // Zwracaj kopię bo to repo w pamieci
-                            return original != null ? Slot.create(original.id(), original.getOwner()) : null;
-                        }));
+                .collect(
+                        Collectors.toMap(
+                                slotId -> slotId,
+                                slotId -> {
+                                    Slot original = findById(slotId).orElse(null);
+                                    // Zwracaj kopię bo to repo w pamieci
+                                    return original != null
+                                            ? Slot.create(original.id(), original.getOwner())
+                                            : null;
+                                }));
     }
 
     public void saveAll(Collection<Slot> slots) {

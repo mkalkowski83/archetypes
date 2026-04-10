@@ -3,13 +3,12 @@ package com.softwarearchetypes.planvsexecution.productionanalysis.modification;
 import com.softwarearchetypes.planvsexecution.productionanalysis.PlannedProduction;
 import com.softwarearchetypes.planvsexecution.productionanalysis.ProductionPlan;
 import com.softwarearchetypes.planvsexecution.productionanalysis.delta.DeltaResult;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Increases production buffer quantities when under-production is detected.
- * Simulation: "what if we planned more to compensate?"
+ * Increases production buffer quantities when under-production is detected. Simulation: "what if we
+ * planned more to compensate?"
  */
 public class IncreaseBufferModifier implements ScheduleModifier {
 
@@ -31,11 +30,8 @@ public class IncreaseBufferModifier implements ScheduleModifier {
             int bufferQuantity = (int) (target.targetQuantity() * bufferPercentage / 100);
             int newQuantity = target.targetQuantity() + bufferQuantity;
 
-            modifiedTargets.add(new PlannedProduction(
-                    target.id(),
-                    target.productId(),
-                    newQuantity
-            ));
+            modifiedTargets.add(
+                    new PlannedProduction(target.id(), target.productId(), newQuantity));
         }
 
         return ProductionPlan.of(modifiedTargets);

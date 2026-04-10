@@ -3,8 +3,8 @@ package com.softwarearchetypes.inventory.availability;
 import java.time.Instant;
 
 /**
- * Blockade represents a lock placed on a resource.
- * It contains information about who owns the lock, when it was created, and its duration.
+ * Blockade represents a lock placed on a resource. It contains information about who owns the lock,
+ * when it was created, and its duration.
  */
 sealed interface Blockade permits IndividualBlockade, PoolBlockade, TemporalBlockade {
 

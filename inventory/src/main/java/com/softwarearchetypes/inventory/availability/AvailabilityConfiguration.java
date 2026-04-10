@@ -8,7 +8,8 @@ public class AvailabilityConfiguration {
     private final ResourceAvailabilityRepository repository;
     private final AvailabilityFacade facade;
 
-    AvailabilityConfiguration(Clock clock, ResourceAvailabilityRepository repository, AvailabilityFacade facade) {
+    AvailabilityConfiguration(
+            Clock clock, ResourceAvailabilityRepository repository, AvailabilityFacade facade) {
         this.clock = clock;
         this.repository = repository;
         this.facade = facade;

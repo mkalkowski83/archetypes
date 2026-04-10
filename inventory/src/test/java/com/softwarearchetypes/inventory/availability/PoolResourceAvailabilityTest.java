@@ -1,13 +1,12 @@
 package com.softwarearchetypes.inventory.availability;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class PoolResourceAvailabilityTest {
 
@@ -35,8 +34,8 @@ class PoolResourceAvailabilityTest {
         Quantity requested = Quantity.of(30, LITERS);
 
         // when
-        Result<String, BlockadeId> result = milk.lock(
-                PoolLockRequest.of(MILK_ID, requested, ALICE, LockDuration.indefinite()));
+        Result<String, BlockadeId> result =
+                milk.lock(PoolLockRequest.of(MILK_ID, requested, ALICE, LockDuration.indefinite()));
 
         // then
         assertThat(result.success()).isTrue();
@@ -50,8 +49,12 @@ class PoolResourceAvailabilityTest {
         PoolResourceAvailability milk = PoolResourceAvailability.create(MILK_ID, capacity);
 
         // when
-        milk.lock(PoolLockRequest.of(MILK_ID, Quantity.of(30, LITERS), ALICE, LockDuration.indefinite()));
-        milk.lock(PoolLockRequest.of(MILK_ID, Quantity.of(40, LITERS), BOB, LockDuration.indefinite()));
+        milk.lock(
+                PoolLockRequest.of(
+                        MILK_ID, Quantity.of(30, LITERS), ALICE, LockDuration.indefinite()));
+        milk.lock(
+                PoolLockRequest.of(
+                        MILK_ID, Quantity.of(40, LITERS), BOB, LockDuration.indefinite()));
 
         // then
         assertThat(milk.availableQuantity().amount()).isEqualByComparingTo(BigDecimal.valueOf(30));
@@ -63,11 +66,15 @@ class PoolResourceAvailabilityTest {
         // given
         Quantity capacity = Quantity.of(100, LITERS);
         PoolResourceAvailability milk = PoolResourceAvailability.create(MILK_ID, capacity);
-        milk.lock(PoolLockRequest.of(MILK_ID, Quantity.of(80, LITERS), ALICE, LockDuration.indefinite()));
+        milk.lock(
+                PoolLockRequest.of(
+                        MILK_ID, Quantity.of(80, LITERS), ALICE, LockDuration.indefinite()));
 
         // when
-        Result<String, BlockadeId> result = milk.lock(
-                PoolLockRequest.of(MILK_ID, Quantity.of(30, LITERS), BOB, LockDuration.indefinite()));
+        Result<String, BlockadeId> result =
+                milk.lock(
+                        PoolLockRequest.of(
+                                MILK_ID, Quantity.of(30, LITERS), BOB, LockDuration.indefinite()));
 
         // then
         assertThat(result.failure()).isTrue();
@@ -78,8 +85,13 @@ class PoolResourceAvailabilityTest {
         // given
         Quantity capacity = Quantity.of(100, LITERS);
         PoolResourceAvailability milk = PoolResourceAvailability.create(MILK_ID, capacity);
-        Result<String, BlockadeId> lockResult = milk.lock(
-                PoolLockRequest.of(MILK_ID, Quantity.of(30, LITERS), ALICE, LockDuration.indefinite()));
+        Result<String, BlockadeId> lockResult =
+                milk.lock(
+                        PoolLockRequest.of(
+                                MILK_ID,
+                                Quantity.of(30, LITERS),
+                                ALICE,
+                                LockDuration.indefinite()));
         BlockadeId blockadeId = lockResult.getSuccess();
 
         // when
@@ -124,7 +136,12 @@ class PoolResourceAvailabilityTest {
 
         // when
         milk.withdraw(Quantity.of(20, LITERS)); // permanently consumed
-        milk.lock(PoolLockRequest.of(MILK_ID, Quantity.of(30, LITERS), ALICE, LockDuration.indefinite())); // temporarily blocked
+        milk.lock(
+                PoolLockRequest.of(
+                        MILK_ID,
+                        Quantity.of(30, LITERS),
+                        ALICE,
+                        LockDuration.indefinite())); // temporarily blocked
 
         // then
         assertThat(milk.availableQuantity().amount()).isEqualByComparingTo(BigDecimal.valueOf(50));

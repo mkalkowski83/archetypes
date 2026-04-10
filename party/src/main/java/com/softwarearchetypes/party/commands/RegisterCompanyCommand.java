@@ -6,5 +6,4 @@ import java.util.Set;
 public record RegisterCompanyCommand(
         String organizationName,
         Set<String> roles,
-        Set<RegisteredIdentifier> registeredIdentifiers) {
-}
+        Set<RegisteredIdentifier> registeredIdentifiers) {}

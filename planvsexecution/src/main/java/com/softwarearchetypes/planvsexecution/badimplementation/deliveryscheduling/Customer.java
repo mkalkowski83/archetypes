@@ -1,8 +1,8 @@
 package com.softwarearchetypes.planvsexecution.badimplementation.deliveryscheduling;
 
 /**
- * Customer entity with SLA information.
- * Part of the problem: delivery plan is reconstructed from multiple entities like this one.
+ * Customer entity with SLA information. Part of the problem: delivery plan is reconstructed from
+ * multiple entities like this one.
  */
 public class Customer {
     private Long id;

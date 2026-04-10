@@ -3,9 +3,8 @@ package com.softwarearchetypes.product;
 import java.util.UUID;
 
 /**
- * Public API - commands for interacting with ProductRelationshipsFacade.
- * Commands represent write operations (mutations).
- * All fields use simple types - no domain objects leak through the API.
+ * Public API - commands for interacting with ProductRelationshipsFacade. Commands represent write
+ * operations (mutations). All fields use simple types - no domain objects leak through the API.
  */
 public class ProductRelationshipCommands {
 
@@ -13,14 +12,12 @@ public class ProductRelationshipCommands {
         // Static utility class
     }
 
-    /**
-     * Command to define a new relationship between two products.
-     */
+    /** Command to define a new relationship between two products. */
     public record DefineRelationship(
             String fromProductId,
             String toProductId,
-            String relationshipType  // "UPGRADABLE_TO", "SUBSTITUTED_BY", etc.
-    ) {
+            String relationshipType // "UPGRADABLE_TO", "SUBSTITUTED_BY", etc.
+            ) {
         public DefineRelationship {
             if (fromProductId == null || fromProductId.isBlank()) {
                 throw new IllegalArgumentException("From product ID must be defined");
@@ -34,12 +31,8 @@ public class ProductRelationshipCommands {
         }
     }
 
-    /**
-     * Command to remove an existing relationship.
-     */
-    public record RemoveRelationship(
-            UUID relationshipId
-    ) {
+    /** Command to remove an existing relationship. */
+    public record RemoveRelationship(UUID relationshipId) {
         public RemoveRelationship {
             if (relationshipId == null) {
                 throw new IllegalArgumentException("Relationship ID must be defined");

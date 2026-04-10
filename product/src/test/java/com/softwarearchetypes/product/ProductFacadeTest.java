@@ -1,11 +1,10 @@
 package com.softwarearchetypes.product;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.product.ProductCommands.AllowedValuesConfig;
@@ -21,16 +20,13 @@ import com.softwarearchetypes.product.ProductQueries.FindByTrackingStrategyCrite
 import com.softwarearchetypes.product.ProductQueries.FindProductTypeCriteria;
 import com.softwarearchetypes.product.ProductViews.FeatureTypeView;
 import com.softwarearchetypes.product.ProductViews.ProductTypeView;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-/**
- * Tests for ProductFacade - main API for managing ProductTypes.
- */
+/** Tests for ProductFacade - main API for managing ProductTypes. */
 class ProductFacadeTest {
 
     private ProductConfiguration configuration;
@@ -48,23 +44,24 @@ class ProductFacadeTest {
 
     @Test
     void shouldDefineSimpleProductTypeAndFindIt() {
-        //given
+        // given
         String productId = UUID.randomUUID().toString();
 
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "UUID",
-                productId,
-                "Simple Product",
-                "A simple product without features",
-                "pcs",
-                "IDENTICAL",
-                Set.of(),
-                Set.of(),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "UUID",
+                                productId,
+                                "Simple Product",
+                                "A simple product without features",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.success());
         ProductTypeView found = facade.findBy(new FindProductTypeCriteria(productId)).orElseThrow();
         assertEquals("Simple Product", found.name());
@@ -74,26 +71,32 @@ class ProductFacadeTest {
 
     @Test
     void shouldDefineProductTypeWithMandatoryFeaturesAndFindIt() {
-        //given
+        // given
         String productId = UUID.randomUUID().toString();
 
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "UUID",
-                productId,
-                "Laptop",
-                "Business laptop with configurable features",
-                "pcs",
-                "INDIVIDUALLY_TRACKED",
-                Set.of(
-                        new MandatoryFeature("color", new AllowedValuesConfig(Set.of("Black", "Silver", "Gold"))),
-                        new MandatoryFeature("storage", new AllowedValuesConfig(Set.of("256GB", "512GB", "1TB")))
-                ),
-                Set.of(),
-                Map.of("category", "electronics")
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "UUID",
+                                productId,
+                                "Laptop",
+                                "Business laptop with configurable features",
+                                "pcs",
+                                "INDIVIDUALLY_TRACKED",
+                                Set.of(
+                                        new MandatoryFeature(
+                                                "color",
+                                                new AllowedValuesConfig(
+                                                        Set.of("Black", "Silver", "Gold"))),
+                                        new MandatoryFeature(
+                                                "storage",
+                                                new AllowedValuesConfig(
+                                                        Set.of("256GB", "512GB", "1TB")))),
+                                Set.of(),
+                                Map.of("category", "electronics")));
 
-        //then
+        // then
         assertTrue(result.success());
         ProductTypeView found = facade.findBy(new FindProductTypeCriteria(productId)).orElseThrow();
         assertEquals("Laptop", found.name());
@@ -103,26 +106,28 @@ class ProductFacadeTest {
 
     @Test
     void shouldDefineProductTypeWithOptionalFeaturesAndFindIt() {
-        //given
+        // given
         String productId = UUID.randomUUID().toString();
 
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "UUID",
-                productId,
-                "Smartphone",
-                "Smartphone with optional features",
-                "pcs",
-                "INDIVIDUALLY_TRACKED",
-                Set.of(),
-                Set.of(
-                        new OptionalFeature("engraving", new UnconstrainedConfig("TEXT")),
-                        new OptionalFeature("warranty_years", new NumericRangeConfig(1, 5))
-                ),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "UUID",
+                                productId,
+                                "Smartphone",
+                                "Smartphone with optional features",
+                                "pcs",
+                                "INDIVIDUALLY_TRACKED",
+                                Set.of(),
+                                Set.of(
+                                        new OptionalFeature(
+                                                "engraving", new UnconstrainedConfig("TEXT")),
+                                        new OptionalFeature(
+                                                "warranty_years", new NumericRangeConfig(1, 5))),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.success());
         ProductTypeView found = facade.findBy(new FindProductTypeCriteria(productId)).orElseThrow();
         assertEquals(2, found.optionalFeatures().size());
@@ -130,30 +135,39 @@ class ProductFacadeTest {
 
     @Test
     void shouldDefineProductTypeWithAllConstraintTypes() {
-        //given
+        // given
         String productId = UUID.randomUUID().toString();
 
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "UUID",
-                productId,
-                "Complex Product",
-                "Product with all constraint types",
-                "pcs",
-                "IDENTICAL",
-                Set.of(
-                        new MandatoryFeature("color", new AllowedValuesConfig(Set.of("Red", "Blue", "Green"))),
-                        new MandatoryFeature("year", new NumericRangeConfig(2020, 2025)),
-                        new MandatoryFeature("weight", new DecimalRangeConfig("0.1", "100.0")),
-                        new MandatoryFeature("code", new RegexConfig("^[A-Z]{2}-\\d{4}$")),
-                        new MandatoryFeature("expiry", new DateRangeConfig("2024-01-01", "2025-12-31")),
-                        new MandatoryFeature("notes", new UnconstrainedConfig("TEXT"))
-                ),
-                Set.of(),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "UUID",
+                                productId,
+                                "Complex Product",
+                                "Product with all constraint types",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(
+                                        new MandatoryFeature(
+                                                "color",
+                                                new AllowedValuesConfig(
+                                                        Set.of("Red", "Blue", "Green"))),
+                                        new MandatoryFeature(
+                                                "year", new NumericRangeConfig(2020, 2025)),
+                                        new MandatoryFeature(
+                                                "weight", new DecimalRangeConfig("0.1", "100.0")),
+                                        new MandatoryFeature(
+                                                "code", new RegexConfig("^[A-Z]{2}-\\d{4}$")),
+                                        new MandatoryFeature(
+                                                "expiry",
+                                                new DateRangeConfig("2024-01-01", "2025-12-31")),
+                                        new MandatoryFeature(
+                                                "notes", new UnconstrainedConfig("TEXT"))),
+                                Set.of(),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.success());
         ProductTypeView found = facade.findBy(new FindProductTypeCriteria(productId)).orElseThrow();
         assertEquals(6, found.mandatoryFeatures().size());
@@ -161,20 +175,21 @@ class ProductFacadeTest {
 
     @Test
     void shouldFailForInvalidIdentifierType() {
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "INVALID_TYPE",
-                "some-id",
-                "Product",
-                "Description",
-                "pcs",
-                "IDENTICAL",
-                Set.of(),
-                Set.of(),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "INVALID_TYPE",
+                                "some-id",
+                                "Product",
+                                "Description",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.failure());
         assertTrue(result.getFailure().contains("Unknown product identifier type"));
     }
@@ -185,26 +200,30 @@ class ProductFacadeTest {
 
     @Test
     void shouldFindProductTypesByTrackingStrategy() {
-        //given
+        // given
         thereIsProductType("Identical Product 1", "IDENTICAL");
         thereIsProductType("Tracked Product", "INDIVIDUALLY_TRACKED");
         thereIsProductType("Identical Product 2", "IDENTICAL");
 
-        //when
-        Set<ProductTypeView> identicalProducts = facade.findBy(new FindByTrackingStrategyCriteria("IDENTICAL"));
-        Set<ProductTypeView> trackedProducts = facade.findBy(new FindByTrackingStrategyCriteria("INDIVIDUALLY_TRACKED"));
+        // when
+        Set<ProductTypeView> identicalProducts =
+                facade.findBy(new FindByTrackingStrategyCriteria("IDENTICAL"));
+        Set<ProductTypeView> trackedProducts =
+                facade.findBy(new FindByTrackingStrategyCriteria("INDIVIDUALLY_TRACKED"));
 
-        //then
+        // then
         assertEquals(2, identicalProducts.size());
         assertEquals(1, trackedProducts.size());
     }
 
     @Test
     void shouldReturnEmptyForNonExistentProduct() {
-        //when
-        boolean found = facade.findBy(new FindProductTypeCriteria(UUID.randomUUID().toString())).isPresent();
+        // when
+        boolean found =
+                facade.findBy(new FindProductTypeCriteria(UUID.randomUUID().toString()))
+                        .isPresent();
 
-        //then
+        // then
         assertFalse(found);
     }
 
@@ -214,40 +233,44 @@ class ProductFacadeTest {
 
     @Test
     void shouldReturnCorrectFeatureTypeViews() {
-        //given
+        // given
         String productId = UUID.randomUUID().toString();
-        facade.handle(new DefineProductType(
-                "UUID",
-                productId,
-                "Product with Features",
-                "Description",
-                "pcs",
-                "IDENTICAL",
-                Set.of(new MandatoryFeature("color", new AllowedValuesConfig(Set.of("Red", "Blue")))),
-                Set.of(new OptionalFeature("size", new NumericRangeConfig(1, 10))),
-                Map.of()
-        ));
+        facade.handle(
+                new DefineProductType(
+                        "UUID",
+                        productId,
+                        "Product with Features",
+                        "Description",
+                        "pcs",
+                        "IDENTICAL",
+                        Set.of(
+                                new MandatoryFeature(
+                                        "color", new AllowedValuesConfig(Set.of("Red", "Blue")))),
+                        Set.of(new OptionalFeature("size", new NumericRangeConfig(1, 10))),
+                        Map.of()));
 
-        //when
+        // when
         ProductTypeView view = facade.findBy(new FindProductTypeCriteria(productId)).orElseThrow();
 
-        //then
+        // then
         assertEquals(1, view.mandatoryFeatures().size());
         assertEquals(1, view.optionalFeatures().size());
 
-        FeatureTypeView colorFeature = view.mandatoryFeatures().stream()
-                .filter(f -> f.name().equals("color"))
-                .findFirst()
-                .orElseThrow();
+        FeatureTypeView colorFeature =
+                view.mandatoryFeatures().stream()
+                        .filter(f -> f.name().equals("color"))
+                        .findFirst()
+                        .orElseThrow();
         assertEquals("TEXT", colorFeature.valueType());
         assertEquals("ALLOWED_VALUES", colorFeature.constraintType());
         assertNotNull(colorFeature.constraintConfig());
         assertTrue(colorFeature.constraintConfig().containsKey("allowedValues"));
 
-        FeatureTypeView sizeFeature = view.optionalFeatures().stream()
-                .filter(f -> f.name().equals("size"))
-                .findFirst()
-                .orElseThrow();
+        FeatureTypeView sizeFeature =
+                view.optionalFeatures().stream()
+                        .filter(f -> f.name().equals("size"))
+                        .findFirst()
+                        .orElseThrow();
         assertEquals("INTEGER", sizeFeature.valueType());
         assertEquals("NUMERIC_RANGE", sizeFeature.constraintType());
         assertEquals(1, sizeFeature.constraintConfig().get("min"));
@@ -260,39 +283,41 @@ class ProductFacadeTest {
 
     @Test
     void shouldSupportIsbnIdentifier() {
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "ISBN",
-                "0-201-77060-1",
-                "Book",
-                "A sample book",
-                "pcs",
-                "IDENTICAL",
-                Set.of(),
-                Set.of(),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "ISBN",
+                                "0-201-77060-1",
+                                "Book",
+                                "A sample book",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldSupportGtinIdentifier() {
-        //when
-        Result<String, ProductIdentifier> result = facade.handle(new DefineProductType(
-                "GTIN",
-                "96385074",
-                "Retail Product",
-                "A product with GTIN",
-                "pcs",
-                "IDENTICAL",
-                Set.of(),
-                Set.of(),
-                Map.of()
-        ));
+        // when
+        Result<String, ProductIdentifier> result =
+                facade.handle(
+                        new DefineProductType(
+                                "GTIN",
+                                "96385074",
+                                "Retail Product",
+                                "A product with GTIN",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
@@ -302,53 +327,53 @@ class ProductFacadeTest {
 
     @Test
     void shouldRejectNullProductIdType() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new DefineProductType(
-                        null,
-                        "id",
-                        "Name",
-                        "Description",
-                        "pcs",
-                        "IDENTICAL",
-                        Set.of(),
-                        Set.of(),
-                        Map.of()
-                )
-        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new DefineProductType(
+                                null,
+                                "id",
+                                "Name",
+                                "Description",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
     }
 
     @Test
     void shouldRejectBlankProductId() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new DefineProductType(
-                        "UUID",
-                        "   ",
-                        "Name",
-                        "Description",
-                        "pcs",
-                        "IDENTICAL",
-                        Set.of(),
-                        Set.of(),
-                        Map.of()
-                )
-        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new DefineProductType(
+                                "UUID",
+                                "   ",
+                                "Name",
+                                "Description",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
     }
 
     @Test
     void shouldRejectBlankName() {
-        assertThrows(IllegalArgumentException.class, () ->
-                new DefineProductType(
-                        "UUID",
-                        UUID.randomUUID().toString(),
-                        "",
-                        "Description",
-                        "pcs",
-                        "IDENTICAL",
-                        Set.of(),
-                        Set.of(),
-                        Map.of()
-                )
-        );
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        new DefineProductType(
+                                "UUID",
+                                UUID.randomUUID().toString(),
+                                "",
+                                "Description",
+                                "pcs",
+                                "IDENTICAL",
+                                Set.of(),
+                                Set.of(),
+                                Map.of()));
     }
 
     // ===========================================
@@ -356,16 +381,16 @@ class ProductFacadeTest {
     // ===========================================
 
     private void thereIsProductType(String name, String trackingStrategy) {
-        facade.handle(new DefineProductType(
-                "UUID",
-                UUID.randomUUID().toString(),
-                name,
-                "Description of " + name,
-                "pcs",
-                trackingStrategy,
-                Set.of(),
-                Set.of(),
-                Map.of()
-        ));
+        facade.handle(
+                new DefineProductType(
+                        "UUID",
+                        UUID.randomUUID().toString(),
+                        name,
+                        "Description of " + name,
+                        "pcs",
+                        trackingStrategy,
+                        Set.of(),
+                        Set.of(),
+                        Map.of()));
     }
 }

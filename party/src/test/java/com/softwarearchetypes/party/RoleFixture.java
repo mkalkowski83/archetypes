@@ -1,10 +1,10 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.stream.IntStream;
-
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+
+import java.util.Set;
+import java.util.stream.IntStream;
 
 final class RoleFixture {
 
@@ -23,5 +23,4 @@ final class RoleFixture {
     static Set<String> stringSetFrom(Set<Role> roles) {
         return roles.stream().map(Role::asString).collect(toSet());
     }
-
 }

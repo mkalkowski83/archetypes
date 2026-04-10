@@ -8,6 +8,7 @@ public abstract class NamedOfferItemModifier implements OfferItemModifier {
     public NamedOfferItemModifier(String name) {
         this.name = name;
     }
+
     public String getName() {
         return name;
     }

@@ -3,7 +3,6 @@ package com.softwarearchetypes.rules.discounting.offer.modifiers.functors.applie
 import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.quantity.money.Percentage;
 import com.softwarearchetypes.rules.discounting.offer.OfferItem;
-
 import java.util.function.Function;
 
 public class PercentageFromBase implements Function<OfferItem, Money> {

@@ -3,8 +3,8 @@ package com.softwarearchetypes.planvsexecution.badimplementation.deliveryschedul
 import java.time.LocalDate;
 
 /**
- * Driver availability information.
- * Part of the problem: delivery plan is reconstructed from multiple entities like this one.
+ * Driver availability information. Part of the problem: delivery plan is reconstructed from
+ * multiple entities like this one.
  */
 public class DriverAvailability {
     private Long driverId;
@@ -13,7 +13,12 @@ public class DriverAvailability {
     private boolean available;
     private int maxDeliveries; // Maximum deliveries this driver can handle per day
 
-    public DriverAvailability(Long driverId, String driverName, LocalDate date, boolean available, int maxDeliveries) {
+    public DriverAvailability(
+            Long driverId,
+            String driverName,
+            LocalDate date,
+            boolean available,
+            int maxDeliveries) {
         this.driverId = driverId;
         this.driverName = driverName;
         this.date = date;

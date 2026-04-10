@@ -1,21 +1,19 @@
 package com.softwarearchetypes.accounting;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static com.softwarearchetypes.quantity.money.Money.zeroPln;
 import static java.util.stream.Collectors.toMap;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.util.HashMap;
+import java.util.Map;
 
 public record AccountAmounts(Map<AccountId, Money> all) {
 
     public AccountAmounts(Map<AccountId, Money> all) {
-        this.all = all
-                .entrySet()
-                .stream()
-                .filter(entry -> entry.getValue() != null)
-                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        this.all =
+                all.entrySet().stream()
+                        .filter(entry -> entry.getValue() != null)
+                        .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public static AccountAmounts of(Map<AccountId, Money> amounts) {

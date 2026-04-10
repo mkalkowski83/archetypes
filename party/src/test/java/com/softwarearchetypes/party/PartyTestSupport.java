@@ -14,22 +14,24 @@ class PartyTestSupport {
     }
 
     Person thereIsSomePerson() {
-        Person party = PartyFixture.somePerson()
-                                   .with(somePersonalData())
-                                   .withRandomPartyId()
-                                   .withRoleSetOf(someRoleSetOfSize(5))
-                                   .withRegisteredIdentifierSetOf(someIdentifierSetOfSize(5))
-                                   .build();
+        Person party =
+                PartyFixture.somePerson()
+                        .with(somePersonalData())
+                        .withRandomPartyId()
+                        .withRoleSetOf(someRoleSetOfSize(5))
+                        .withRegisteredIdentifierSetOf(someIdentifierSetOfSize(5))
+                        .build();
         return (Person) thereIs(party);
     }
 
     Organization thereIsSomeOrganization() {
-        Company party = PartyFixture.someCompany()
-                                    .with(someOrganizationName())
-                                    .withRandomPartyId()
-                                    .withRoleSetOf(someRoleSetOfSize(5))
-                                    .withRegisteredIdentifierSetOf(someIdentifierSetOfSize(5))
-                                    .build();
+        Company party =
+                PartyFixture.someCompany()
+                        .with(someOrganizationName())
+                        .withRandomPartyId()
+                        .withRoleSetOf(someRoleSetOfSize(5))
+                        .withRegisteredIdentifierSetOf(someIdentifierSetOfSize(5))
+                        .build();
         return (Organization) thereIs(party);
     }
 

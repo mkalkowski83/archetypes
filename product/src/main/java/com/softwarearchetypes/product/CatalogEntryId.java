@@ -1,17 +1,15 @@
 package com.softwarearchetypes.product;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
 import java.util.Objects;
 import java.util.UUID;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 /**
  * Unique identifier for a CatalogEntry (may differ from ProductIdentifier).
  *
- * The same ProductType can appear in multiple catalog entries:
- * - Different marketing campaigns
- * - Different markets/regions
- * - Different time periods
+ * <p>The same ProductType can appear in multiple catalog entries: - Different marketing campaigns -
+ * Different markets/regions - Different time periods
  */
 class CatalogEntryId {
 

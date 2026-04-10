@@ -3,9 +3,7 @@ package com.softwarearchetypes.inventory;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * Unique identifier for an Instance (ProductInstance or PackageInstance).
- */
+/** Unique identifier for an Instance (ProductInstance or PackageInstance). */
 public record InstanceId(UUID value) {
 
     public InstanceId {

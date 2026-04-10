@@ -1,136 +1,136 @@
 package com.softwarearchetypes.common;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 class VersionTest {
 
     @Test
     void shouldCreateInitialVersionWithZeroValue() {
-        //when
+        // when
         Version version = Version.initial();
 
-        //then
+        // then
         assertNotNull(version);
         assertEquals(0L, version.value());
     }
 
     @Test
     void shouldCreateVersionWithSpecificValue() {
-        //given
+        // given
         long value = 42L;
 
-        //when
+        // when
         Version version = Version.of(value);
 
-        //then
+        // then
         assertNotNull(version);
         assertEquals(value, version.value());
     }
 
     @Test
     void shouldCreateVersionWithZeroValue() {
-        //given
+        // given
         long value = 0L;
 
-        //when
+        // when
         Version version = Version.of(value);
 
-        //then
+        // then
         assertEquals(0L, version.value());
     }
 
     @Test
     void shouldCreateVersionWithNegativeValue() {
-        //given
+        // given
         long value = -1L;
 
-        //when
+        // when
         Version version = Version.of(value);
 
-        //then
+        // then
         assertEquals(value, version.value());
     }
 
     @Test
     void shouldCreateVersionWithMaxLongValue() {
-        //given
+        // given
         long value = Long.MAX_VALUE;
 
-        //when
+        // when
         Version version = Version.of(value);
 
-        //then
+        // then
         assertEquals(value, version.value());
     }
 
     @Test
     void shouldCreateVersionWithMinLongValue() {
-        //given
+        // given
         long value = Long.MIN_VALUE;
 
-        //when
+        // when
         Version version = Version.of(value);
 
-        //then
+        // then
         assertEquals(value, version.value());
     }
 
     @Test
     void shouldBeEqualWhenVersionsHaveSameValue() {
-        //given
+        // given
         Version firstVersion = Version.of(10L);
         Version secondVersion = Version.of(10L);
 
-        //when & then
+        // when & then
         assertEquals(firstVersion, secondVersion);
         assertEquals(firstVersion.hashCode(), secondVersion.hashCode());
     }
 
     @Test
     void shouldNotBeEqualWhenVersionsHaveDifferentValues() {
-        //given
+        // given
         Version firstVersion = Version.of(10L);
         Version secondVersion = Version.of(20L);
 
-        //when & then
+        // when & then
         assertNotEquals(firstVersion, secondVersion);
     }
 
     @Test
     void shouldHaveProperToStringRepresentation() {
-        //given
+        // given
         long value = 123L;
         Version version = Version.of(value);
 
-        //when
+        // when
         String result = version.toString();
 
-        //then
+        // then
         assertNotNull(result);
         assertEquals("Version[value=123]", result);
     }
 
     @Test
     void shouldInitialVersionBeEqualToVersionOfZero() {
-        //given
+        // given
         Version initialVersion = Version.initial();
         Version zeroVersion = Version.of(0L);
 
-        //when & then
+        // when & then
         assertEquals(initialVersion, zeroVersion);
     }
 
     @Test
     void shouldCreateMultipleInitialVersionsWithSameValue() {
-        //given
+        // given
         Version firstInitial = Version.initial();
         Version secondInitial = Version.initial();
 
-        //when & then
+        // when & then
         assertEquals(firstInitial, secondInitial);
         assertEquals(0L, firstInitial.value());
         assertEquals(0L, secondInitial.value());

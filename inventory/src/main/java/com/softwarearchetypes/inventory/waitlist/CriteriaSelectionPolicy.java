@@ -5,16 +5,17 @@ import java.util.Optional;
 import java.util.Queue;
 
 /**
- * Criteria-based selection.
- * Finds first entry that matches the predicate from context.
- * Order is preserved (FIFO among matching entries).
+ * Criteria-based selection. Finds first entry that matches the predicate from context. Order is
+ * preserved (FIFO among matching entries).
  */
 class CriteriaSelectionPolicy<T> implements WaitListSelectionPolicy<T> {
 
     @Override
-    public Optional<WaitListEntry<T>> selectNext(Queue<WaitListEntry<T>> queue, SelectionContext<T> context) {
+    public Optional<WaitListEntry<T>> selectNext(
+            Queue<WaitListEntry<T>> queue, SelectionContext<T> context) {
         if (context.canFulfill() == null) {
-            throw new IllegalArgumentException("CriteriaSelectionPolicy requires predicate in context");
+            throw new IllegalArgumentException(
+                    "CriteriaSelectionPolicy requires predicate in context");
         }
 
         Iterator<WaitListEntry<T>> iterator = queue.iterator();

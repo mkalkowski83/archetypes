@@ -10,7 +10,14 @@ class PartyRelationshipTestSupport {
         this.facade = facade;
     }
 
-    void thereIsARelationBetween(Party from, Role fromRole, Party to, Role toRole, RelationshipName name) {
-        facade.handle(new AssignPartyRelationshipCommand(from.id(), fromRole.asString(), to.id(), toRole.asString(), name.asString()));
+    void thereIsARelationBetween(
+            Party from, Role fromRole, Party to, Role toRole, RelationshipName name) {
+        facade.handle(
+                new AssignPartyRelationshipCommand(
+                        from.id(),
+                        fromRole.asString(),
+                        to.id(),
+                        toRole.asString(),
+                        name.asString()));
     }
 }

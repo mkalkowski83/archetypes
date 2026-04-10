@@ -7,5 +7,4 @@ public record AssignPartyRelationshipCommand(
         String fromRole,
         PartyId toPartyId,
         String toRole,
-        String relationshipName) {
-}
+        String relationshipName) {}

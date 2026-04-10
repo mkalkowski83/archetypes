@@ -1,10 +1,9 @@
 package com.softwarearchetypes.accounting;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.softwarearchetypes.quantity.money.Money;
 
 public record Balances(Map<AccountId, Money> balances) {
 
@@ -17,10 +16,7 @@ public record Balances(Map<AccountId, Money> balances) {
     }
 
     public Money sum() {
-        return balances
-                .values()
-                .stream()
-                .reduce(Money.zeroPln(), Money::add);
+        return balances.values().stream().reduce(Money.zeroPln(), Money::add);
     }
 
     public int size() {
@@ -31,4 +27,3 @@ public record Balances(Map<AccountId, Money> balances) {
         return balances().keySet();
     }
 }
-

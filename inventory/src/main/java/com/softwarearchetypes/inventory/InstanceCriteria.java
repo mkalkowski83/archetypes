@@ -4,9 +4,9 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * InstanceCriteria is a specification pattern for filtering product instances.
- * Used for queries like "find all instances with color=Black" or "instances from batch X".
- * Supports composition via and(), or(), and not() operations.
+ * InstanceCriteria is a specification pattern for filtering product instances. Used for queries
+ * like "find all instances with color=Black" or "instances from batch X". Supports composition via
+ * and(), or(), and not() operations.
  */
 @FunctionalInterface
 public interface InstanceCriteria {
@@ -37,16 +37,12 @@ public interface InstanceCriteria {
 
     static InstanceCriteria byBatch(BatchId batchId) {
         Objects.requireNonNull(batchId, "batchId cannot be null");
-        return instance -> instance.batchId()
-                .map(b -> b.equals(batchId))
-                .orElse(false);
+        return instance -> instance.batchId().map(b -> b.equals(batchId)).orElse(false);
     }
 
     static InstanceCriteria bySerial(SerialNumber serialNumber) {
         Objects.requireNonNull(serialNumber, "serialNumber cannot be null");
-        return instance -> instance.serialNumber()
-                .map(s -> s.equals(serialNumber))
-                .orElse(false);
+        return instance -> instance.serialNumber().map(s -> s.equals(serialNumber)).orElse(false);
     }
 
     static InstanceCriteria custom(Predicate<Instance> predicate) {

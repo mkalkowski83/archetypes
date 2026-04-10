@@ -9,5 +9,4 @@ record OrganizationName(String value) {
     public String asString() {
         return value;
     }
-
 }

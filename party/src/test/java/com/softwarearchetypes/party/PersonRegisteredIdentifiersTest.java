@@ -5,5 +5,4 @@ class PersonRegisteredIdentifiersTest extends PartyRegisteredIdentifiersTest<Per
     PersonRegisteredIdentifiersTest() {
         super(Person.class);
     }
-
 }

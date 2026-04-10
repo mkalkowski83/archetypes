@@ -6,12 +6,11 @@ import com.softwarearchetypes.rules.discounting.config.reflection.Config;
 import com.softwarearchetypes.rules.discounting.config.reflection.Discount;
 import com.softwarearchetypes.rules.discounting.config.reflection.DiscountParam;
 import com.softwarearchetypes.rules.discounting.config.reflection.ReflectionBeanWriter;
-
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ConfigImporter  {
+public class ConfigImporter {
 
     private final DiscountRepository discountRepository;
     private final ReflectionBeanWriter beanWriter = new ReflectionBeanWriter();
@@ -27,12 +26,12 @@ public class ConfigImporter  {
             Map<String, String> params = new HashMap<>();
             beanWriter.writeBean(Config.MODIFIER_PREFIX, modifier, params);
 
-
             String name = humanReadableName(modifier);
 
             UUID discountId = discountRepository.insert(new Discount(null, name));
             for (Map.Entry<String, String> p : params.entrySet()) {
-                discountRepository.insertParam(new DiscountParam(discountId, p.getKey(), p.getValue()));
+                discountRepository.insertParam(
+                        new DiscountParam(discountId, p.getKey(), p.getValue()));
             }
 
             params.clear();
@@ -40,7 +39,8 @@ public class ConfigImporter  {
 
             beanWriter.writeBean(Config.CLIENT_PREDICATE_PREFIX, clientPredicate, params);
             for (Map.Entry<String, String> p : params.entrySet()) {
-                discountRepository.insertParam(new DiscountParam(discountId, p.getKey(), p.getValue()));
+                discountRepository.insertParam(
+                        new DiscountParam(discountId, p.getKey(), p.getValue()));
             }
         }
     }

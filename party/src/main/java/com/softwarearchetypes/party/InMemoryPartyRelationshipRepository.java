@@ -8,20 +8,21 @@ import java.util.stream.Collectors;
 
 class InMemoryPartyRelationshipRepository implements PartyRelationshipRepository {
 
-    private final ConcurrentHashMap<PartyRelationshipId, PartyRelationship> map = new ConcurrentHashMap<>(10);
+    private final ConcurrentHashMap<PartyRelationshipId, PartyRelationship> map =
+            new ConcurrentHashMap<>(10);
 
     @Override
     public List<PartyRelationship> findAllRelationsFrom(PartyId partyId) {
         return map.values().parallelStream()
-                  .filter(rel -> rel.from().partyId().equals(partyId))
-                  .collect(Collectors.toList());
+                .filter(rel -> rel.from().partyId().equals(partyId))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<PartyRelationship> findAllRelationsFrom(PartyId partyId, RelationshipName name) {
         return map.values().parallelStream()
-                  .filter(rel -> rel.name().equals(name) && rel.from().partyId().equals(partyId))
-                  .collect(Collectors.toList());
+                .filter(rel -> rel.name().equals(name) && rel.from().partyId().equals(partyId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -42,8 +43,6 @@ class InMemoryPartyRelationshipRepository implements PartyRelationshipRepository
 
     @Override
     public List<PartyRelationship> findMatching(Predicate<PartyRelationship> predicate) {
-        return map.values().parallelStream()
-                  .filter(predicate)
-                  .collect(Collectors.toList());
+        return map.values().parallelStream().filter(predicate).collect(Collectors.toList());
     }
 }

@@ -14,11 +14,13 @@ public record ModificationRule(
         }
     }
 
-    public static ModificationRule of(ScheduleModificationCondition condition, PaymentScheduleModifier modifier) {
+    public static ModificationRule of(
+            ScheduleModificationCondition condition, PaymentScheduleModifier modifier) {
         return new ModificationRule(condition, modifier, false);
     }
 
-    public static ModificationRule once(ScheduleModificationCondition condition, PaymentScheduleModifier modifier) {
+    public static ModificationRule once(
+            ScheduleModificationCondition condition, PaymentScheduleModifier modifier) {
         return new ModificationRule(condition, modifier, true);
     }
 }

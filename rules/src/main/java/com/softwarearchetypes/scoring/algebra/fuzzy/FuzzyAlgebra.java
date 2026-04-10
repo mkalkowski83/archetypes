@@ -4,7 +4,6 @@ import com.softwarearchetypes.scoring.algebra.Algebra;
 import com.softwarearchetypes.scoring.ast.CmpOp;
 import com.softwarearchetypes.scoring.ast.Metric;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +41,11 @@ public class FuzzyAlgebra implements Algebra<FuzzyValue> {
         }
 
         return switch (op) {
-            case GT  -> fuzzyGreater(v, value, margin);
+            case GT -> fuzzyGreater(v, value, margin);
             case GTE -> fuzzyGreater(v, value - 0.1 * margin, margin);
-            case LT  -> fuzzyLess(v, value, margin);
+            case LT -> fuzzyLess(v, value, margin);
             case LTE -> fuzzyLess(v, value + 0.1 * margin, margin);
-            case EQ  -> fuzzyEqual(v, value, margin);
+            case EQ -> fuzzyEqual(v, value, margin);
         };
     }
 

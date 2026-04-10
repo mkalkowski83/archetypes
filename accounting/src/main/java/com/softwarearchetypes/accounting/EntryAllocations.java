@@ -1,12 +1,12 @@
 package com.softwarearchetypes.accounting;
 
+import static com.softwarearchetypes.accounting.EntryAllocationStrategy.MANUAL;
+
 import java.time.Instant;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import static com.softwarearchetypes.accounting.EntryAllocationStrategy.MANUAL;
 
 class EntryAllocations {
 
@@ -19,7 +19,6 @@ class EntryAllocations {
     Optional<Entry> findAllocationFor(EntryAllocationFilter filter) {
         return entryRepository.findMatching(filter.predicate(), filter.comparator());
     }
-
 }
 
 enum EntryAllocationStrategy {
@@ -78,7 +77,7 @@ class EntryAllocationFilterBuilder {
         return this;
     }
 
-    //TODO: other filters possible
+    // TODO: other filters possible
 
     EntryAllocationFilter build() {
         return new EntryAllocationFilter(buildEntryPredicate(), buildComparator());
@@ -114,5 +113,4 @@ class EntryAllocationFilterBuilder {
             case MANUAL -> null;
         };
     }
-
 }

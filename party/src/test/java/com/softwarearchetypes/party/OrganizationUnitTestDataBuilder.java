@@ -11,6 +11,7 @@ final class OrganizationUnitTestDataBuilder extends PartyAbstractTestDataBuilder
 
     @Override
     OrganizationUnit build() {
-        return new OrganizationUnit(partyId, organizationName, roles, registeredIdentifiers, version);
+        return new OrganizationUnit(
+                partyId, organizationName, roles, registeredIdentifiers, version);
     }
 }

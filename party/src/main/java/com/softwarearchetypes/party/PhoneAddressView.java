@@ -7,5 +7,5 @@ public record PhoneAddressView(
         PartyId partyId,
         String phoneNumber,
         Set<String> useTypes,
-        Validity validity) implements AddressView {
-}
+        Validity validity)
+        implements AddressView {}

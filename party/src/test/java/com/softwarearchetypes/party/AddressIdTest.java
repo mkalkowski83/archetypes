@@ -1,45 +1,44 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 class AddressIdTest {
 
     @Test
     void twoAddressIdsShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         AddressId firstAddressId = AddressId.of(UUID.randomUUID());
         AddressId secondAddressId = AddressId.of(UUID.randomUUID());
 
-        //expect
+        // expect
         assertNotEquals(firstAddressId, secondAddressId);
     }
 
     @Test
     void twoAddressIdsShouldBeEqualWhenCreatedForTheSameValue() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
 
-        //expect
+        // expect
         assertEquals(AddressId.of(value), AddressId.of(value));
     }
 
     @Test
     void AddressIdIsConvertibleToTheValueItWasCreatedFrom() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
         AddressId addressId = AddressId.of(value);
 
-        //expect
+        // expect
         assertEquals(value.toString(), addressId.asString());
     }
 
     @Test
     void shouldNotAllowToCreateAddressIdForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> AddressId.of(null));
     }
 }

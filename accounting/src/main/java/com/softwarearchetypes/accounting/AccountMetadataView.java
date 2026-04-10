@@ -1,5 +1,3 @@
 package com.softwarearchetypes.accounting;
 
-public record AccountMetadataView(AccountId id, String name, String type) {
-
-}
+public record AccountMetadataView(AccountId id, String name, String type) {}

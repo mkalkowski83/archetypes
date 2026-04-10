@@ -1,26 +1,34 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
 import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
 import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
 import com.softwarearchetypes.party.events.EmailAddressDefined;
 import com.softwarearchetypes.party.events.EmailAddressRemoved;
 import com.softwarearchetypes.party.events.EmailAddressUpdated;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 final class EmailAddress extends Address {
 
     private final EmailAddressDetails emailAddressDetails;
 
-    EmailAddress(AddressId id, PartyId partyId, EmailAddressDetails emailAddressDetails, Set<AddressUseType> useTypes) {
+    EmailAddress(
+            AddressId id,
+            PartyId partyId,
+            EmailAddressDetails emailAddressDetails,
+            Set<AddressUseType> useTypes) {
         super(id, partyId, useTypes);
         this.emailAddressDetails = emailAddressDetails;
     }
 
-    EmailAddress(AddressId id, PartyId partyId, EmailAddressDetails emailAddressDetails, Set<AddressUseType> useTypes, Validity validity) {
+    EmailAddress(
+            AddressId id,
+            PartyId partyId,
+            EmailAddressDetails emailAddressDetails,
+            Set<AddressUseType> useTypes,
+            Validity validity) {
         super(id, partyId, useTypes, validity);
         this.emailAddressDetails = emailAddressDetails;
     }
@@ -32,12 +40,20 @@ final class EmailAddress extends Address {
 
     @Override
     public AddressUpdateSucceeded toAddressUpdateSucceededEvent() {
-        return new EmailAddressUpdated(id().asString(), partyId().asString(), emailAddressDetails.email(), useTypesAsStringSet());
+        return new EmailAddressUpdated(
+                id().asString(),
+                partyId().asString(),
+                emailAddressDetails.email(),
+                useTypesAsStringSet());
     }
 
     @Override
     public AddressDefinitionSucceeded toAddressDefinitionSucceededEvent() {
-        return new EmailAddressDefined(id().asString(), partyId().asString(), emailAddressDetails.email(), useTypesAsStringSet());
+        return new EmailAddressDefined(
+                id().asString(),
+                partyId().asString(),
+                emailAddressDetails.email(),
+                useTypesAsStringSet());
     }
 
     @Override

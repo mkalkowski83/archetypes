@@ -3,8 +3,8 @@ package com.softwarearchetypes.product;
 import java.util.List;
 
 /**
- * Result of package validation - either success or failure with error messages.
- * Used to validate if selected products match package structure rules.
+ * Result of package validation - either success or failure with error messages. Used to validate if
+ * selected products match package structure rules.
  */
 record PackageValidationResult(boolean valid, List<String> errors) {
 

@@ -1,23 +1,23 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 class EmailAddressDetailsTest {
 
     @Test
     void shouldCreateValidEmailAddress() {
-        //when
+        // when
         EmailAddressDetails email = new EmailAddressDetails("john.doe@example.com");
 
-        //then
+        // then
         assertEquals("john.doe@example.com", email.email());
     }
 
     @Test
     void shouldAcceptVariousValidEmailFormats() {
-        //expect
+        // expect
         assertDoesNotThrow(() -> new EmailAddressDetails("user@domain.com"));
         assertDoesNotThrow(() -> new EmailAddressDetails("user.name@domain.com"));
         assertDoesNotThrow(() -> new EmailAddressDetails("user+tag@domain.co.uk"));
@@ -27,34 +27,36 @@ class EmailAddressDetailsTest {
 
     @Test
     void shouldRejectNullEmail() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails(null));
     }
 
     @Test
     void shouldRejectEmptyEmail() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails(""));
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("   "));
     }
 
     @Test
     void shouldRejectInvalidEmailFormat() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("invalid"));
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("@domain.com"));
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("user@"));
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("user domain.com"));
+        assertThrows(
+                IllegalArgumentException.class, () -> new EmailAddressDetails("user domain.com"));
         assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("user@domain"));
-        assertThrows(IllegalArgumentException.class, () -> new EmailAddressDetails("user@@domain.com"));
+        assertThrows(
+                IllegalArgumentException.class, () -> new EmailAddressDetails("user@@domain.com"));
     }
 
     @Test
     void shouldCreateEmailUsingFactoryMethod() {
-        //when
+        // when
         EmailAddressDetails email = EmailAddressDetails.of("test@example.com");
 
-        //then
+        // then
         assertEquals("test@example.com", email.email());
     }
 }

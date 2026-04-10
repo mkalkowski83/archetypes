@@ -1,15 +1,14 @@
 package com.softwarearchetypes.inventory.availability;
 
 import com.softwarearchetypes.common.Result;
-
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * AvailabilityFacade manages resource availability independently of inventory entries.
- * Resources can be created, locked, and unlocked without going through InventoryEntry.
+ * AvailabilityFacade manages resource availability independently of inventory entries. Resources
+ * can be created, locked, and unlocked without going through InventoryEntry.
  */
 public class AvailabilityFacade {
 
@@ -30,7 +29,8 @@ public class AvailabilityFacade {
         return Result.success(availability.id());
     }
 
-    public Result<String, BlockadeId> lock(ResourceAvailabilityId availabilityId, LockRequest request) {
+    public Result<String, BlockadeId> lock(
+            ResourceAvailabilityId availabilityId, LockRequest request) {
         Optional<ResourceAvailability> availability = repository.findById(availabilityId);
         if (availability.isEmpty()) {
             return Result.failure("Availability not found: " + availabilityId);
@@ -47,7 +47,8 @@ public class AvailabilityFacade {
         return lock(command.availabilityId(), command.request());
     }
 
-    public Result<String, BlockadeId> unlock(ResourceAvailabilityId availabilityId, UnlockRequest request) {
+    public Result<String, BlockadeId> unlock(
+            ResourceAvailabilityId availabilityId, UnlockRequest request) {
         Optional<ResourceAvailability> availability = repository.findById(availabilityId);
         if (availability.isEmpty()) {
             return Result.failure("Availability not found: " + availabilityId);
@@ -61,7 +62,8 @@ public class AvailabilityFacade {
     }
 
     public Result<String, BlockadeId> handle(UnlockRequest request) {
-        Optional<ResourceAvailability> availability = repository.findByBlockadeId(request.blockadeId());
+        Optional<ResourceAvailability> availability =
+                repository.findByBlockadeId(request.blockadeId());
         if (availability.isEmpty()) {
             return Result.failure("No resource found with blockade: " + request.blockadeId());
         }
@@ -74,12 +76,14 @@ public class AvailabilityFacade {
     }
 
     public boolean isAvailable(ResourceAvailabilityId availabilityId) {
-        return repository.findById(availabilityId)
+        return repository
+                .findById(availabilityId)
                 .map(ResourceAvailability::isAvailable)
                 .orElse(false);
     }
 
-    public Result<String, BlockadeId> lockIndividual(ResourceId resourceId, IndividualLockRequest request) {
+    public Result<String, BlockadeId> lockIndividual(
+            ResourceId resourceId, IndividualLockRequest request) {
         List<ResourceAvailability> availabilities = repository.findByResourceId(resourceId);
         if (availabilities.isEmpty()) {
             return Result.failure("No availability found for resource: " + resourceId);
@@ -87,14 +91,23 @@ public class AvailabilityFacade {
         return lock(availabilities.get(0).id(), request);
     }
 
-    public Result<String, BlockadeId> lockTemporal(ResourceId resourceId, TemporalLockRequest request) {
+    public Result<String, BlockadeId> lockTemporal(
+            ResourceId resourceId, TemporalLockRequest request) {
         List<ResourceAvailability> availabilities = repository.findByResourceId(resourceId);
-        Optional<ResourceAvailability> matching = availabilities.stream()
-                .filter(a -> a instanceof TemporalResourceAvailability tra && tra.slot().equals(request.slot()))
-                .findFirst();
+        Optional<ResourceAvailability> matching =
+                availabilities.stream()
+                        .filter(
+                                a ->
+                                        a instanceof TemporalResourceAvailability tra
+                                                && tra.slot().equals(request.slot()))
+                        .findFirst();
 
         if (matching.isEmpty()) {
-            return Result.failure("No temporal availability found for resource: " + resourceId + " slot: " + request.slot());
+            return Result.failure(
+                    "No temporal availability found for resource: "
+                            + resourceId
+                            + " slot: "
+                            + request.slot());
         }
         return lock(matching.get().id(), request);
     }
@@ -116,9 +129,7 @@ public class AvailabilityFacade {
     }
 
     List<ResourceAvailability> findAvailable() {
-        return repository.findAll().stream()
-                .filter(ResourceAvailability::isAvailable)
-                .toList();
+        return repository.findAll().stream().filter(ResourceAvailability::isAvailable).toList();
     }
 
     List<ResourceAvailability> findAvailableByResourceId(ResourceId resourceId) {
@@ -128,8 +139,8 @@ public class AvailabilityFacade {
     }
 
     /**
-     * Releases all expired blockades from resources that have them.
-     * Returns list of all released blockade IDs.
+     * Releases all expired blockades from resources that have them. Returns list of all released
+     * blockade IDs.
      */
     public List<BlockadeId> releaseExpired() {
         List<BlockadeId> allReleased = new ArrayList<>();

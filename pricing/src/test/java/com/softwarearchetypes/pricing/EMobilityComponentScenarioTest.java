@@ -1,37 +1,31 @@
 package com.softwarearchetypes.pricing;
 
+import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
+import static java.time.Clock.fixed;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.softwarearchetypes.quantity.money.Money;
-
-import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
-import static java.time.Clock.fixed;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * E-Mobility charging session scenario using Component semantic composition.
- * <p>
- * Scenario: Customer charged EV with:
- * - 12 kWh of energy
- * - Session duration: 40 minutes
- * <p>
- * Price breakdown:
- * - Energy cost (wholesale + grid)
- * - CPO markup (session fee + per kWh + per minute)
- * - EMSP markup (per kWh + per minute)
- * - VAT 23% on net amount
+ *
+ * <p>Scenario: Customer charged EV with: - 12 kWh of energy - Session duration: 40 minutes
+ *
+ * <p>Price breakdown: - Energy cost (wholesale + grid) - CPO markup (session fee + per kWh + per
+ * minute) - EMSP markup (per kWh + per minute) - VAT 23% on net amount
  */
 class EMobilityComponentScenarioTest {
 
-    static final Instant NOW = LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
     private final PricingFacade facade = PricingConfiguration.inMemory(clock).pricingFacade();
 
@@ -44,69 +38,97 @@ class EMobilityComponentScenarioTest {
         // Energy wholesale - progressive step pricing
         // Base price: 0.60 PLN for first tier (0-5 kWh)
         // Each 5 kWh tier increases by 0.10 PLN
-        facade.addCalculator("energy-wholesale", CalculatorType.STEP_FUNCTION,
+        facade.addCalculator(
+                "energy-wholesale",
+                CalculatorType.STEP_FUNCTION,
                 Parameters.of(
                         "basePrice", Money.pln(BigDecimal.valueOf(0.60)),
                         "stepSize", BigDecimal.valueOf(5),
                         "stepIncrement", BigDecimal.valueOf(0.10),
                         "stepBoundary", StepBoundary.INCLUSIVE,
-                        "interpretation", Interpretation.MARGINAL
-                ));
+                        "interpretation", Interpretation.MARGINAL));
 
         // Energy grid fee - flat 0.15 PLN per kWh
-        facade.addCalculator("energy-grid", CalculatorType.SIMPLE_FIXED,
-                Parameters.of("amount", Money.pln(BigDecimal.valueOf(0.15)),
-                        "interpretation", Interpretation.UNIT
-                ));
+        facade.addCalculator(
+                "energy-grid",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                        "amount",
+                        Money.pln(BigDecimal.valueOf(0.15)),
+                        "interpretation",
+                        Interpretation.UNIT));
 
         // ============================================================
         // CPO (Charging Point Operator) CALCULATORS
         // ============================================================
 
         // CPO session fee - flat 1.50 PLN per session
-        facade.addCalculator("cpo-session-fee", CalculatorType.SIMPLE_FIXED,
-                Parameters.of("amount", Money.pln(new BigDecimal("1.50")),
-                        "interpretation", Interpretation.TOTAL));
+        facade.addCalculator(
+                "cpo-session-fee",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                        "amount",
+                        Money.pln(new BigDecimal("1.50")),
+                        "interpretation",
+                        Interpretation.TOTAL));
 
         // CPO per kWh markup - 0.25 PLN per kWh
-        facade.addCalculator("cpo-per-kwh", CalculatorType.SIMPLE_FIXED,
-                Parameters.of("amount", Money.pln(BigDecimal.valueOf(0.25)),
-                        "interpretation", Interpretation.UNIT
-                ));
+        facade.addCalculator(
+                "cpo-per-kwh",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                        "amount",
+                        Money.pln(BigDecimal.valueOf(0.25)),
+                        "interpretation",
+                        Interpretation.UNIT));
 
         // CPO per minute markup - 0.10 PLN per minute
-        facade.addCalculator("cpo-per-minute", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "cpo-per-minute",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                        "amount", Money.pln(BigDecimal.valueOf(0.10)),
-                        "interpretation", Interpretation.UNIT
-                ));
+                        "amount",
+                        Money.pln(BigDecimal.valueOf(0.10)),
+                        "interpretation",
+                        Interpretation.UNIT));
 
         // ============================================================
         // EMSP (E-Mobility Service Provider) CALCULATORS
         // ============================================================
 
         // EMSP per kWh markup - 0.10 PLN per kWh
-        facade.addCalculator("emsp-per-kwh", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "emsp-per-kwh",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                        "amount", Money.pln(BigDecimal.valueOf(0.10)),
-                        "interpretation", Interpretation.UNIT
-                ));
+                        "amount",
+                        Money.pln(BigDecimal.valueOf(0.10)),
+                        "interpretation",
+                        Interpretation.UNIT));
 
         // EMSP per minute markup - 0.05 PLN per minute
-        facade.addCalculator("emsp-per-minute", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "emsp-per-minute",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                        "amount", Money.pln(BigDecimal.valueOf(0.05)),
-                        "interpretation", Interpretation.UNIT
-                ));
+                        "amount",
+                        Money.pln(BigDecimal.valueOf(0.05)),
+                        "interpretation",
+                        Interpretation.UNIT));
 
         // ============================================================
         // VAT CALCULATOR
         // ============================================================
 
         // VAT 23% - percentage calculator
-        facade.addCalculator("vat-rate", CalculatorType.PERCENTAGE,
-                Parameters.of("percentageRate", BigDecimal.valueOf(23),
-                        "interpretation", Interpretation.TOTAL));
+        facade.addCalculator(
+                "vat-rate",
+                CalculatorType.PERCENTAGE,
+                Parameters.of(
+                        "percentageRate",
+                        BigDecimal.valueOf(23),
+                        "interpretation",
+                        Interpretation.TOTAL));
     }
 
     @Test
@@ -122,64 +144,60 @@ class EMobilityComponentScenarioTest {
         facade.createSimpleComponent("energy-grid-component", "energy-grid");
 
         // Energy net = wholesale + grid
-        facade.createCompositeComponent("energy-net",
-                Map.of(),
-                "energy-wholesale-component", "energy-grid-component"
-        );
+        facade.createCompositeComponent(
+                "energy-net", Map.of(), "energy-wholesale-component", "energy-grid-component");
 
         // ============================================================
         // STEP 2: Create CPO markup components
         // ============================================================
         facade.createSimpleComponent("cpo-session-component", "cpo-session-fee");
         facade.createSimpleComponent("cpo-kwh-component", "cpo-per-kwh");
-        facade.createSimpleComponent("cpo-time-component", "cpo-per-minute", Map.of("time", "quantity"));
+        facade.createSimpleComponent(
+                "cpo-time-component", "cpo-per-minute", Map.of("time", "quantity"));
 
-        facade.createCompositeComponent("cpo-markup",
+        facade.createCompositeComponent(
+                "cpo-markup",
                 Map.of(),
-                "cpo-session-component", "cpo-kwh-component", "cpo-time-component"
-        );
+                "cpo-session-component",
+                "cpo-kwh-component",
+                "cpo-time-component");
 
         // ============================================================
         // STEP 3: Create EMSP markup components
         // ============================================================
         facade.createSimpleComponent("emsp-kwh-component", "emsp-per-kwh");
-        facade.createSimpleComponent("emsp-time-component", "emsp-per-minute", Map.of("time", "quantity"));
+        facade.createSimpleComponent(
+                "emsp-time-component", "emsp-per-minute", Map.of("time", "quantity"));
 
-        facade.createCompositeComponent("emsp-markup",
-                Map.of(),
-                "emsp-kwh-component", "emsp-time-component"
-        );
+        facade.createCompositeComponent(
+                "emsp-markup", Map.of(), "emsp-kwh-component", "emsp-time-component");
 
         // ============================================================
         // STEP 4: Create net amount (before VAT)
         // ============================================================
-        facade.createCompositeComponent("netto",
-                Map.of(),
-                "energy-net", "cpo-markup", "emsp-markup"
-        );
+        facade.createCompositeComponent(
+                "netto", Map.of(), "energy-net", "cpo-markup", "emsp-markup");
 
         // ============================================================
         // STEP 5: Create VAT component with dependency on netto
         // ============================================================
         facade.createSimpleComponent("vat-component", "vat-rate");
 
-        facade.createCompositeComponent("total-session-cost",
-                Map.of(
-                        "vat-component", Map.of(
-                                "baseAmount", new ValueOf("netto")
-                        )
-                ),
-                "netto", "vat-component"
-        );
+        facade.createCompositeComponent(
+                "total-session-cost",
+                Map.of("vat-component", Map.of("baseAmount", new ValueOf("netto"))),
+                "netto",
+                "vat-component");
 
         // ============================================================
         // STEP 6: Calculate for 12 kWh and 40 minutes
         // ============================================================
 
-        Parameters sessionParams = Parameters.of(
-                "quantity", BigDecimal.valueOf(12),  // 12 kWh
-                "time", BigDecimal.valueOf(40)        // 40 minutes
-        );
+        Parameters sessionParams =
+                Parameters.of(
+                        "quantity", BigDecimal.valueOf(12), // 12 kWh
+                        "time", BigDecimal.valueOf(40) // 40 minutes
+                        );
 
         Money result = facade.calculateComponent("total-session-cost", sessionParams);
 
@@ -211,7 +229,8 @@ class EMobilityComponentScenarioTest {
         // ============================================================
         // STEP 7: Verify detailed breakdown
         // ============================================================
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-session-cost", sessionParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-session-cost", sessionParams);
 
         assertThat(breakdown)
                 .hasName("total-session-cost")
@@ -237,7 +256,7 @@ class EMobilityComponentScenarioTest {
                 .child("energy-net")
                 .child("energy-wholesale-component")
                 .hasTotal(Money.pln(new BigDecimal("8.10")))
-                .hasNoChildren();  // simple component, no children
+                .hasNoChildren(); // simple component, no children
 
         assertThat(breakdown)
                 .child("netto")
@@ -297,9 +316,7 @@ class EMobilityComponentScenarioTest {
                 .hasNoChildren();
 
         // Verify VAT
-        assertThat(breakdown)
-                .child("vat-component")
-                .hasTotal(Money.pln(new BigDecimal("4.97")));
+        assertThat(breakdown).child("vat-component").hasTotal(Money.pln(new BigDecimal("4.97")));
     }
 
     @Test
@@ -307,35 +324,44 @@ class EMobilityComponentScenarioTest {
         // given: complete component structure (same as previous test)
         facade.createSimpleComponent("energy-wholesale-component", "energy-wholesale");
         facade.createSimpleComponent("energy-grid-component", "energy-grid");
-        facade.createCompositeComponent("energy-net", Map.of(),
-                "energy-wholesale-component", "energy-grid-component");
+        facade.createCompositeComponent(
+                "energy-net", Map.of(), "energy-wholesale-component", "energy-grid-component");
 
         facade.createSimpleComponent("cpo-session-component", "cpo-session-fee");
         facade.createSimpleComponent("cpo-kwh-component", "cpo-per-kwh");
-        facade.createSimpleComponent("cpo-time-component", "cpo-per-minute", Map.of("time", "quantity"));
-        facade.createCompositeComponent("cpo-markup", Map.of(),
-                "cpo-session-component", "cpo-kwh-component", "cpo-time-component");
+        facade.createSimpleComponent(
+                "cpo-time-component", "cpo-per-minute", Map.of("time", "quantity"));
+        facade.createCompositeComponent(
+                "cpo-markup",
+                Map.of(),
+                "cpo-session-component",
+                "cpo-kwh-component",
+                "cpo-time-component");
 
         facade.createSimpleComponent("emsp-kwh-component", "emsp-per-kwh");
-        facade.createSimpleComponent("emsp-time-component", "emsp-per-minute", Map.of("time", "quantity"));
-        facade.createCompositeComponent("emsp-markup", Map.of(),
-                "emsp-kwh-component", "emsp-time-component");
+        facade.createSimpleComponent(
+                "emsp-time-component", "emsp-per-minute", Map.of("time", "quantity"));
+        facade.createCompositeComponent(
+                "emsp-markup", Map.of(), "emsp-kwh-component", "emsp-time-component");
 
-        facade.createCompositeComponent("netto", Map.of(),
-                "energy-net", "cpo-markup", "emsp-markup");
+        facade.createCompositeComponent(
+                "netto", Map.of(), "energy-net", "cpo-markup", "emsp-markup");
 
         facade.createSimpleComponent("vat-component", "vat-rate");
-        facade.createCompositeComponent("total-session-cost",
+        facade.createCompositeComponent(
+                "total-session-cost",
                 Map.of("vat-component", Map.of("baseAmount", new ValueOf("netto"))),
-                "netto", "vat-component");
+                "netto",
+                "vat-component");
 
         // when: calculate with formatting
-        Parameters sessionParams = Parameters.of(
-                "quantity", BigDecimal.valueOf(12),
-                "time", BigDecimal.valueOf(40)
-        );
+        Parameters sessionParams =
+                Parameters.of(
+                        "quantity", BigDecimal.valueOf(12),
+                        "time", BigDecimal.valueOf(40));
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-session-cost", sessionParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-session-cost", sessionParams);
 
         // then: print formatted breakdown
         System.out.println("=".repeat(60));

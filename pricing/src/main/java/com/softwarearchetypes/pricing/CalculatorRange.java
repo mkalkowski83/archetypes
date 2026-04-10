@@ -5,13 +5,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * Represents a range of values that maps to a specific calculator.
- * Supports different value types: numeric (BigDecimal), time (LocalTime), date (LocalDate).
+ * Represents a range of values that maps to a specific calculator. Supports different value types:
+ * numeric (BigDecimal), time (LocalTime), date (LocalDate).
  */
 interface CalculatorRange {
 
     /**
      * Checks if this range supports the given value type.
+     *
      * @param value the value to check
      * @return true if the value type is supported by this range
      */
@@ -19,26 +20,27 @@ interface CalculatorRange {
 
     /**
      * Checks if the given value falls within this range.
+     *
      * @param value the value to check
      * @return true if the value is within the range (inclusive start, exclusive end)
      */
     boolean contains(Object value);
 
-    /**
-     * Returns the ID of the calculator to use for values in this range.
-     */
+    /** Returns the ID of the calculator to use for values in this range. */
     CalculatorId calculatorId();
 
     /**
      * Checks if this range is compatible with another range (same type).
+     *
      * @param other the other range
      * @return true if both ranges are of the same type
      */
     boolean isCompatibleWith(CalculatorRange other);
 
     /**
-     * Checks if this range overlaps with another range.
-     * Only compatible ranges can be checked for overlap.
+     * Checks if this range overlaps with another range. Only compatible ranges can be checked for
+     * overlap.
+     *
      * @param other the other range
      * @return true if the ranges overlap
      * @throws IllegalArgumentException if ranges are not compatible
@@ -47,6 +49,7 @@ interface CalculatorRange {
 
     /**
      * Returns the range definition without the calculator ID.
+     *
      * @return string representation of just the range interval (e.g., "[0, 1000)")
      */
     String describe();
@@ -64,12 +67,11 @@ interface CalculatorRange {
     static DateRange date(LocalDate from, LocalDate to, CalculatorId calculatorId) {
         return new DateRange(from, to, calculatorId);
     }
-
 }
 
 /**
- * Range for date values (LocalDate).
- * Represents an interval [from, to) - inclusive from, exclusive to.
+ * Range for date values (LocalDate). Represents an interval [from, to) - inclusive from, exclusive
+ * to.
  */
 record DateRange(LocalDate from, LocalDate to, CalculatorId calculatorId)
         implements CalculatorRange {
@@ -77,8 +79,7 @@ record DateRange(LocalDate from, LocalDate to, CalculatorId calculatorId)
     public DateRange {
         if (!from.isBefore(to)) {
             throw new IllegalArgumentException(
-                    "From must be before to: [%s, %s)".formatted(from, to)
-            );
+                    "From must be before to: [%s, %s)".formatted(from, to));
         }
     }
 
@@ -106,8 +107,7 @@ record DateRange(LocalDate from, LocalDate to, CalculatorId calculatorId)
         if (!isCompatibleWith(other)) {
             throw new IllegalArgumentException(
                     "Cannot check overlap with incompatible range type: %s"
-                            .formatted(other.getClass().getSimpleName())
-            );
+                            .formatted(other.getClass().getSimpleName()));
         }
 
         DateRange o = (DateRange) other;
@@ -131,8 +131,8 @@ record DateRange(LocalDate from, LocalDate to, CalculatorId calculatorId)
 }
 
 /**
- * Range for numeric values (BigDecimal).
- * Represents an interval [min, max) - inclusive min, exclusive max.
+ * Range for numeric values (BigDecimal). Represents an interval [min, max) - inclusive min,
+ * exclusive max.
  */
 record NumericRange(BigDecimal min, BigDecimal max, CalculatorId calculatorId)
         implements CalculatorRange {
@@ -140,8 +140,7 @@ record NumericRange(BigDecimal min, BigDecimal max, CalculatorId calculatorId)
     public NumericRange {
         if (min.compareTo(max) >= 0) {
             throw new IllegalArgumentException(
-                    "Min must be less than max: [%s, %s)".formatted(min, max)
-            );
+                    "Min must be less than max: [%s, %s)".formatted(min, max));
         }
     }
 
@@ -169,8 +168,7 @@ record NumericRange(BigDecimal min, BigDecimal max, CalculatorId calculatorId)
         if (!isCompatibleWith(other)) {
             throw new IllegalArgumentException(
                     "Cannot check overlap with incompatible range type: %s"
-                            .formatted(other.getClass().getSimpleName())
-            );
+                            .formatted(other.getClass().getSimpleName()));
         }
 
         NumericRange o = (NumericRange) other;
@@ -194,9 +192,8 @@ record NumericRange(BigDecimal min, BigDecimal max, CalculatorId calculatorId)
 }
 
 /**
- * Range for time values (LocalTime).
- * Represents an interval [from, to) - inclusive from, exclusive to.
- * Supports ranges that cross midnight (e.g., 22:00-06:00).
+ * Range for time values (LocalTime). Represents an interval [from, to) - inclusive from, exclusive
+ * to. Supports ranges that cross midnight (e.g., 22:00-06:00).
  */
 record TimeRange(LocalTime from, LocalTime to, CalculatorId calculatorId)
         implements CalculatorRange {
@@ -233,8 +230,7 @@ record TimeRange(LocalTime from, LocalTime to, CalculatorId calculatorId)
         if (!isCompatibleWith(other)) {
             throw new IllegalArgumentException(
                     "Cannot check overlap with incompatible range type: %s"
-                            .formatted(other.getClass().getSimpleName())
-            );
+                            .formatted(other.getClass().getSimpleName()));
         }
 
         TimeRange o = (TimeRange) other;
@@ -265,7 +261,8 @@ record TimeRange(LocalTime from, LocalTime to, CalculatorId calculatorId)
 
         // Both cross midnight
         // Both ranges contain midnight, so they always overlap
-        // (unless one ends exactly when the other starts, but with exclusive end that's still overlap)
+        // (unless one ends exactly when the other starts, but with exclusive end that's still
+        // overlap)
         return true;
     }
 

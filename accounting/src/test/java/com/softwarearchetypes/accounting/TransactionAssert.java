@@ -1,15 +1,13 @@
 package com.softwarearchetypes.accounting;
 
-import java.time.Instant;
-import java.util.List;
-
-import org.assertj.core.api.AbstractAssert;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.time.Instant;
+import java.util.List;
+import org.assertj.core.api.AbstractAssert;
 
 public class TransactionAssert extends AbstractAssert<TransactionAssert, Transaction> {
 
@@ -47,71 +45,108 @@ public class TransactionAssert extends AbstractAssert<TransactionAssert, Transac
     }
 
     TransactionAssert hasExactlyOneCreditEntryFor(Account account, Money amount) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountCredited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount)).toList().size());
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountCredited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount))
+                        .toList()
+                        .size());
         return this;
     }
 
-    TransactionAssert hasExactlyOneCreditEntryFor(Account account, Money amount, Validity validity) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountCredited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount))
-                              .filter(it -> it.validity().equals(validity)).toList().size());
+    TransactionAssert hasExactlyOneCreditEntryFor(
+            Account account, Money amount, Validity validity) {
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountCredited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount))
+                        .filter(it -> it.validity().equals(validity))
+                        .toList()
+                        .size());
         return this;
     }
 
-    TransactionAssert hasExactlyOneCreditEntryFor(Account account, Money amount, EntryId appliedTo) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountCredited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount))
-                              .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent()).toList().size());
+    TransactionAssert hasExactlyOneCreditEntryFor(
+            Account account, Money amount, EntryId appliedTo) {
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountCredited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount))
+                        .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent())
+                        .toList()
+                        .size());
         return this;
     }
 
-    TransactionAssert hasExactlyOneCreditEntryFor(Account account, Money amount, Validity validity, EntryId appliedTo) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountCredited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount))
-                              .filter(it -> it.validity().equals(validity))
-                              .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent()).toList().size());
+    TransactionAssert hasExactlyOneCreditEntryFor(
+            Account account, Money amount, Validity validity, EntryId appliedTo) {
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountCredited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount))
+                        .filter(it -> it.validity().equals(validity))
+                        .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent())
+                        .toList()
+                        .size());
         return this;
     }
 
     TransactionAssert hasExactlyOneDebitEntryFor(Account account, Money amount) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountDebited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount.negate())).toList().size());
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountDebited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount.negate()))
+                        .toList()
+                        .size());
         return this;
     }
 
     TransactionAssert hasExactlyOneDebitEntryFor(Account account, Money amount, Validity validity) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountDebited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount.negate()))
-                              .filter(it -> it.validity().equals(validity)).toList().size());
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountDebited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount.negate()))
+                        .filter(it -> it.validity().equals(validity))
+                        .toList()
+                        .size());
         return this;
     }
 
     TransactionAssert hasExactlyOneDebitEntryFor(Account account, Money amount, EntryId appliedTo) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountDebited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount.negate()))
-                              .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent()).toList().size());
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountDebited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount.negate()))
+                        .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent())
+                        .toList()
+                        .size());
         return this;
     }
 
-    TransactionAssert hasExactlyOneDebitEntryFor(Account account, Money amount, Validity validity, EntryId appliedTo) {
-        assertEquals(1, actual.entries().get(account).stream()
-                              .filter(AccountDebited.class::isInstance)
-                              .filter(it -> it.amount().equals(amount.negate()))
-                              .filter(it -> it.validity().equals(validity))
-                              .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent()).toList().size());
+    TransactionAssert hasExactlyOneDebitEntryFor(
+            Account account, Money amount, Validity validity, EntryId appliedTo) {
+        assertEquals(
+                1,
+                actual.entries().get(account).stream()
+                        .filter(AccountDebited.class::isInstance)
+                        .filter(it -> it.amount().equals(amount.negate()))
+                        .filter(it -> it.validity().equals(validity))
+                        .filter(it -> it.appliedTo().filter(id -> id.equals(appliedTo)).isPresent())
+                        .toList()
+                        .size());
         return this;
     }
 
     TransactionEntriesAssert containsEntries() {
-        return new TransactionEntriesAssert(actual.entries().values().stream().flatMap(List::stream).collect(toList()));
+        return new TransactionEntriesAssert(
+                actual.entries().values().stream().flatMap(List::stream).collect(toList()));
     }
 }
 
@@ -140,7 +175,4 @@ class TransactionEntriesAssert extends AbstractAssert<TransactionEntriesAssert, 
         assertTrue(actual.stream().allMatch(it -> metadata.equals(it.metadata())));
         return this;
     }
-
-
 }
-

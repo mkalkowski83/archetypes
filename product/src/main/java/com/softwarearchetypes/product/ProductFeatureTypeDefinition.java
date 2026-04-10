@@ -2,9 +2,7 @@ package com.softwarearchetypes.product;
 
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
-/**
- * Defines a product feature type along with whether it's mandatory or optional.
- */
+/** Defines a product feature type along with whether it's mandatory or optional. */
 class ProductFeatureTypeDefinition {
 
     private final ProductFeatureType featureType;

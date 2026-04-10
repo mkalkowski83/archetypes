@@ -1,9 +1,9 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 import static com.softwarearchetypes.common.StringUtils.isNotBlank;
+
+import java.util.UUID;
 
 record PartyRoleTypeId(String value) {
 

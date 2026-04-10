@@ -26,16 +26,12 @@ class InMemoryCapabilitiesRepository implements CapabilitiesRepository {
 
     @Override
     public List<Capability> findByPartyId(PartyId partyId) {
-        return capabilities.values().stream()
-                .filter(c -> c.partyId().equals(partyId))
-                .toList();
+        return capabilities.values().stream().filter(c -> c.partyId().equals(partyId)).toList();
     }
 
     @Override
     public List<Capability> findByType(CapabilityType type) {
-        return capabilities.values().stream()
-                .filter(c -> c.type().equals(type))
-                .toList();
+        return capabilities.values().stream().filter(c -> c.type().equals(type)).toList();
     }
 
     @Override

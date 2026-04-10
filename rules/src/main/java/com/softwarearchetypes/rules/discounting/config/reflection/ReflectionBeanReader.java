@@ -6,7 +6,6 @@ import com.softwarearchetypes.rules.predicates.AndPredicate;
 import com.softwarearchetypes.rules.predicates.LogicalPredicate;
 import com.softwarearchetypes.rules.predicates.NotPredicate;
 import com.softwarearchetypes.rules.predicates.OrPredicate;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
@@ -26,13 +25,13 @@ public class ReflectionBeanReader {
         this.props = Objects.requireNonNull(props);
     }
 
-
     public <T> T readBean(String prefix, Class<T> expectedType) {
         String classKey = prefix + ".class";
         String className = props.get(classKey);
 
         if (className == null || className.isBlank()) {
-            throw new IllegalArgumentException("No entry '" + classKey + "' for type " + expectedType.getName());
+            throw new IllegalArgumentException(
+                    "No entry '" + classKey + "' for type " + expectedType.getName());
         }
 
         Class<?> rawClass;
@@ -43,8 +42,8 @@ public class ReflectionBeanReader {
         }
 
         if (!expectedType.isAssignableFrom(rawClass)) {
-            throw new IllegalArgumentException("Class " + className +
-                    " not compatibile with " + expectedType.getName());
+            throw new IllegalArgumentException(
+                    "Class " + className + " not compatibile with " + expectedType.getName());
         }
 
         @SuppressWarnings("unchecked")
@@ -77,7 +76,6 @@ public class ReflectionBeanReader {
         }
     }
 
-
     private <T> T instantiateRecord(String prefix, Class<T> clazz) {
         var components = clazz.getRecordComponents();
         Class<?>[] paramTypes = new Class<?>[components.length];
@@ -106,7 +104,8 @@ public class ReflectionBeanReader {
 
         for (int i = 0; i < params.length; i++) {
             Parameter p = params[i];
-            String paramName = p.getName(); // wymaga -parameters przy kompilacji !!!!!!!!!!!!!!!!!!!
+            String paramName =
+                    p.getName(); // wymaga -parameters przy kompilacji !!!!!!!!!!!!!!!!!!!
             Class<?> paramType = p.getType();
 
             String simpleKey = prefix + "." + paramName;
@@ -150,8 +149,8 @@ public class ReflectionBeanReader {
             }
 
             if (paramType.isPrimitive()) {
-                throw new IllegalArgumentException("No config for primitive param "
-                        + paramName + " (" + simpleKey + ")");
+                throw new IllegalArgumentException(
+                        "No config for primitive param " + paramName + " (" + simpleKey + ")");
             } else {
                 args[i] = null;
             }
@@ -162,23 +161,26 @@ public class ReflectionBeanReader {
             T instance = (T) ctor.newInstance(args);
             return instance;
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new IllegalStateException("Could not create "
-                    + clazz.getName() + " from prefix '" + prefix + "'", e);
+            throw new IllegalStateException(
+                    "Could not create " + clazz.getName() + " from prefix '" + prefix + "'", e);
         }
     }
 
     private Constructor<?> chooseConstructor(Class<?> clazz) {
         Constructor<?>[] ctors = clazz.getDeclaredConstructors();
         if (ctors.length == 0) {
-            throw new IllegalStateException("Class " + clazz.getName() + " has no public constructor");
+            throw new IllegalStateException(
+                    "Class " + clazz.getName() + " has no public constructor");
         }
         if (ctors.length == 1) {
             ctors[0].setAccessible(true);
             return ctors[0];
         }
         // can add logic @Inject / @JsonCreator
-        throw new IllegalStateException("Class " + clazz.getName()
-                + " has many constructors – specify it in ReflectionBeanReader");
+        throw new IllegalStateException(
+                "Class "
+                        + clazz.getName()
+                        + " has many constructors – specify it in ReflectionBeanReader");
     }
 
     private Money readMoney(String prefix) {
@@ -189,8 +191,14 @@ public class ReflectionBeanReader {
         String currCode = props.get(currencyKey);
 
         if (amountStr == null || currCode == null) {
-            throw new IllegalArgumentException("No money data at: '" + prefix +
-                    "' (expected " + amountKey + " i " + currencyKey + ")");
+            throw new IllegalArgumentException(
+                    "No money data at: '"
+                            + prefix
+                            + "' (expected "
+                            + amountKey
+                            + " i "
+                            + currencyKey
+                            + ")");
         }
 
         BigDecimal amount = new BigDecimal(amountStr);
@@ -210,15 +218,9 @@ public class ReflectionBeanReader {
         return Percentage.of(val);
     }
 
-
-
     /**
-     *
-     * prefix.root = n1
-     * prefix.n1.type  = AND / OR / NOT / LEAF
-     * prefix.n1.left  = n2
-     * prefix.n1.right = n3
-     * ...
+     * prefix.root = n1 prefix.n1.type = AND / OR / NOT / LEAF prefix.n1.left = n2 prefix.n1.right =
+     * n3 ...
      */
     public LogicalPredicate<?> readLogicalPredicate(String basePrefix) {
         String rootId = props.get(basePrefix + ".root");
@@ -270,25 +272,36 @@ public class ReflectionBeanReader {
                 // nodePrefix.<paramName> = ...
                 String className = props.get(nodePrefix + ".class");
                 if (className == null) {
-                    throw new IllegalArgumentException("No " + nodePrefix + ".class for predicate leaf");
+                    throw new IllegalArgumentException(
+                            "No " + nodePrefix + ".class for predicate leaf");
                 }
                 try {
                     Class<?> leafClass = Class.forName(className);
-                    Object bean = instantiatePojo(nodePrefix, leafClass); // or instantiateRecord, if rekord
+                    Object bean =
+                            instantiatePojo(
+                                    nodePrefix, leafClass); // or instantiateRecord, if rekord
                     if (!(bean instanceof LogicalPredicate<?> lp)) {
-                        throw new IllegalArgumentException("Leaf " + nodePrefix + " of class " + className +
-                                " does not implement LogicalPredicate");
+                        throw new IllegalArgumentException(
+                                "Leaf "
+                                        + nodePrefix
+                                        + " of class "
+                                        + className
+                                        + " does not implement LogicalPredicate");
                     }
                     yield lp;
                 } catch (ClassNotFoundException e) {
-                    throw new IllegalArgumentException("Could not load leaf class: " + className, e);
+                    throw new IllegalArgumentException(
+                            "Could not load leaf class: " + className, e);
                 }
             }
-            default -> throw new IllegalArgumentException("Unknown type for logical node '" + type +
-                    "' for a prefix " + nodePrefix);
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unknown type for logical node '"
+                                    + type
+                                    + "' for a prefix "
+                                    + nodePrefix);
         };
     }
-
 
     private boolean isSimpleType(Class<?> type) {
         return type.isPrimitive()

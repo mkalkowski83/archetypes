@@ -1,39 +1,31 @@
 package com.softwarearchetypes.party;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import static com.softwarearchetypes.common.StringUtils.isNotBlank;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static com.softwarearchetypes.common.StringUtils.isNotBlank;
-
 /**
- * PartyRoleType is a definition/template for a role that parties can play.
- * It defines what the role means and what capabilities are required to assume it.
+ * PartyRoleType is a definition/template for a role that parties can play. It defines what the role
+ * means and what capabilities are required to assume it.
  *
- * Examples:
- * - "Senior Radiologist" - requires MedicalImaging capability with Senior skill level
- * - "Hazmat Driver" - requires GoodsDelivery capability with ADR certification
- * - "Customer" - no specific capability requirements
+ * <p>Examples: - "Senior Radiologist" - requires MedicalImaging capability with Senior skill level
+ * - "Hazmat Driver" - requires GoodsDelivery capability with ADR certification - "Customer" - no
+ * specific capability requirements
  *
- * TODO: Integration with PartyRole
- * This class should be connected to PartyRole so that:
- * 1. PartyRole references PartyRoleType instead of simple Role string
- * 2. When assigning a role to Party, the system validates RoleRequirements against Party's Capabilities
- * 3. PartyRole should have Validity period
+ * <p>TODO: Integration with PartyRole This class should be connected to PartyRole so that: 1.
+ * PartyRole references PartyRoleType instead of simple Role string 2. When assigning a role to
+ * Party, the system validates RoleRequirements against Party's Capabilities 3. PartyRole should
+ * have Validity period
  *
- * Current PartyRole structure:
- *   PartyRole(partyId, role) - simple string-based
+ * <p>Current PartyRole structure: PartyRole(partyId, role) - simple string-based
  *
- * Target PartyRole structure (see lesson for details):
- *   PartyRole {
- *     partyRoleId: PartyRoleId
- *     partyId: PartyId
- *     partyRoleTypeId: PartyRoleTypeId  // reference to this type
- *     validity: Validity
- *   }
+ * <p>Target PartyRole structure (see lesson for details): PartyRole { partyRoleId: PartyRoleId
+ * partyId: PartyId partyRoleTypeId: PartyRoleTypeId // reference to this type validity: Validity }
  *
- * See: diagrams/party-role-requirements.puml
+ * <p>See: diagrams/party-role-requirements.puml
  */
 final class PartyRoleType {
 
@@ -42,7 +34,8 @@ final class PartyRoleType {
     private final String description;
     private final RoleRequirements requirements;
 
-    private PartyRoleType(PartyRoleTypeId id, String name, String description, RoleRequirements requirements) {
+    private PartyRoleType(
+            PartyRoleTypeId id, String name, String description, RoleRequirements requirements) {
         checkArgument(id != null, "PartyRoleTypeId cannot be null");
         checkArgument(isNotBlank(name), "Name cannot be blank");
         this.id = id;
@@ -63,11 +56,13 @@ final class PartyRoleType {
         return new PartyRoleType(PartyRoleTypeId.random(), name, null, requirements);
     }
 
-    public static PartyRoleType create(String name, String description, RoleRequirements requirements) {
+    public static PartyRoleType create(
+            String name, String description, RoleRequirements requirements) {
         return new PartyRoleType(PartyRoleTypeId.random(), name, description, requirements);
     }
 
-    public static PartyRoleType withId(PartyRoleTypeId id, String name, String description, RoleRequirements requirements) {
+    public static PartyRoleType withId(
+            PartyRoleTypeId id, String name, String description, RoleRequirements requirements) {
         return new PartyRoleType(id, name, description, requirements);
     }
 
@@ -91,9 +86,7 @@ final class PartyRoleType {
         return requirements != null && !requirements.capabilityRequirements().isEmpty();
     }
 
-    /**
-     * Checks if a party with given capabilities can assume this role.
-     */
+    /** Checks if a party with given capabilities can assume this role. */
     public boolean canBeAssumedWith(List<Capability> capabilities) {
         if (requirements == null) {
             return true;
@@ -101,9 +94,7 @@ final class PartyRoleType {
         return requirements.isSatisfiedBy(capabilities);
     }
 
-    /**
-     * Returns missing capability requirements for given capabilities.
-     */
+    /** Returns missing capability requirements for given capabilities. */
     public List<CapabilityRequirement> findMissingRequirements(List<Capability> capabilities) {
         if (requirements == null) {
             return List.of();

@@ -1,9 +1,8 @@
 package com.softwarearchetypes.accounting.postingrules;
 
-import java.util.function.Predicate;
-
 import com.softwarearchetypes.accounting.AccountId;
 import com.softwarearchetypes.accounting.EntryView;
+import java.util.function.Predicate;
 
 @FunctionalInterface
 public interface EligibilityCondition {
@@ -11,23 +10,26 @@ public interface EligibilityCondition {
     boolean test(PostingContext context);
 
     static EligibilityCondition accountEquals(AccountId accountId) {
-        return context -> context.triggeringEntries().stream()
-                                 .anyMatch(entry -> entry.accountId().equals(accountId));
+        return context ->
+                context.triggeringEntries().stream()
+                        .anyMatch(entry -> entry.accountId().equals(accountId));
     }
 
     static EligibilityCondition entryTypeEquals(EntryView.EntryType entryType) {
-        return context -> context.triggeringEntries().stream()
-                                 .anyMatch(it -> it.type().equals(entryType));
+        return context ->
+                context.triggeringEntries().stream().anyMatch(it -> it.type().equals(entryType));
     }
 
     static EligibilityCondition accountType(String type) {
-        return context -> context.triggeringEntries().stream()
-                                 .anyMatch(entry -> {
-                                     return context.accountingFacade()
-                                                   .findAccount(entry.accountId())
-                                                   .map(account -> account.type().equals(type))
-                                                   .orElse(false);
-                                 });
+        return context ->
+                context.triggeringEntries().stream()
+                        .anyMatch(
+                                entry -> {
+                                    return context.accountingFacade()
+                                            .findAccount(entry.accountId())
+                                            .map(account -> account.type().equals(type))
+                                            .orElse(false);
+                                });
     }
 
     static EligibilityCondition custom(Predicate<PostingContext> predicate) {

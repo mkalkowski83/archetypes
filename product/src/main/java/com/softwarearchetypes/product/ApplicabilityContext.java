@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Context for evaluating applicability constraints.
- * Generic key-value map representing the situation in which we check applicability.
+ * Context for evaluating applicability constraints. Generic key-value map representing the
+ * situation in which we check applicability.
  */
 public class ApplicabilityContext {
 

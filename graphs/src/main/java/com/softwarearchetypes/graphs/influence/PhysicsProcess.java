@@ -1,3 +1,3 @@
 package com.softwarearchetypes.graphs.influence;
 
-record PhysicsProcess(String name) { }
+record PhysicsProcess(String name) {}

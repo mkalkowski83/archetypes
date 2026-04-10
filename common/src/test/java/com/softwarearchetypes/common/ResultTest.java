@@ -1,17 +1,5 @@
 package com.softwarearchetypes.common;
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result.CompositeResult;
-import com.softwarearchetypes.common.Result.CompositeSetResult;
-
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.RandomStringUtils.insecure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import com.softwarearchetypes.common.Result.CompositeResult;
+import com.softwarearchetypes.common.Result.CompositeSetResult;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import org.junit.jupiter.api.Test;
 
 class ResultTest {
 
@@ -48,92 +46,101 @@ class ResultTest {
 
     @Test
     void shouldFailToGetSuccessOnFailureResult() {
-        assertThrows(IllegalStateException.class, () -> Result.failure(insecure().nextAlphabetic(10)).getSuccess());
+        assertThrows(
+                IllegalStateException.class,
+                () -> Result.failure(insecure().nextAlphabetic(10)).getSuccess());
     }
 
     @Test
     void shouldFailToGetFailureOnSuccessResult() {
-        assertThrows(IllegalStateException.class, () -> Result.success(insecure().nextAlphabetic(10)).getFailure());
+        assertThrows(
+                IllegalStateException.class,
+                () -> Result.success(insecure().nextAlphabetic(10)).getFailure());
     }
 
     @Test
     void shouldChooseAndProperlyApplySuccessMappingFunction() {
-        //given
+        // given
         String value = insecure().nextAlphabetic(10);
 
-        //and
+        // and
         Function<String, String> successMappingFunction = val -> "SUCCESS-" + val;
         Function<String, String> failureMappingFunction = val -> "FAILURE-" + val;
 
-        //when
+        // when
         Result<String, String> result = Result.success(value);
 
-        //then
-        assertEquals("SUCCESS-" + value, result.ifSuccessOrElse(successMappingFunction, failureMappingFunction));
+        // then
+        assertEquals(
+                "SUCCESS-" + value,
+                result.ifSuccessOrElse(successMappingFunction, failureMappingFunction));
     }
 
     @Test
     void shouldChooseAndProperlyApplyFailureMappingFunction() {
-        //given
+        // given
         String value = insecure().nextAlphabetic(10);
 
-        //and
+        // and
         Function<String, String> successMappingFunction = val -> "SUCCESS-" + val;
         Function<String, String> failureMappingFunction = val -> "FAILURE-" + val;
 
-        //when
+        // when
         Result<String, String> result = Result.failure(value);
 
-        //then
-        assertEquals("FAILURE-" + value, result.ifSuccessOrElse(successMappingFunction, failureMappingFunction));
+        // then
+        assertEquals(
+                "FAILURE-" + value,
+                result.ifSuccessOrElse(successMappingFunction, failureMappingFunction));
     }
 
     @Test
     void shouldMapSuccessResultAccordingToMappingFunction() {
-        //given
+        // given
         int value = 1;
 
-        //and
+        // and
         Function<Integer, String> successMappingFunction = val -> String.valueOf(val * 2);
         Function<Integer, String> failureMappingFunction = val -> "";
 
-        //when
+        // when
         Result<Integer, Integer> result = Result.success(value);
 
-        //then
-        assertEquals("2", result.biMap(successMappingFunction, failureMappingFunction).getSuccess());
+        // then
+        assertEquals(
+                "2", result.biMap(successMappingFunction, failureMappingFunction).getSuccess());
     }
 
     @Test
     void shouldMapFailureResultAccordingToMappingFunction() {
-        //given
+        // given
         int value = 1;
 
-        //and
+        // and
         Function<Integer, String> successMappingFunction = val -> String.valueOf(val * 2);
         Function<Integer, String> failureMappingFunction = val -> "";
 
-        //when
+        // when
         Result<Integer, Integer> result = Result.failure(value);
 
-        //then
+        // then
         assertEquals("", result.biMap(successMappingFunction, failureMappingFunction).getFailure());
     }
 
     @Test
     void shouldCallSuccessConsumerOnPeek() {
-        //given
+        // given
         int value = randomNumber();
         Consumer<Integer> successConsumer = mock(Consumer.class);
         Consumer<Integer> failureConsumer = mock(Consumer.class);
 
-        //and
+        // and
         Result<Integer, Integer> result = Result.success(value);
 
-        //when
+        // when
         Result<Integer, Integer> peekResult = result.peek(successConsumer, failureConsumer);
 
-        //then
+        // then
         assertEquals(result, peekResult);
         verify(successConsumer, times(1)).accept(value);
         verify(failureConsumer, times(0)).accept(value);
@@ -141,19 +148,19 @@ class ResultTest {
 
     @Test
     void shouldCallSuccessConsumerOnPeekSuccess() {
-        //given
+        // given
         int value = randomNumber();
         Consumer<Integer> successConsumer = mock(Consumer.class);
         Consumer<Integer> failureConsumer = mock(Consumer.class);
 
-        //and
+        // and
         Result<Integer, Integer> result = Result.success(value);
 
-        //when
-        Result<Integer, Integer> peekResult = result.peekSuccess(successConsumer)
-                                                    .peekFailure(failureConsumer);
+        // when
+        Result<Integer, Integer> peekResult =
+                result.peekSuccess(successConsumer).peekFailure(failureConsumer);
 
-        //then
+        // then
         assertEquals(result, peekResult);
         verify(successConsumer, times(1)).accept(value);
         verify(failureConsumer, times(0)).accept(value);
@@ -161,18 +168,18 @@ class ResultTest {
 
     @Test
     void shouldCallFailureConsumerOnPeek() {
-        //given
+        // given
         int value = randomNumber();
         Consumer<Integer> successConsumer = mock(Consumer.class);
         Consumer<Integer> failureConsumer = mock(Consumer.class);
 
-        //and
+        // and
         Result<Integer, Integer> result = Result.failure(value);
 
-        //when
+        // when
         Result<Integer, Integer> peekResult = result.peek(successConsumer, failureConsumer);
 
-        //then
+        // then
         assertEquals(result, peekResult);
         verify(successConsumer, times(0)).accept(value);
         verify(failureConsumer, times(1)).accept(value);
@@ -180,19 +187,19 @@ class ResultTest {
 
     @Test
     void shouldCallFailureConsumerOnPeekFailure() {
-        //given
+        // given
         int value = randomNumber();
         Consumer<Integer> successConsumer = mock(Consumer.class);
         Consumer<Integer> failureConsumer = mock(Consumer.class);
 
-        //and
+        // and
         Result<Integer, Integer> result = Result.failure(value);
 
-        //when
-        Result<Integer, Integer> peekResult = result.peekSuccess(successConsumer)
-                                                    .peekFailure(failureConsumer);
+        // when
+        Result<Integer, Integer> peekResult =
+                result.peekSuccess(successConsumer).peekFailure(failureConsumer);
 
-        //then
+        // then
         assertEquals(result, peekResult);
         verify(successConsumer, times(0)).accept(value);
         verify(failureConsumer, times(1)).accept(value);
@@ -200,568 +207,588 @@ class ResultTest {
 
     @Test
     void shouldCombineTwoSuccessResults() {
-        //given
+        // given
         int firstValue = randomNumber();
         int secondValue = randomNumber();
 
-        //and
+        // and
         Result<Integer, Integer> firstResult = Result.success(firstValue);
         Result<Integer, Integer> secondResult = Result.success(secondValue);
 
-        //and
+        // and
         BiFunction<Integer, Integer, Integer> successCombiner = Integer::sum;
         BiFunction<Integer, Integer, Integer> failureCombiner = (val1, val2) -> val1 - val2;
 
-        //when
-        Result<Integer, Integer> combinedResult = firstResult.combine(secondResult, failureCombiner, successCombiner);
+        // when
+        Result<Integer, Integer> combinedResult =
+                firstResult.combine(secondResult, failureCombiner, successCombiner);
 
-        //then
+        // then
         assertEquals(firstValue + secondValue, combinedResult.getSuccess());
     }
 
     @Test
     void shouldCombineTwoFailureResults() {
-        //given
+        // given
         int firstValue = randomNumber();
         int secondValue = randomNumber();
 
-        //and
+        // and
         Result<Integer, Integer> firstResult = Result.failure(firstValue);
         Result<Integer, Integer> secondResult = Result.failure(secondValue);
 
-        //and
+        // and
         BiFunction<Integer, Integer, Integer> successCombiner = Integer::sum;
         BiFunction<Integer, Integer, Integer> failureCombiner = (val1, val2) -> val1 - val2;
 
-        //when
-        Result<Integer, Integer> combinedResult = firstResult.combine(secondResult, failureCombiner, successCombiner);
+        // when
+        Result<Integer, Integer> combinedResult =
+                firstResult.combine(secondResult, failureCombiner, successCombiner);
 
-        //then
+        // then
         assertEquals(firstValue - secondValue, combinedResult.getFailure());
     }
 
     @Test
     void shouldProduceFailureResultWhenCombiningFailureAndSuccessResults() {
-        //given
+        // given
         int firstValue = randomNumber();
         int secondValue = randomNumber();
 
-        //and
+        // and
         Result<Integer, Integer> firstResult = Result.success(firstValue);
         Result<Integer, Integer> secondResult = Result.failure(secondValue);
 
-        //and
+        // and
         BiFunction<Integer, Integer, Integer> successCombiner = Integer::sum;
-        BiFunction<Integer, Integer, Integer> failureCombiner = (val1, val2) -> ofNullable(val1).orElse(0) - ofNullable(val2).orElse(0);
+        BiFunction<Integer, Integer, Integer> failureCombiner =
+                (val1, val2) -> ofNullable(val1).orElse(0) - ofNullable(val2).orElse(0);
 
-        //when
-        Result<Integer, Integer> successFailureCombinedResult = firstResult.combine(secondResult, failureCombiner, successCombiner);
+        // when
+        Result<Integer, Integer> successFailureCombinedResult =
+                firstResult.combine(secondResult, failureCombiner, successCombiner);
 
-        //then
+        // then
         assertEquals(-secondValue, successFailureCombinedResult.getFailure());
 
-        //when
-        Result<Integer, Integer> failureSuccessCombinedResult = secondResult.combine(firstResult, failureCombiner, successCombiner);
+        // when
+        Result<Integer, Integer> failureSuccessCombinedResult =
+                secondResult.combine(firstResult, failureCombiner, successCombiner);
 
-        //then
+        // then
         assertEquals(secondValue, failureSuccessCombinedResult.getFailure());
     }
 
     @Test
     void shouldMapSuccessValueUsingMapFunction() {
-        //given
+        // given
         int value = 10;
 
-        //and
+        // and
         Function<Integer, String> mapper = val -> "Value: " + (val * 2);
 
-        //when
+        // when
         Result<String, String> result = Result.<String, Integer>success(value).map(mapper);
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals("Value: 20", result.getSuccess());
     }
 
     @Test
     void shouldNotMapFailureValueUsingMapFunction() {
-        //given
+        // given
         String errorMessage = "Error occurred";
 
-        //and
+        // and
         Function<Integer, String> mapper = val -> "Value: " + (val * 2);
 
-        //when
+        // when
         Result<String, String> result = Result.<String, Integer>failure(errorMessage).map(mapper);
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals(errorMessage, result.getFailure());
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenMapWithNullMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.map(null));
     }
 
     @Test
     void shouldMapFailureValueUsingMapFailureFunction() {
-        //given
+        // given
         int errorCode = 404;
 
-        //and
+        // and
         Function<Integer, String> mapper = code -> "Error " + code + ": Not Found";
 
-        //when
-        Result<String, Integer> result = Result.<Integer, Integer>failure(errorCode).mapFailure(mapper);
+        // when
+        Result<String, Integer> result =
+                Result.<Integer, Integer>failure(errorCode).mapFailure(mapper);
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals("Error 404: Not Found", result.getFailure());
     }
 
     @Test
     void shouldNotMapSuccessValueUsingMapFailureFunction() {
-        //given
+        // given
         int value = 42;
 
-        //and
+        // and
         Function<Integer, String> mapper = code -> "Error " + code;
 
-        //when
+        // when
         Result<String, Integer> result = Result.<Integer, Integer>success(value).mapFailure(mapper);
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals(value, result.getSuccess());
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenMapFailureWithNullMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.failure("error");
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.mapFailure(null));
     }
 
     @Test
     void shouldFlatMapSuccessResultWithAnotherSuccessResult() {
-        //given
+        // given
         int value = 5;
 
-        //and
+        // and
         Function<Integer, Result<String, Integer>> mapper = val -> Result.success(val * 2);
 
-        //when
+        // when
         Result<String, Integer> result = Result.<String, Integer>success(value).flatMap(mapper);
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals(10, result.getSuccess());
     }
 
     @Test
     void shouldFlatMapSuccessResultWithFailureResult() {
-        //given
+        // given
         int value = 5;
         String errorMessage = "Validation failed";
 
-        //and
+        // and
         Function<Integer, Result<String, Integer>> mapper = val -> Result.failure(errorMessage);
 
-        //when
+        // when
         Result<String, Integer> result = Result.<String, Integer>success(value).flatMap(mapper);
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals(errorMessage, result.getFailure());
     }
 
     @Test
     void shouldNotFlatMapFailureResult() {
-        //given
+        // given
         String errorMessage = "Initial error";
 
-        //and
+        // and
         Function<Integer, Result<String, Integer>> mapper = val -> Result.success(val * 2);
 
-        //when
-        Result<String, Integer> result = Result.<String, Integer>failure(errorMessage).flatMap(mapper);
+        // when
+        Result<String, Integer> result =
+                Result.<String, Integer>failure(errorMessage).flatMap(mapper);
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals(errorMessage, result.getFailure());
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenFlatMapWithNullMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.flatMap(null));
     }
 
     @Test
     void shouldFoldSuccessResultUsingRightMapper() {
-        //given
+        // given
         int value = 10;
 
-        //and
+        // and
         Function<String, Integer> leftMapper = error -> -1;
         Function<Integer, Integer> rightMapper = val -> val * 3;
 
-        //when
+        // when
         Integer result = Result.<String, Integer>success(value).fold(leftMapper, rightMapper);
 
-        //then
+        // then
         assertEquals(30, result);
     }
 
     @Test
     void shouldFoldFailureResultUsingLeftMapper() {
-        //given
+        // given
         String errorMessage = "Error";
 
-        //and
+        // and
         Function<String, Integer> leftMapper = String::length;
         Function<Integer, Integer> rightMapper = val -> val * 3;
 
-        //when
-        Integer result = Result.<String, Integer>failure(errorMessage).fold(leftMapper, rightMapper);
+        // when
+        Integer result =
+                Result.<String, Integer>failure(errorMessage).fold(leftMapper, rightMapper);
 
-        //then
+        // then
         assertEquals(5, result);
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenFoldingWithNullLeftMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.fold(null, val -> val * 2));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenFoldingWithNullRightMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.fold(error -> -1, null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenBiMapWithNullSuccessMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.biMap(null, error -> ""));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenBiMapWithNullFailureMapper() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.biMap(val -> "", null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenIfSuccessOrElseWithNullSuccessMapping() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
-        assertThrows(IllegalArgumentException.class, () -> result.ifSuccessOrElse(null, error -> ""));
+        // when & then
+        assertThrows(
+                IllegalArgumentException.class, () -> result.ifSuccessOrElse(null, error -> ""));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenIfSuccessOrElseWithNullFailureMapping() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.ifSuccessOrElse(val -> "", null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPeekWithNullSuccessConsumer() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.peek(null, error -> {}));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPeekWithNullFailureConsumer() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.peek(val -> {}, null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPeekSuccessWithNullConsumer() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.peekSuccess(null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenPeekFailureWithNullConsumer() {
-        //given
+        // given
         Result<String, Integer> result = Result.failure("error");
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> result.peekFailure(null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCombineWithNullSecondResult() {
-        //given
+        // given
         Result<String, Integer> result = Result.success(10);
 
-        //when & then
-        assertThrows(IllegalArgumentException.class, () -> result.combine(null, (f1, f2) -> "", (s1, s2) -> 0));
+        // when & then
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> result.combine(null, (f1, f2) -> "", (s1, s2) -> 0));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCombineWithNullFailureCombiner() {
-        //given
+        // given
         Result<String, Integer> firstResult = Result.success(10);
         Result<String, Integer> secondResult = Result.success(20);
 
-        //when & then
-        assertThrows(IllegalArgumentException.class, () -> firstResult.combine(secondResult, null, (s1, s2) -> s1 + s2));
+        // when & then
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> firstResult.combine(secondResult, null, (s1, s2) -> s1 + s2));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenCombineWithNullSuccessCombiner() {
-        //given
+        // given
         Result<String, Integer> firstResult = Result.success(10);
         Result<String, Integer> secondResult = Result.success(20);
 
-        //when & then
-        assertThrows(IllegalArgumentException.class, () -> firstResult.combine(secondResult, (f1, f2) -> "", null));
+        // when & then
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> firstResult.combine(secondResult, (f1, f2) -> "", null));
     }
 
     @Test
     void shouldCreateEmptyCompositeResult() {
-        //when
+        // when
         CompositeResult<String, Integer> composite = Result.composite();
         Result<String, List<Integer>> result = composite.toResult();
 
-        //then
+        // then
         assertTrue(result.success());
         assertTrue(result.getSuccess().isEmpty());
     }
 
     @Test
     void shouldCreateEmptyCompositeSetResult() {
-        //when
+        // when
         CompositeSetResult<String, Integer> composite = Result.compositeSet();
         Result<String, Set<Integer>> result = composite.toResult();
 
-        //then
+        // then
         assertTrue(result.success());
         assertTrue(result.getSuccess().isEmpty());
     }
 
     @Test
     void shouldAccumulateSuccessResultsIntoList() {
-        //given
+        // given
         CompositeResult<String, Integer> composite = Result.composite();
 
-        //when
-        Result<String, List<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2))
-                .accumulate(Result.success(3))
-                .toResult();
+        // when
+        Result<String, List<Integer>> result =
+                composite
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(2))
+                        .accumulate(Result.success(3))
+                        .toResult();
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals(List.of(1, 2, 3), result.getSuccess());
     }
 
     @Test
     void shouldAccumulateSuccessResultsIntoSet() {
-        //given
+        // given
         CompositeSetResult<String, Integer> composite = Result.compositeSet();
 
-        //when
-        Result<String, Set<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2))
-                .accumulate(Result.success(3))
-                .toResult();
+        // when
+        Result<String, Set<Integer>> result =
+                composite
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(2))
+                        .accumulate(Result.success(3))
+                        .toResult();
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals(Set.of(1, 2, 3), result.getSuccess());
     }
 
     @Test
     void shouldStopAccumulatingOnFirstFailure() {
-        //given
+        // given
         CompositeResult<String, Integer> composite = Result.composite();
 
-        //when
-        Result<String, List<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.failure("Error occurred"))
-                .accumulate(Result.success(3))
-                .toResult();
+        // when
+        Result<String, List<Integer>> result =
+                composite
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.failure("Error occurred"))
+                        .accumulate(Result.success(3))
+                        .toResult();
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals("Error occurred", result.getFailure());
     }
 
     @Test
     void shouldStopAccumulatingToSetOnFirstFailure() {
-        //given
+        // given
         CompositeSetResult<String, Integer> composite = Result.compositeSet();
 
-        //when
-        Result<String, Set<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.failure("Error occurred"))
-                .accumulate(Result.success(3))
-                .toResult();
+        // when
+        Result<String, Set<Integer>> result =
+                composite
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.failure("Error occurred"))
+                        .accumulate(Result.success(3))
+                        .toResult();
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals("Error occurred", result.getFailure());
     }
 
     @Test
     void shouldRetainFailureWhenAccumulatingToFailedComposite() {
-        //given
-        CompositeResult<String, Integer> composite = Result.<String, Integer>composite()
-                .accumulate(Result.failure("First error"));
+        // given
+        CompositeResult<String, Integer> composite =
+                Result.<String, Integer>composite().accumulate(Result.failure("First error"));
 
-        //when
-        Result<String, List<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2))
-                .toResult();
+        // when
+        Result<String, List<Integer>> result =
+                composite.accumulate(Result.success(1)).accumulate(Result.success(2)).toResult();
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals("First error", result.getFailure());
     }
 
     @Test
     void shouldRetainFailureWhenAccumulatingToSetToFailedComposite() {
-        //given
-        CompositeSetResult<String, Integer> composite = Result.<String, Integer>compositeSet()
-                .accumulate(Result.failure("First error"));
+        // given
+        CompositeSetResult<String, Integer> composite =
+                Result.<String, Integer>compositeSet().accumulate(Result.failure("First error"));
 
-        //when
-        Result<String, Set<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2))
-                .toResult();
+        // when
+        Result<String, Set<Integer>> result =
+                composite.accumulate(Result.success(1)).accumulate(Result.success(2)).toResult();
 
-        //then
+        // then
         assertTrue(result.failure());
         assertEquals("First error", result.getFailure());
     }
 
     @Test
     void shouldAccumulateToSetRemovingDuplicates() {
-        //given
+        // given
         CompositeSetResult<String, Integer> composite = Result.compositeSet();
 
-        //when
-        Result<String, Set<Integer>> result = composite
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2))
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(3))
-                .toResult();
+        // when
+        Result<String, Set<Integer>> result =
+                composite
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(2))
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(3))
+                        .toResult();
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals(Set.of(1, 2, 3), result.getSuccess());
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenAccumulateWithNull() {
-        //given
+        // given
         CompositeResult<String, Integer> composite = Result.composite();
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> composite.accumulate(null));
     }
 
     @Test
     void shouldThrowIllegalArgumentExceptionWhenAccumulateToSetWithNull() {
-        //given
+        // given
         CompositeSetResult<String, Integer> composite = Result.compositeSet();
 
-        //when & then
+        // when & then
         assertThrows(IllegalArgumentException.class, () -> composite.accumulate(null));
     }
 
     @Test
     void shouldReturnTrueForSuccessOnCompositeResult() {
-        //given
-        CompositeResult<String, Integer> composite = Result.<String, Integer>composite()
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2));
+        // given
+        CompositeResult<String, Integer> composite =
+                Result.<String, Integer>composite()
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(2));
 
-        //when & then
+        // when & then
         assertTrue(composite.success());
         assertFalse(composite.failure());
     }
 
     @Test
     void shouldReturnTrueForFailureOnCompositeResult() {
-        //given
-        CompositeResult<String, Integer> composite = Result.<String, Integer>composite()
-                .accumulate(Result.success(1))
-                .accumulate(Result.failure("Error"));
+        // given
+        CompositeResult<String, Integer> composite =
+                Result.<String, Integer>composite()
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.failure("Error"));
 
-        //when & then
+        // when & then
         assertTrue(composite.failure());
         assertFalse(composite.success());
     }
 
     @Test
     void shouldReturnTrueForSuccessOnCompositeSetResult() {
-        //given
-        CompositeSetResult<String, Integer> composite = Result.<String, Integer>compositeSet()
-                .accumulate(Result.success(1))
-                .accumulate(Result.success(2));
+        // given
+        CompositeSetResult<String, Integer> composite =
+                Result.<String, Integer>compositeSet()
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.success(2));
 
-        //when & then
+        // when & then
         assertTrue(composite.success());
         assertFalse(composite.failure());
     }
 
     @Test
     void shouldReturnTrueForFailureOnCompositeSetResult() {
-        //given
-        CompositeSetResult<String, Integer> composite = Result.<String, Integer>compositeSet()
-                .accumulate(Result.success(1))
-                .accumulate(Result.failure("Error"));
+        // given
+        CompositeSetResult<String, Integer> composite =
+                Result.<String, Integer>compositeSet()
+                        .accumulate(Result.success(1))
+                        .accumulate(Result.failure("Error"));
 
-        //when & then
+        // when & then
         assertTrue(composite.failure());
         assertFalse(composite.success());
     }
@@ -769,5 +796,4 @@ class ResultTest {
     private static int randomNumber() {
         return RANDOM.nextInt();
     }
-
 }

@@ -4,14 +4,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * Defines the safe set of data types that can be used for product feature values.
- * Each type knows how to convert between its runtime representation and String (for persistence).
+ * Defines the safe set of data types that can be used for product feature values. Each type knows
+ * how to convert between its runtime representation and String (for persistence).
  *
- * This enum restricts feature values to a well-defined set of types, preventing
- * arbitrary classes from being used as feature values.
+ * <p>This enum restricts feature values to a well-defined set of types, preventing arbitrary
+ * classes from being used as feature values.
  */
 enum FeatureValueType {
-
     TEXT(String.class) {
         @Override
         Object castFrom(String value) {
@@ -80,25 +79,20 @@ enum FeatureValueType {
 
     /**
      * Converts a String representation to the runtime type.
+     *
      * @throws IllegalArgumentException if the value cannot be parsed
      */
     abstract Object castFrom(String value);
 
-    /**
-     * Converts the runtime type to its String representation (for persistence).
-     */
+    /** Converts the runtime type to its String representation (for persistence). */
     abstract String castTo(Object value);
 
-    /**
-     * Returns the class that represents this value type.
-     */
+    /** Returns the class that represents this value type. */
     Class<?> type() {
         return type;
     }
 
-    /**
-     * Checks if the given value is an instance of this type.
-     */
+    /** Checks if the given value is an instance of this type. */
     boolean isInstance(Object value) {
         return type.isInstance(value);
     }

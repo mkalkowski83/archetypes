@@ -20,11 +20,13 @@ public class ProductRelationshipsQueries {
         return repository.findAllRelationsFrom(productIdentifier);
     }
 
-    public List<ProductRelationship> findAllRelationsFrom(ProductIdentifier productIdentifier, ProductRelationshipType type) {
+    public List<ProductRelationship> findAllRelationsFrom(
+            ProductIdentifier productIdentifier, ProductRelationshipType type) {
         return repository.findAllRelationsFrom(productIdentifier, type);
     }
 
-    public List<ProductRelationship> findAllRelationsFrom(List<ProductIdentifier> productIdentifiers, ProductRelationshipType type) {
+    public List<ProductRelationship> findAllRelationsFrom(
+            List<ProductIdentifier> productIdentifiers, ProductRelationshipType type) {
         return productIdentifiers.stream()
                 .flatMap(it -> repository.findAllRelationsFrom(it, type).stream())
                 .toList();

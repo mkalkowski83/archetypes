@@ -1,28 +1,27 @@
 package com.softwarearchetypes.pricing;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.math.BigDecimal;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class StepFunctionCalculatorTest {
 
     @Test
     void shouldCalculateBasePriceForQuantityWithinFirstStep() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),             // base price
-            new BigDecimal("10"),       // step size
-            new BigDecimal("5")                // step increment
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100), // base price
+                        new BigDecimal("10"), // step size
+                        new BigDecimal("5") // step increment
+                        );
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("5")));
 
@@ -36,12 +35,13 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldCalculateIncreasedPriceForSecondStep() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),             // base price
-            new BigDecimal("10"),       // step size
-            new BigDecimal("5")                // step increment
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100), // base price
+                        new BigDecimal("10"), // step size
+                        new BigDecimal("5") // step increment
+                        );
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("15")));
 
@@ -55,12 +55,13 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldCalculateIncreasedPriceForMultipleSteps() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),             // base price
-            new BigDecimal("10"),       // step size
-            new BigDecimal("5")                // step increment
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100), // base price
+                        new BigDecimal("10"), // step size
+                        new BigDecimal("5") // step increment
+                        );
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("35")));
 
@@ -74,12 +75,13 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldCalculatePriceAtExactStepBoundary() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),             // base price
-            new BigDecimal("10"),       // step size
-            new BigDecimal("5")                // step increment
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100), // base price
+                        new BigDecimal("10"), // step size
+                        new BigDecimal("5") // step increment
+                        );
 
         Parameters params = new Parameters(Map.of("quantity", new BigDecimal("20")));
 
@@ -93,12 +95,12 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldThrowExceptionWhenQuantityParameterMissing() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),
-            new BigDecimal("10"),
-            new BigDecimal("5")
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100),
+                        new BigDecimal("10"),
+                        new BigDecimal("5"));
 
         Parameters params = Parameters.empty();
 
@@ -109,12 +111,12 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldReturnCorrectType() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),
-            new BigDecimal("10"),
-            new BigDecimal("5")
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100),
+                        new BigDecimal("10"),
+                        new BigDecimal("5"));
 
         // when & then
         assertEquals(CalculatorType.STEP_FUNCTION, calculator.getType());
@@ -123,12 +125,12 @@ class StepFunctionCalculatorTest {
     @Test
     void shouldProvideDescription() {
         // given
-        StepFunctionCalculator calculator = new StepFunctionCalculator(
-            "Volume Pricing",
-            Money.pln(100),
-            new BigDecimal("10"),
-            new BigDecimal("5")
-        );
+        StepFunctionCalculator calculator =
+                new StepFunctionCalculator(
+                        "Volume Pricing",
+                        Money.pln(100),
+                        new BigDecimal("10"),
+                        new BigDecimal("5"));
 
         // when
         String description = calculator.describe();

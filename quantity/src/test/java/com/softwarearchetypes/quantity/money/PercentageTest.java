@@ -1,12 +1,11 @@
 package com.softwarearchetypes.quantity.money;
 
-import java.math.BigDecimal;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 class PercentageTest {
 
@@ -51,8 +50,7 @@ class PercentageTest {
     @Test
     void shouldThrowExceptionForNegativePercentage() {
         // when & then
-        assertThrows(IllegalArgumentException.class,
-            () -> Percentage.of(new BigDecimal("-10")));
+        assertThrows(IllegalArgumentException.class, () -> Percentage.of(new BigDecimal("-10")));
     }
 
     @Test
@@ -84,8 +82,8 @@ class PercentageTest {
     @Test
     void shouldMultiplyPercentages() {
         // given
-        Percentage p1 = Percentage.of(50);  // 50%
-        Percentage p2 = Percentage.of(20);  // 20%
+        Percentage p1 = Percentage.of(50); // 50%
+        Percentage p2 = Percentage.of(20); // 20%
 
         // when - 50% of 20% = 10%
         Percentage result = p1.multiply(p2);

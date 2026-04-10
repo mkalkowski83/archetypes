@@ -4,7 +4,8 @@ import java.util.function.Supplier;
 
 class PartyRelationshipFixture {
 
-    public static class FixablePartyRelationshipIdSupplier implements Supplier<PartyRelationshipId> {
+    public static class FixablePartyRelationshipIdSupplier
+            implements Supplier<PartyRelationshipId> {
 
         private PartyRelationshipId fixedValue;
 

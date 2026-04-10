@@ -3,7 +3,6 @@ package com.softwarearchetypes.scoring.algebra;
 import com.softwarearchetypes.scoring.ast.Expression;
 import com.softwarearchetypes.scoring.ast.ExpressionVisitor;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.ArrayList;
 import java.util.List;
 

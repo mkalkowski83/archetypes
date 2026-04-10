@@ -1,10 +1,8 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.commands.AssignPartyRelationshipCommand;
@@ -12,22 +10,24 @@ import com.softwarearchetypes.party.commands.RegisterCompanyCommand;
 import com.softwarearchetypes.party.commands.RegisterOrganizationUnitCommand;
 import com.softwarearchetypes.party.commands.RegisterPersonCommand;
 import com.softwarearchetypes.party.commands.RemovePartyRelationshipCommand;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 /**
- * Scenarios for PartyRelationships - connections between parties.
- * Tests employment, account holding, subscriptions, partnerships, and organization structure.
+ * Scenarios for PartyRelationships - connections between parties. Tests employment, account
+ * holding, subscriptions, partnerships, and organization structure.
  */
 @DisplayName("Party Relationships Scenarios")
 class PartyRelationshipsScenariosTest {
 
     private final PartyConfiguration configuration = PartyConfiguration.inMemory();
     private final PartiesFacade partiesFacade = configuration.partiesFacade();
-    private final PartyRelationshipsFacade relationshipsFacade = configuration.partyRelationshipsFacade();
-    private final PartyRelationshipsQueries relationshipsQueries = configuration.partyRelationshipsQueries();
+    private final PartyRelationshipsFacade relationshipsFacade =
+            configuration.partyRelationshipsFacade();
+    private final PartyRelationshipsQueries relationshipsQueries =
+            configuration.partyRelationshipsQueries();
 
     // ===== Employment relationships =====
 
@@ -41,11 +41,10 @@ class PartyRelationshipsScenariosTest {
             PartyId employee = registerPerson("Jan", "Pracownik");
             PartyId employer = registerCompany("BigCorp S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            employee, "Employee",
-                            employer, "Employer",
-                            "Employment"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    employee, "Employee", employer, "Employer", "Employment"));
 
             assertTrue(result.success());
             assertEquals("Employment", result.getSuccess().relationshipName());
@@ -78,17 +77,27 @@ class PartyRelationshipsScenariosTest {
             PartyId client1 = registerCompany("Client A S.A.");
             PartyId client2 = registerCompany("Client B Sp. z o.o.");
 
-            PartyRelationshipView rel1 = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            consultant, "Consultant",
-                            client1, "Client",
-                            "Consulting Agreement")).getSuccess();
+            PartyRelationshipView rel1 =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            consultant,
+                                            "Consultant",
+                                            client1,
+                                            "Client",
+                                            "Consulting Agreement"))
+                            .getSuccess();
 
-            PartyRelationshipView rel2 = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            consultant, "Consultant",
-                            client2, "Client",
-                            "Consulting Agreement")).getSuccess();
+            PartyRelationshipView rel2 =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            consultant,
+                                            "Consultant",
+                                            client2,
+                                            "Client",
+                                            "Consulting Agreement"))
+                            .getSuccess();
 
             assertNotNull(rel1.id());
             assertNotNull(rel2.id());
@@ -107,11 +116,14 @@ class PartyRelationshipsScenariosTest {
             PartyId customer = registerPerson("Klient", "Bankowy");
             PartyId bank = registerCompany("MójBank S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            customer, "Account Holder",
-                            bank, "Account Provider",
-                            "Account Holding"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    customer,
+                                    "Account Holder",
+                                    bank,
+                                    "Account Provider",
+                                    "Account Holding"));
 
             assertTrue(result.success());
             assertEquals("Account Holding", result.getSuccess().relationshipName());
@@ -123,11 +135,14 @@ class PartyRelationshipsScenariosTest {
             PartyId company = registerCompany("TechStartup Sp. z o.o.");
             PartyId bank = registerCompany("CorporateBank S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            company, "Corporate Account Holder",
-                            bank, "Corporate Banking Provider",
-                            "Corporate Account Agreement"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    company,
+                                    "Corporate Account Holder",
+                                    bank,
+                                    "Corporate Banking Provider",
+                                    "Corporate Account Agreement"));
 
             assertTrue(result.success());
         }
@@ -138,11 +153,10 @@ class PartyRelationshipsScenariosTest {
             PartyId borrower = registerPerson("Kredytobiorca", "Nowak");
             PartyId lender = registerCompany("LoanBank S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            borrower, "Borrower",
-                            lender, "Lender",
-                            "Mortgage Loan"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    borrower, "Borrower", lender, "Lender", "Mortgage Loan"));
 
             assertTrue(result.success());
             assertEquals("Mortgage Loan", result.getSuccess().relationshipName());
@@ -154,23 +168,34 @@ class PartyRelationshipsScenariosTest {
             PartyId customer = registerPerson("Wieloproduktowy", "Klient");
             PartyId bank = registerCompany("UniversalBank S.A.");
 
-            PartyRelationshipView account = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            customer, "Account Holder",
-                            bank, "Account Provider",
-                            "Savings Account")).getSuccess();
+            PartyRelationshipView account =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            customer,
+                                            "Account Holder",
+                                            bank,
+                                            "Account Provider",
+                                            "Savings Account"))
+                            .getSuccess();
 
-            PartyRelationshipView card = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            customer, "Card Holder",
-                            bank, "Card Issuer",
-                            "Credit Card")).getSuccess();
+            PartyRelationshipView card =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            customer,
+                                            "Card Holder",
+                                            bank,
+                                            "Card Issuer",
+                                            "Credit Card"))
+                            .getSuccess();
 
-            PartyRelationshipView loan = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            customer, "Borrower",
-                            bank, "Lender",
-                            "Personal Loan")).getSuccess();
+            PartyRelationshipView loan =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            customer, "Borrower", bank, "Lender", "Personal Loan"))
+                            .getSuccess();
 
             assertNotNull(account.id());
             assertNotNull(card.id());
@@ -190,11 +215,14 @@ class PartyRelationshipsScenariosTest {
             PartyId subscriber = registerPerson("Abonent", "Mobilny");
             PartyId telco = registerCompany("MobileTel S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            subscriber, "Subscriber",
-                            telco, "Service Provider",
-                            "Mobile Subscription"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    subscriber,
+                                    "Subscriber",
+                                    telco,
+                                    "Service Provider",
+                                    "Mobile Subscription"));
 
             assertTrue(result.success());
         }
@@ -205,11 +233,14 @@ class PartyRelationshipsScenariosTest {
             PartyId company = registerCompany("BigEnterprise S.A.");
             PartyId telco = registerCompany("BusinessTel Sp. z o.o.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            company, "Corporate Subscriber",
-                            telco, "Corporate Service Provider",
-                            "Corporate Subscription"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    company,
+                                    "Corporate Subscriber",
+                                    telco,
+                                    "Corporate Service Provider",
+                                    "Corporate Subscription"));
 
             assertTrue(result.success());
         }
@@ -220,23 +251,38 @@ class PartyRelationshipsScenariosTest {
             PartyId person = registerPerson("Multi", "Abonent");
             PartyId telco = registerCompany("AllServicesTel S.A.");
 
-            PartyRelationshipView mobile = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            person, "Mobile Subscriber",
-                            telco, "Mobile Provider",
-                            "Mobile Voice")).getSuccess();
+            PartyRelationshipView mobile =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            person,
+                                            "Mobile Subscriber",
+                                            telco,
+                                            "Mobile Provider",
+                                            "Mobile Voice"))
+                            .getSuccess();
 
-            PartyRelationshipView internet = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            person, "Internet Subscriber",
-                            telco, "Internet Provider",
-                            "Home Internet")).getSuccess();
+            PartyRelationshipView internet =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            person,
+                                            "Internet Subscriber",
+                                            telco,
+                                            "Internet Provider",
+                                            "Home Internet"))
+                            .getSuccess();
 
-            PartyRelationshipView tv = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            person, "TV Subscriber",
-                            telco, "TV Provider",
-                            "Cable TV")).getSuccess();
+            PartyRelationshipView tv =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            person,
+                                            "TV Subscriber",
+                                            telco,
+                                            "TV Provider",
+                                            "Cable TV"))
+                            .getSuccess();
 
             assertNotNull(mobile.id());
             assertNotNull(internet.id());
@@ -256,11 +302,14 @@ class PartyRelationshipsScenariosTest {
             PartyId hrDepartment = registerOrganizationUnit("HR Department");
             PartyId company = registerCompany("CorporateHQ S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            hrDepartment, "Department",
-                            company, "Parent Organization",
-                            "Organizational Membership"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    hrDepartment,
+                                    "Department",
+                                    company,
+                                    "Parent Organization",
+                                    "Organizational Membership"));
 
             assertTrue(result.success());
         }
@@ -292,11 +341,10 @@ class PartyRelationshipsScenariosTest {
             PartyId team = registerOrganizationUnit("Backend Team");
             PartyId department = registerOrganizationUnit("Engineering Department");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            team, "Team",
-                            department, "Department",
-                            "Team Membership"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    team, "Team", department, "Department", "Team Membership"));
 
             assertTrue(result.success());
         }
@@ -308,17 +356,27 @@ class PartyRelationshipsScenariosTest {
             PartyId engineeringDept = registerOrganizationUnit("Engineering");
             PartyId backendTeam = registerOrganizationUnit("Backend Team");
 
-            PartyRelationshipView deptToCompany = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            engineeringDept, "Department",
-                            company, "Company",
-                            "Organizational Membership")).getSuccess();
+            PartyRelationshipView deptToCompany =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            engineeringDept,
+                                            "Department",
+                                            company,
+                                            "Company",
+                                            "Organizational Membership"))
+                            .getSuccess();
 
-            PartyRelationshipView teamToDept = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            backendTeam, "Team",
-                            engineeringDept, "Department",
-                            "Team Membership")).getSuccess();
+            PartyRelationshipView teamToDept =
+                    relationshipsFacade
+                            .handle(
+                                    new AssignPartyRelationshipCommand(
+                                            backendTeam,
+                                            "Team",
+                                            engineeringDept,
+                                            "Department",
+                                            "Team Membership"))
+                            .getSuccess();
 
             assertNotNull(deptToCompany.id());
             assertNotNull(teamToDept.id());
@@ -337,11 +395,14 @@ class PartyRelationshipsScenariosTest {
             PartyId company1 = registerCompany("Tech Innovations Ltd");
             PartyId company2 = registerCompany("Marketing Solutions S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            company1, "Partner",
-                            company2, "Partner",
-                            "Strategic Partnership"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    company1,
+                                    "Partner",
+                                    company2,
+                                    "Partner",
+                                    "Strategic Partnership"));
 
             assertTrue(result.success());
         }
@@ -352,11 +413,14 @@ class PartyRelationshipsScenariosTest {
             PartyId supplier = registerCompany("Parts Manufacturer Ltd");
             PartyId customer = registerCompany("Product Assembly S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            supplier, "Supplier",
-                            customer, "Customer",
-                            "Supply Agreement"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    supplier,
+                                    "Supplier",
+                                    customer,
+                                    "Customer",
+                                    "Supply Agreement"));
 
             assertTrue(result.success());
         }
@@ -367,11 +431,14 @@ class PartyRelationshipsScenariosTest {
             PartyId franchisor = registerCompany("FastFood International");
             PartyId franchisee = registerCompany("Local FastFood Sp. z o.o.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            franchisee, "Franchisee",
-                            franchisor, "Franchisor",
-                            "Franchise Agreement"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    franchisee,
+                                    "Franchisee",
+                                    franchisor,
+                                    "Franchisor",
+                                    "Franchise Agreement"));
 
             assertTrue(result.success());
         }
@@ -382,11 +449,14 @@ class PartyRelationshipsScenariosTest {
             PartyId manufacturer = registerCompany("Electronics Producer Ltd");
             PartyId distributor = registerCompany("Regional Distributor S.A.");
 
-            Result<String, PartyRelationshipView> result = relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            distributor, "Distributor",
-                            manufacturer, "Manufacturer",
-                            "Distribution Agreement"));
+            Result<String, PartyRelationshipView> result =
+                    relationshipsFacade.handle(
+                            new AssignPartyRelationshipCommand(
+                                    distributor,
+                                    "Distributor",
+                                    manufacturer,
+                                    "Manufacturer",
+                                    "Distribution Agreement"));
 
             assertTrue(result.success());
         }
@@ -406,8 +476,8 @@ class PartyRelationshipsScenariosTest {
 
             PartyRelationshipView employment = createEmployment(employee, employer);
 
-            Result<String, PartyRelationshipId> result = relationshipsFacade.handle(
-                    new RemovePartyRelationshipCommand(employment.id()));
+            Result<String, PartyRelationshipId> result =
+                    relationshipsFacade.handle(new RemovePartyRelationshipCommand(employment.id()));
 
             assertTrue(result.success());
             assertTrue(relationshipsQueries.findBy(employment.id()).isEmpty());
@@ -435,11 +505,11 @@ class PartyRelationshipsScenariosTest {
             PartyId company2 = registerCompany("Company Two");
 
             createEmployment(person, company1);
-            relationshipsFacade.handle(
-                    new AssignPartyRelationshipCommand(
-                            person, "Consultant",
-                            company2, "Client",
-                            "Consulting")).getSuccess();
+            relationshipsFacade
+                    .handle(
+                            new AssignPartyRelationshipCommand(
+                                    person, "Consultant", company2, "Client", "Consulting"))
+                    .getSuccess();
 
             var relationships = relationshipsQueries.findAllRelationsFrom(person);
 
@@ -450,33 +520,37 @@ class PartyRelationshipsScenariosTest {
     // ===== Helper methods =====
 
     private PartyId registerPerson(String firstName, String lastName) {
-        return partiesFacade.handle(
-                new RegisterPersonCommand(firstName, lastName, Set.of(), Set.of())).getSuccess().partyId();
+        return partiesFacade
+                .handle(new RegisterPersonCommand(firstName, lastName, Set.of(), Set.of()))
+                .getSuccess()
+                .partyId();
     }
 
     private PartyId registerCompany(String name) {
-        return partiesFacade.handle(
-                new RegisterCompanyCommand(name, Set.of(), Set.of())).getSuccess().partyId();
+        return partiesFacade
+                .handle(new RegisterCompanyCommand(name, Set.of(), Set.of()))
+                .getSuccess()
+                .partyId();
     }
 
     private PartyId registerOrganizationUnit(String name) {
-        return partiesFacade.handle(
-                new RegisterOrganizationUnitCommand(name, Set.of(), Set.of())).getSuccess().partyId();
+        return partiesFacade
+                .handle(new RegisterOrganizationUnitCommand(name, Set.of(), Set.of()))
+                .getSuccess()
+                .partyId();
     }
 
     private PartyRelationshipView createEmployment(PartyId employee, PartyId employer) {
-        return relationshipsFacade.handle(
-                new AssignPartyRelationshipCommand(
-                        employee, "Employee",
-                        employer, "Employer",
-                        "Employment")).getSuccess();
+        return relationshipsFacade
+                .handle(
+                        new AssignPartyRelationshipCommand(
+                                employee, "Employee", employer, "Employer", "Employment"))
+                .getSuccess();
     }
 
     private void createOrganizationalMembership(PartyId unit, PartyId parent) {
         relationshipsFacade.handle(
                 new AssignPartyRelationshipCommand(
-                        unit, "Unit",
-                        parent, "Parent",
-                        "Organizational Membership"));
+                        unit, "Unit", parent, "Parent", "Organizational Membership"));
     }
 }

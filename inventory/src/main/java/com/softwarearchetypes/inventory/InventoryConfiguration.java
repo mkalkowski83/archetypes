@@ -11,11 +11,12 @@ public class InventoryConfiguration {
     private final AvailabilityFacade availabilityFacade;
     private final InventoryFacade facade;
 
-    InventoryConfiguration(InventoryEntryRepository entryRepository,
-                          InstanceRepository instanceRepository,
-                          ProductDefinitionValidator productValidator,
-                          AvailabilityFacade availabilityFacade,
-                          InventoryFacade facade) {
+    InventoryConfiguration(
+            InventoryEntryRepository entryRepository,
+            InstanceRepository instanceRepository,
+            ProductDefinitionValidator productValidator,
+            AvailabilityFacade availabilityFacade,
+            InventoryFacade facade) {
         this.entryRepository = entryRepository;
         this.instanceRepository = instanceRepository;
         this.productValidator = productValidator;
@@ -32,13 +33,17 @@ public class InventoryConfiguration {
         return inMemory(availabilityConfig, ProductDefinitionValidator.alwaysValid());
     }
 
-    public static InventoryConfiguration inMemory(AvailabilityConfiguration availabilityConfig,
-                                                   ProductDefinitionValidator productValidator) {
+    public static InventoryConfiguration inMemory(
+            AvailabilityConfiguration availabilityConfig,
+            ProductDefinitionValidator productValidator) {
         AvailabilityFacade availabilityFacade = availabilityConfig.facade();
         InventoryEntryRepository entryRepository = new InMemoryInventoryEntryRepository();
         InstanceRepository instanceRepository = new InMemoryInstanceRepository();
-        InventoryFacade facade = new InventoryFacade(entryRepository, instanceRepository, productValidator, availabilityFacade);
-        return new InventoryConfiguration(entryRepository, instanceRepository, productValidator, availabilityFacade, facade);
+        InventoryFacade facade =
+                new InventoryFacade(
+                        entryRepository, instanceRepository, productValidator, availabilityFacade);
+        return new InventoryConfiguration(
+                entryRepository, instanceRepository, productValidator, availabilityFacade, facade);
     }
 
     public InventoryFacade facade() {

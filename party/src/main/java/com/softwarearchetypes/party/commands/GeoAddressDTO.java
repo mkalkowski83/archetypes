@@ -15,5 +15,4 @@ public record GeoAddressDTO(
         String city,
         String zipCode,
         Locale locale,
-        Set<String> useTypes) {
-}
+        Set<String> useTypes) {}

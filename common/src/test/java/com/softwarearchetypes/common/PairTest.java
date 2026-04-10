@@ -1,23 +1,23 @@
 package com.softwarearchetypes.common;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
 
 class PairTest {
 
     @Test
     void shouldCreatePairWithBothValues() {
-        //given
+        // given
         String first = "first";
         String second = "second";
 
-        //when
+        // when
         Pair<String> pair = new Pair<>(first, second);
 
-        //then
+        // then
         assertNotNull(pair);
         assertEquals(first, pair.first());
         assertEquals(second, pair.second());
@@ -25,14 +25,14 @@ class PairTest {
 
     @Test
     void shouldCreatePairWithNullValues() {
-        //given
+        // given
         String first = null;
         String second = null;
 
-        //when
+        // when
         Pair<String> pair = new Pair<>(first, second);
 
-        //then
+        // then
         assertNotNull(pair);
         assertEquals(first, pair.first());
         assertEquals(second, pair.second());
@@ -40,81 +40,81 @@ class PairTest {
 
     @Test
     void shouldCreatePairWithDifferentTypes() {
-        //given
+        // given
         Integer first = 42;
         Integer second = 100;
 
-        //when
+        // when
         Pair<Integer> pair = new Pair<>(first, second);
 
-        //then
+        // then
         assertEquals(first, pair.first());
         assertEquals(second, pair.second());
     }
 
     @Test
     void shouldBeEqualWhenBothPairsHaveSameValues() {
-        //given
+        // given
         Pair<String> firstPair = new Pair<>("A", "B");
         Pair<String> secondPair = new Pair<>("A", "B");
 
-        //when & then
+        // when & then
         assertEquals(firstPair, secondPair);
         assertEquals(firstPair.hashCode(), secondPair.hashCode());
     }
 
     @Test
     void shouldNotBeEqualWhenPairsHaveDifferentFirstValue() {
-        //given
+        // given
         Pair<String> firstPair = new Pair<>("A", "B");
         Pair<String> secondPair = new Pair<>("C", "B");
 
-        //when & then
+        // when & then
         assertNotEquals(firstPair, secondPair);
     }
 
     @Test
     void shouldNotBeEqualWhenPairsHaveDifferentSecondValue() {
-        //given
+        // given
         Pair<String> firstPair = new Pair<>("A", "B");
         Pair<String> secondPair = new Pair<>("A", "C");
 
-        //when & then
+        // when & then
         assertNotEquals(firstPair, secondPair);
     }
 
     @Test
     void shouldNotBeEqualWhenPairsHaveDifferentValues() {
-        //given
+        // given
         Pair<String> firstPair = new Pair<>("A", "B");
         Pair<String> secondPair = new Pair<>("C", "D");
 
-        //when & then
+        // when & then
         assertNotEquals(firstPair, secondPair);
     }
 
     @Test
     void shouldHaveProperToStringRepresentation() {
-        //given
+        // given
         Pair<String> pair = new Pair<>("first", "second");
 
-        //when
+        // when
         String result = pair.toString();
 
-        //then
+        // then
         assertNotNull(result);
         assertEquals("Pair[first=first, second=second]", result);
     }
 
     @Test
     void shouldCreatePairWithSameValueForBothElements() {
-        //given
+        // given
         String value = "same";
 
-        //when
+        // when
         Pair<String> pair = new Pair<>(value, value);
 
-        //then
+        // then
         assertEquals(value, pair.first());
         assertEquals(value, pair.second());
         assertEquals(pair.first(), pair.second());

@@ -3,7 +3,6 @@ package com.softwarearchetypes.rules.discounting.offer.modifiers.functors.guardi
 import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.quantity.money.Percentage;
 import com.softwarearchetypes.rules.discounting.offer.OfferItem;
-
 import java.util.function.Predicate;
 
 public class MarginGuardian implements Predicate<OfferItem> {

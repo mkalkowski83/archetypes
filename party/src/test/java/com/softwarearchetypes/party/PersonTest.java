@@ -1,80 +1,81 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result;
-import com.softwarearchetypes.party.events.PersonalDataUpdateSkipped;
-import com.softwarearchetypes.party.events.PersonalDataUpdated;
-
 import static com.softwarearchetypes.party.PartyFixture.somePerson;
 import static com.softwarearchetypes.party.PersonalDataFixture.somePersonalData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.softwarearchetypes.common.Result;
+import com.softwarearchetypes.party.events.PersonalDataUpdateSkipped;
+import com.softwarearchetypes.party.events.PersonalDataUpdated;
+import org.junit.jupiter.api.Test;
+
 class PersonTest {
 
     @Test
     void shouldAddPersonalDataToPerson() {
-        //given
+        // given
         Person person = somePerson().withRandomPartyId().build();
 
-        //and
+        // and
         PersonalData personalData = somePersonalData();
 
-        //when
+        // when
         Result<String, Person> result = person.update(personalData);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldReturnPersonalData() {
-        //given
+        // given
         Person person = somePerson().withRandomPartyId().build();
 
-        //and
+        // and
         PersonalData personalData = somePersonalData();
 
-        //when
+        // when
         person.update(personalData);
 
-        //then
+        // then
         assertEquals(personalData, person.personalData());
     }
 
     @Test
     void shouldGeneratePersonalDataUpdatedEventWhenSuccessfullyDefiningData() {
-        //given
+        // given
         Person person = somePerson().withRandomPartyId().build();
 
-        //and
+        // and
         PersonalData personalData = somePersonalData();
 
-        //and
-        PersonalDataUpdated expectedEvent = new PersonalDataUpdated(person.id().asString(), personalData.firstName(), personalData.lastName());
+        // and
+        PersonalDataUpdated expectedEvent =
+                new PersonalDataUpdated(
+                        person.id().asString(), personalData.firstName(), personalData.lastName());
 
-        //when
+        // when
         person.update(personalData);
 
-        //then
+        // then
         assertTrue(person.events().contains(expectedEvent));
     }
 
     @Test
     void shouldGeneratePersonalDataUpdateSkippedEventWhenNoChangesAreIdentified() {
-        //given
+        // given
         PersonalData data = somePersonalData();
-        Person person = ((PersonTestDataBuilder) somePerson().withRandomPartyId()).with(data).build();
-        PersonalDataUpdateSkipped expectedEvent = PersonalDataUpdateSkipped.dueToNoChangeIdentifiedFor(person.id()
-                                                                                                             .asString(), data.firstName(), data.lastName());
+        Person person =
+                ((PersonTestDataBuilder) somePerson().withRandomPartyId()).with(data).build();
+        PersonalDataUpdateSkipped expectedEvent =
+                PersonalDataUpdateSkipped.dueToNoChangeIdentifiedFor(
+                        person.id().asString(), data.firstName(), data.lastName());
 
-        //when
+        // when
         person.update(data);
 
-        //then
+        // then
         assertTrue(person.events().contains(expectedEvent));
     }
-
-
 }

@@ -1,15 +1,14 @@
 package com.softwarearchetypes.common;
 
+import static com.softwarearchetypes.common.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static com.softwarearchetypes.common.Preconditions.checkNotNull;
 
 public sealed interface Result<F, S> permits Result.Success, Result.Failure {
 
@@ -61,7 +60,9 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
     }
 
-    default <L, R> Result<L, R> biMap(Function<? super S, ? extends R> successMapper, Function<? super F, ? extends L> failureMapper) {
+    default <L, R> Result<L, R> biMap(
+            Function<? super S, ? extends R> successMapper,
+            Function<? super F, ? extends L> failureMapper) {
         checkNotNull(successMapper, "successMapper cannot be null");
         checkNotNull(failureMapper, "failureMapper cannot be null");
         if (success()) {
@@ -89,7 +90,8 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
     }
 
-    default Result<F, S> peek(Consumer<? super S> successConsumer, Consumer<? super F> failureConsumer) {
+    default Result<F, S> peek(
+            Consumer<? super S> successConsumer, Consumer<? super F> failureConsumer) {
         checkNotNull(successConsumer, "successConsumer cannot be null");
         checkNotNull(failureConsumer, "failureConsumer cannot be null");
         if (success()) {
@@ -102,14 +104,12 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
 
     default Result<F, S> peekSuccess(Consumer<? super S> successConsumer) {
         checkNotNull(successConsumer, "successConsumer cannot be null");
-        return peek(successConsumer, it -> {
-        });
+        return peek(successConsumer, it -> {});
     }
 
     default Result<F, S> peekFailure(Consumer<? super F> failureConsumer) {
         checkNotNull(failureConsumer, "failureConsumer cannot be null");
-        return peek(it -> {
-        }, failureConsumer);
+        return peek(it -> {}, failureConsumer);
     }
 
     default <R> R ifSuccessOrElse(Function<S, R> successMapping, Function<F, R> failureMapping) {
@@ -131,7 +131,9 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
     }
 
-    default <U> U fold(Function<? super F, ? extends U> leftMapper, Function<? super S, ? extends U> rightMapper) {
+    default <U> U fold(
+            Function<? super F, ? extends U> leftMapper,
+            Function<? super S, ? extends U> rightMapper) {
         checkNotNull(leftMapper, "leftMapper cannot be null");
         checkNotNull(rightMapper, "rightMapper cannot be null");
         if (success()) {
@@ -141,14 +143,20 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
     }
 
-    default <FAILURE, SUCCESS> Result<FAILURE, SUCCESS> combine(Result<F, S> secondResult, BiFunction<F, F, FAILURE> failureCombiner, BiFunction<S, S, SUCCESS> successCombiner) {
+    default <FAILURE, SUCCESS> Result<FAILURE, SUCCESS> combine(
+            Result<F, S> secondResult,
+            BiFunction<F, F, FAILURE> failureCombiner,
+            BiFunction<S, S, SUCCESS> successCombiner) {
         checkNotNull(secondResult, "secondResult cannot be null");
         checkNotNull(failureCombiner, "failureCombiner cannot be null");
         checkNotNull(successCombiner, "successCombiner cannot be null");
         if (success() && secondResult.success()) {
             return new Success<>(successCombiner.apply(getSuccess(), secondResult.getSuccess()));
         } else {
-            return new Failure<>(failureCombiner.apply(failure() ? getFailure() : null, secondResult.failure() ? secondResult.getFailure() : null));
+            return new Failure<>(
+                    failureCombiner.apply(
+                            failure() ? getFailure() : null,
+                            secondResult.failure() ? secondResult.getFailure() : null));
         }
     }
 
@@ -169,8 +177,8 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
     }
 
     /**
-     * Creates an empty composite Result accumulator with an empty list.
-     * Use with accumulate() to progressively build up a Result containing multiple values.
+     * Creates an empty composite Result accumulator with an empty list. Use with accumulate() to
+     * progressively build up a Result containing multiple values.
      *
      * @return CompositeResult with empty list
      */
@@ -179,8 +187,8 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
     }
 
     /**
-     * Creates an empty composite Result accumulator with an empty set.
-     * Use with accumulate() to progressively build up a Result containing multiple values.
+     * Creates an empty composite Result accumulator with an empty set. Use with accumulate() to
+     * progressively build up a Result containing multiple values.
      *
      * @return CompositeSetResult with empty set
      */
@@ -189,8 +197,8 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
     }
 
     /**
-     * Helper class for accumulating multiple Results into a list.
-     * Provides fail-fast semantics - stops on first failure.
+     * Helper class for accumulating multiple Results into a list. Provides fail-fast semantics -
+     * stops on first failure.
      */
     final class CompositeResult<F, S> {
         private final Result<F, List<S>> result;
@@ -204,10 +212,9 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
 
         /**
-         * Accumulates a new Result into this composite.
-         * If already failed, returns the existing failure.
-         * If new Result fails, returns new failure.
-         * If both succeed, adds the new value to the list.
+         * Accumulates a new Result into this composite. If already failed, returns the existing
+         * failure. If new Result fails, returns new failure. If both succeed, adds the new value to
+         * the list.
          *
          * @param newResult the Result to accumulate
          * @return CompositeResult with accumulated values or failure
@@ -254,8 +261,8 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
     }
 
     /**
-     * Helper class for accumulating multiple Results into a set.
-     * Provides fail-fast semantics - stops on first failure.
+     * Helper class for accumulating multiple Results into a set. Provides fail-fast semantics -
+     * stops on first failure.
      */
     final class CompositeSetResult<F, S> {
         private final Result<F, Set<S>> result;
@@ -269,10 +276,9 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
         }
 
         /**
-         * Accumulates a new Result into this composite.
-         * If already failed, returns the existing failure.
-         * If new Result fails, returns new failure.
-         * If both succeed, adds the new value to the set.
+         * Accumulates a new Result into this composite. If already failed, returns the existing
+         * failure. If new Result fails, returns new failure. If both succeed, adds the new value to
+         * the set.
          *
          * @param newResult the Result to accumulate
          * @return CompositeSetResult with accumulated values or failure
@@ -325,5 +331,4 @@ public sealed interface Result<F, S> permits Result.Success, Result.Failure {
     default F getFailure() {
         throw new IllegalStateException();
     }
-
 }

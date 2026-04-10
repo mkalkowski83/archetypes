@@ -1,6 +1,7 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import static java.util.stream.Collectors.toSet;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
@@ -8,15 +9,18 @@ import com.softwarearchetypes.party.events.PartyRegistered;
 import com.softwarearchetypes.party.events.PersonRegistered;
 import com.softwarearchetypes.party.events.PersonalDataUpdateSkipped;
 import com.softwarearchetypes.party.events.PersonalDataUpdated;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static java.util.stream.Collectors.toSet;
+import java.util.Set;
 
 final class Person extends Party {
 
     private PersonalData personalData;
 
-    Person(PartyId id, PersonalData personalData, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
+    Person(
+            PartyId id,
+            PersonalData personalData,
+            Set<Role> roles,
+            Set<RegisteredIdentifier> registeredIdentifiers,
+            Version version) {
         super(id, roles, registeredIdentifiers, version);
         checkArgument(personalData != null, "Personal data cannot be null");
         this.personalData = personalData;
@@ -25,9 +29,13 @@ final class Person extends Party {
     public Result<String, Person> update(PersonalData personalData) {
         if (!this.personalData.equals(personalData)) {
             this.personalData = personalData;
-            register(new PersonalDataUpdated(id().asString(), personalData.firstName(), personalData.lastName()));
+            register(
+                    new PersonalDataUpdated(
+                            id().asString(), personalData.firstName(), personalData.lastName()));
         } else {
-            register(PersonalDataUpdateSkipped.dueToNoChangeIdentifiedFor(id().asString(), personalData.firstName(), personalData.lastName()));
+            register(
+                    PersonalDataUpdateSkipped.dueToNoChangeIdentifiedFor(
+                            id().asString(), personalData.firstName(), personalData.lastName()));
         }
         return Result.success(this);
     }
@@ -38,8 +46,13 @@ final class Person extends Party {
 
     @Override
     PartyRegistered toPartyRegisteredEvent() {
-        return new PersonRegistered(id().asString(), personalData().firstName(), personalData().lastName(),
-                registeredIdentifiers().stream().map(RegisteredIdentifier::asString).collect(toSet()),
+        return new PersonRegistered(
+                id().asString(),
+                personalData().firstName(),
+                personalData().lastName(),
+                registeredIdentifiers().stream()
+                        .map(RegisteredIdentifier::asString)
+                        .collect(toSet()),
                 roles().stream().map(Role::asString).collect(toSet()));
     }
 }

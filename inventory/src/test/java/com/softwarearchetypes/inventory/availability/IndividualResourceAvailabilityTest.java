@@ -1,14 +1,13 @@
 package com.softwarearchetypes.inventory.availability;
 
-import com.softwarearchetypes.common.Result;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.softwarearchetypes.common.Result;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class IndividualResourceAvailabilityTest {
 
@@ -29,7 +28,8 @@ class IndividualResourceAvailabilityTest {
     void canLockAvailableResource() {
         // given
         IndividualResourceAvailability laptop = IndividualResourceAvailability.create(LAPTOP_ID);
-        IndividualLockRequest request = IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite());
+        IndividualLockRequest request =
+                IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite());
 
         // when
         Result<String, BlockadeId> result = laptop.lock(request);
@@ -46,7 +46,8 @@ class IndividualResourceAvailabilityTest {
         laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
 
         // when
-        Result<String, BlockadeId> result = laptop.lock(IndividualLockRequest.of(LAPTOP_ID, BOB, LockDuration.indefinite()));
+        Result<String, BlockadeId> result =
+                laptop.lock(IndividualLockRequest.of(LAPTOP_ID, BOB, LockDuration.indefinite()));
 
         // then
         assertThat(result.failure()).isTrue();
@@ -59,7 +60,8 @@ class IndividualResourceAvailabilityTest {
         laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
 
         // when
-        Result<String, BlockadeId> result = laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
+        Result<String, BlockadeId> result =
+                laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
 
         // then
         assertThat(result.success()).isTrue();
@@ -69,11 +71,13 @@ class IndividualResourceAvailabilityTest {
     void ownerCanUnlockResource() {
         // given
         IndividualResourceAvailability laptop = IndividualResourceAvailability.create(LAPTOP_ID);
-        Result<String, BlockadeId> lockResult = laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
+        Result<String, BlockadeId> lockResult =
+                laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
         BlockadeId blockadeId = lockResult.getSuccess();
 
         // when
-        Result<String, BlockadeId> unlockResult = laptop.unlock(UnlockRequest.of(ALICE, blockadeId));
+        Result<String, BlockadeId> unlockResult =
+                laptop.unlock(UnlockRequest.of(ALICE, blockadeId));
 
         // then
         assertThat(unlockResult.success()).isTrue();
@@ -84,7 +88,8 @@ class IndividualResourceAvailabilityTest {
     void nonOwnerCannotUnlockResource() {
         // given
         IndividualResourceAvailability laptop = IndividualResourceAvailability.create(LAPTOP_ID);
-        Result<String, BlockadeId> lockResult = laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
+        Result<String, BlockadeId> lockResult =
+                laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.indefinite()));
         BlockadeId blockadeId = lockResult.getSuccess();
 
         // when
@@ -100,14 +105,21 @@ class IndividualResourceAvailabilityTest {
         // given
         Instant now = Instant.parse("2024-01-15T10:00:00Z");
         Clock fixedClock = Clock.fixed(now, ZoneId.of("UTC"));
-        IndividualResourceAvailability laptop = IndividualResourceAvailability.create(LAPTOP_ID, fixedClock);
+        IndividualResourceAvailability laptop =
+                IndividualResourceAvailability.create(LAPTOP_ID, fixedClock);
 
-        laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.of(Duration.ofHours(1))));
+        laptop.lock(
+                IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.of(Duration.ofHours(1))));
 
         // when - time passes beyond lock duration
         Clock afterExpiry = Clock.fixed(now.plus(Duration.ofHours(2)), ZoneId.of("UTC"));
-        IndividualResourceAvailability laptopAfter = new IndividualResourceAvailability(
-                laptop.id(), LAPTOP_ID, afterExpiry, laptop.currentBlockade(), laptop.version());
+        IndividualResourceAvailability laptopAfter =
+                new IndividualResourceAvailability(
+                        laptop.id(),
+                        LAPTOP_ID,
+                        afterExpiry,
+                        laptop.currentBlockade(),
+                        laptop.version());
 
         // then
         assertThat(laptopAfter.isAvailable()).isTrue();
@@ -118,14 +130,21 @@ class IndividualResourceAvailabilityTest {
         // given
         Instant now = Instant.parse("2024-01-15T10:00:00Z");
         Clock fixedClock = Clock.fixed(now, ZoneId.of("UTC"));
-        IndividualResourceAvailability laptop = IndividualResourceAvailability.create(LAPTOP_ID, fixedClock);
+        IndividualResourceAvailability laptop =
+                IndividualResourceAvailability.create(LAPTOP_ID, fixedClock);
 
-        laptop.lock(IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.of(Duration.ofHours(2))));
+        laptop.lock(
+                IndividualLockRequest.of(LAPTOP_ID, ALICE, LockDuration.of(Duration.ofHours(2))));
 
         // when - time passes but still within lock duration
         Clock withinDuration = Clock.fixed(now.plus(Duration.ofHours(1)), ZoneId.of("UTC"));
-        IndividualResourceAvailability laptopDuring = new IndividualResourceAvailability(
-                laptop.id(), LAPTOP_ID, withinDuration, laptop.currentBlockade(), laptop.version());
+        IndividualResourceAvailability laptopDuring =
+                new IndividualResourceAvailability(
+                        laptop.id(),
+                        LAPTOP_ID,
+                        withinDuration,
+                        laptop.currentBlockade(),
+                        laptop.version());
 
         // then
         assertThat(laptopDuring.isAvailable()).isFalse();

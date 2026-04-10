@@ -2,7 +2,6 @@ package com.softwarearchetypes.ordering.commands;
 
 import com.softwarearchetypes.ordering.OrderId;
 import com.softwarearchetypes.ordering.OrderLineId;
-
 import java.math.BigDecimal;
 
 public record SetArbitraryLinePriceCommand(
@@ -11,5 +10,4 @@ public record SetArbitraryLinePriceCommand(
         BigDecimal unitPrice,
         BigDecimal totalPrice,
         String currency,
-        String reason
-) {}
+        String reason) {}

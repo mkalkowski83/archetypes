@@ -14,5 +14,5 @@ public record GeoAddressView(
         String zipCode,
         Locale locale,
         Set<String> useTypes,
-        Validity validity) implements AddressView {
-}
+        Validity validity)
+        implements AddressView {}

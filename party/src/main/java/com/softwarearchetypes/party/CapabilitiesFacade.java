@@ -4,9 +4,7 @@ import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.commands.AddCapabilityCommand;
 import com.softwarearchetypes.party.commands.RemoveCapabilityCommand;
 
-/**
- * Facade for managing party capabilities.
- */
+/** Facade for managing party capabilities. */
 public class CapabilitiesFacade {
 
     private final CapabilitiesRepository repository;
@@ -23,9 +21,10 @@ public class CapabilitiesFacade {
             return Result.failure("PARTY_NOT_FOUND");
         }
 
-        Capability.Builder builder = Capability.forParty(command.partyId())
-                .type(command.capabilityType())
-                .validity(command.validity());
+        Capability.Builder builder =
+                Capability.forParty(command.partyId())
+                        .type(command.capabilityType())
+                        .validity(command.validity());
 
         for (OperatingScope scope : command.scopes()) {
             builder.withScope(scope);

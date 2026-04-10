@@ -2,12 +2,6 @@ package com.softwarearchetypes.scoring.context;
 
 import com.softwarearchetypes.scoring.ast.Metric;
 import com.softwarearchetypes.scoring.events.CustomerEvent;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +14,12 @@ public class WindowContext {
     private final List<CustomerEvent> events;
     private final Map<Metric, Double> metrics;
 
-    public WindowContext(String customerId,
-                         Instant from,
-                         Instant to,
-                         List<CustomerEvent> events,
-                         Map<Metric, Double> metrics) {
+    public WindowContext(
+            String customerId,
+            Instant from,
+            Instant to,
+            List<CustomerEvent> events,
+            Map<Metric, Double> metrics) {
         this.customerId = customerId;
         this.from = from;
         this.to = to;

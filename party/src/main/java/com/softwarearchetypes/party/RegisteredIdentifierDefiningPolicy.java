@@ -12,64 +12,55 @@ interface RegisteredIdentifierDefiningPolicy {
     /**
      * Checks if the given identifier can be assigned to the given party.
      *
-     * @param party      the party to check
+     * @param party the party to check
      * @param identifier the identifier to be assigned
      * @return true if assignment is allowed, false otherwise
      */
     boolean canRegister(Party party, RegisteredIdentifier identifier);
 
     /**
-     * Default policy that allows all identifiers for all parties.
-     * Useful for testing or when no restrictions are needed.
+     * Default policy that allows all identifiers for all parties. Useful for testing or when no
+     * restrictions are needed.
      */
     static RegisteredIdentifierDefiningPolicy allowAll() {
         return new AllowAllIdentifiersPolicy();
     }
 
-    /**
-     * Policy for personal identifiers (PESEL, Passport) - only assignable to Person.
-     */
+    /** Policy for personal identifiers (PESEL, Passport) - only assignable to Person. */
     static RegisteredIdentifierDefiningPolicy personalIdentifiersOnlyForPersons() {
         return new PersonalIdentifiersOnlyForPersonsPolicy();
     }
 
-    /**
-     * Policy for organizational identifiers (REGON, KRS) - only assignable to Organization.
-     */
+    /** Policy for organizational identifiers (REGON, KRS) - only assignable to Organization. */
     static RegisteredIdentifierDefiningPolicy organizationalIdentifiersOnlyForOrganizations() {
         return new OrganizationalIdentifiersOnlyForOrganizationsPolicy();
     }
 
     /**
-     * Combines multiple policies with AND logic.
-     * All policies must return true for the identifier to be allowed.
+     * Combines multiple policies with AND logic. All policies must return true for the identifier
+     * to be allowed.
      */
-    static RegisteredIdentifierDefiningPolicy composite(RegisteredIdentifierDefiningPolicy... policies) {
+    static RegisteredIdentifierDefiningPolicy composite(
+            RegisteredIdentifierDefiningPolicy... policies) {
         return new CompositeIdentifierPolicy(policies);
     }
 
     /**
-     * Combines all standard policies:
-     * - Personal identifiers (PESEL, Passport) only for Person
-     * - Organizational identifiers (REGON, KRS) only for Organization
-     * - Tax numbers (NIP) for both Person and Organization
+     * Combines all standard policies: - Personal identifiers (PESEL, Passport) only for Person -
+     * Organizational identifiers (REGON, KRS) only for Organization - Tax numbers (NIP) for both
+     * Person and Organization
      */
     static RegisteredIdentifierDefiningPolicy all() {
         return composite(
                 personalIdentifiersOnlyForPersons(),
-                organizationalIdentifiersOnlyForOrganizations()
-        );
+                organizationalIdentifiersOnlyForOrganizations());
     }
 
-    /**
-     * Default policy with standard business rules.
-     */
+    /** Default policy with standard business rules. */
     RegisteredIdentifierDefiningPolicy DEFAULT = all();
 }
 
-/**
- * Policy that allows all identifiers for all parties.
- */
+/** Policy that allows all identifiers for all parties. */
 class AllowAllIdentifiersPolicy implements RegisteredIdentifierDefiningPolicy {
 
     @Override
@@ -79,15 +70,13 @@ class AllowAllIdentifiersPolicy implements RegisteredIdentifierDefiningPolicy {
 }
 
 /**
- * Policy that restricts personal identifiers to Person only.
- * Personal identifiers: PERSONAL_IDENTIFICATION_NUMBER (PESEL), PASSPORT
+ * Policy that restricts personal identifiers to Person only. Personal identifiers:
+ * PERSONAL_IDENTIFICATION_NUMBER (PESEL), PASSPORT
  */
 class PersonalIdentifiersOnlyForPersonsPolicy implements RegisteredIdentifierDefiningPolicy {
 
-    private static final Set<String> PERSONAL_IDENTIFIER_TYPES = Set.of(
-            "PERSONAL_IDENTIFICATION_NUMBER",
-            "PASSPORT"
-    );
+    private static final Set<String> PERSONAL_IDENTIFIER_TYPES =
+            Set.of("PERSONAL_IDENTIFICATION_NUMBER", "PASSPORT");
 
     @Override
     public boolean canRegister(Party party, RegisteredIdentifier identifier) {
@@ -99,15 +88,13 @@ class PersonalIdentifiersOnlyForPersonsPolicy implements RegisteredIdentifierDef
 }
 
 /**
- * Policy that restricts organizational identifiers to Organization only.
- * Organizational identifiers: REGON, KRS (Polish company registers)
+ * Policy that restricts organizational identifiers to Organization only. Organizational
+ * identifiers: REGON, KRS (Polish company registers)
  */
-class OrganizationalIdentifiersOnlyForOrganizationsPolicy implements RegisteredIdentifierDefiningPolicy {
+class OrganizationalIdentifiersOnlyForOrganizationsPolicy
+        implements RegisteredIdentifierDefiningPolicy {
 
-    private static final Set<String> ORGANIZATIONAL_IDENTIFIER_TYPES = Set.of(
-            "REGON",
-            "KRS"
-    );
+    private static final Set<String> ORGANIZATIONAL_IDENTIFIER_TYPES = Set.of("REGON", "KRS");
 
     @Override
     public boolean canRegister(Party party, RegisteredIdentifier identifier) {
@@ -119,8 +106,8 @@ class OrganizationalIdentifiersOnlyForOrganizationsPolicy implements RegisteredI
 }
 
 /**
- * Composite policy that combines multiple policies with AND logic.
- * All policies must return true for the identifier to be allowed.
+ * Composite policy that combines multiple policies with AND logic. All policies must return true
+ * for the identifier to be allowed.
  */
 class CompositeIdentifierPolicy implements RegisteredIdentifierDefiningPolicy {
 

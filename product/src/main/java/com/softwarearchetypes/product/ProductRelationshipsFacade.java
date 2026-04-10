@@ -3,8 +3,6 @@ package com.softwarearchetypes.product;
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.product.ProductRelationshipCommands.*;
 
-import java.util.UUID;
-
 public class ProductRelationshipsFacade {
 
     private final ProductRelationshipFactory factory;
@@ -24,9 +22,7 @@ public class ProductRelationshipsFacade {
     // Commands
     // ============================================
 
-    /**
-     * Defines a new relationship between two products.
-     */
+    /** Defines a new relationship between two products. */
     public Result<String, ProductRelationshipId> handle(DefineRelationship command) {
         try {
             var from = parseProductIdentifier(command.fromProductId());
@@ -49,9 +45,7 @@ public class ProductRelationshipsFacade {
         }
     }
 
-    /**
-     * Removes an existing relationship.
-     */
+    /** Removes an existing relationship. */
     public Result<String, ProductRelationshipId> handle(RemoveRelationship command) {
         try {
             var relationshipId = ProductRelationshipId.of(command.relationshipId());

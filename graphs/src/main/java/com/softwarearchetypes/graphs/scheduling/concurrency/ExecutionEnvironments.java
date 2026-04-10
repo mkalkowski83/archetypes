@@ -1,7 +1,6 @@
 package com.softwarearchetypes.graphs.scheduling.concurrency;
 
 import com.softwarearchetypes.graphs.scheduling.ProcessStep;
-
 import java.util.*;
 
 record ExecutionEnvironments(Map<ProcessStep, Integer> stepToEnvironment) {

@@ -9,7 +9,6 @@ interface TransactionRepository {
     Optional<Transaction> find(TransactionId transactionId);
 
     Transaction save(Transaction transaction);
-
 }
 
 class InMemoryTransactionRepo implements TransactionRepository {
@@ -25,5 +24,4 @@ class InMemoryTransactionRepo implements TransactionRepository {
     public Transaction save(Transaction transaction) {
         return transactions.put(transaction.id(), transaction);
     }
-
 }

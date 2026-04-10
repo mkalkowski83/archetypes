@@ -1,26 +1,34 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
 import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
 import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
 import com.softwarearchetypes.party.events.PhoneAddressDefined;
 import com.softwarearchetypes.party.events.PhoneAddressRemoved;
 import com.softwarearchetypes.party.events.PhoneAddressUpdated;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 final class PhoneAddress extends Address {
 
     private final PhoneAddressDetails phoneAddressDetails;
 
-    PhoneAddress(AddressId id, PartyId partyId, PhoneAddressDetails phoneAddressDetails, Set<AddressUseType> useTypes) {
+    PhoneAddress(
+            AddressId id,
+            PartyId partyId,
+            PhoneAddressDetails phoneAddressDetails,
+            Set<AddressUseType> useTypes) {
         super(id, partyId, useTypes);
         this.phoneAddressDetails = phoneAddressDetails;
     }
 
-    PhoneAddress(AddressId id, PartyId partyId, PhoneAddressDetails phoneAddressDetails, Set<AddressUseType> useTypes, Validity validity) {
+    PhoneAddress(
+            AddressId id,
+            PartyId partyId,
+            PhoneAddressDetails phoneAddressDetails,
+            Set<AddressUseType> useTypes,
+            Validity validity) {
         super(id, partyId, useTypes, validity);
         this.phoneAddressDetails = phoneAddressDetails;
     }
@@ -32,12 +40,20 @@ final class PhoneAddress extends Address {
 
     @Override
     public AddressUpdateSucceeded toAddressUpdateSucceededEvent() {
-        return new PhoneAddressUpdated(id().asString(), partyId().asString(), phoneAddressDetails.phoneNumber(), useTypesAsStringSet());
+        return new PhoneAddressUpdated(
+                id().asString(),
+                partyId().asString(),
+                phoneAddressDetails.phoneNumber(),
+                useTypesAsStringSet());
     }
 
     @Override
     public AddressDefinitionSucceeded toAddressDefinitionSucceededEvent() {
-        return new PhoneAddressDefined(id().asString(), partyId().asString(), phoneAddressDetails.phoneNumber(), useTypesAsStringSet());
+        return new PhoneAddressDefined(
+                id().asString(),
+                partyId().asString(),
+                phoneAddressDetails.phoneNumber(),
+                useTypesAsStringSet());
     }
 
     @Override

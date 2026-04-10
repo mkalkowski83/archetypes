@@ -2,7 +2,6 @@ package com.softwarearchetypes.accounting;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 public record TransactionView(
         TransactionId id,
@@ -10,6 +9,4 @@ public record TransactionView(
         TransactionType type,
         Instant occurredAt,
         Instant appliesAt,
-        List<TransactionAccountEntriesView> entries) {
-
-}
+        List<TransactionAccountEntriesView> entries) {}

@@ -1,13 +1,12 @@
 package com.softwarearchetypes.party;
 
-import java.util.regex.Pattern;
-
 import static java.util.Optional.ofNullable;
 
+import java.util.regex.Pattern;
+
 /**
- * Personal Identification Number (PESEL in Poland).
- * Represents a unique personal identifier for individuals.
- * PESEL consists of 11 digits with encoded birth date and checksum validation.
+ * Personal Identification Number (PESEL in Poland). Represents a unique personal identifier for
+ * individuals. PESEL consists of 11 digits with encoded birth date and checksum validation.
  */
 record PersonalIdentificationNumber(String value) implements RegisteredIdentifier {
 
@@ -23,10 +22,12 @@ record PersonalIdentificationNumber(String value) implements RegisteredIdentifie
 
     PersonalIdentificationNumber {
         if (ofNullable(value).filter(it -> PATTERN.matcher(it).matches()).isEmpty()) {
-            throw new IllegalArgumentException("Personal identification number does not meet syntax criteria");
+            throw new IllegalArgumentException(
+                    "Personal identification number does not meet syntax criteria");
         }
         if (!isValidChecksum(value)) {
-            throw new IllegalArgumentException("Personal identification number has invalid checksum");
+            throw new IllegalArgumentException(
+                    "Personal identification number has invalid checksum");
         }
     }
 
@@ -35,10 +36,9 @@ record PersonalIdentificationNumber(String value) implements RegisteredIdentifie
     }
 
     /**
-     * Validates PESEL checksum using the standard algorithm.
-     * Algorithm: multiply first 10 digits by weights [1,3,7,9,1,3,7,9,1,3],
-     * sum the results, take modulo 10, subtract from 10 (if result is 10, use 0),
-     * compare with the 11th digit (checksum).
+     * Validates PESEL checksum using the standard algorithm. Algorithm: multiply first 10 digits by
+     * weights [1,3,7,9,1,3,7,9,1,3], sum the results, take modulo 10, subtract from 10 (if result
+     * is 10, use 0), compare with the 11th digit (checksum).
      */
     private static boolean isValidChecksum(String value) {
         if (value == null || value.length() != 11) {

@@ -17,7 +17,8 @@ public record MetaData(Map<String, String> metadata) {
 
     static MetaData of(String... keyValues) {
         if (keyValues.length % 2 != 0) {
-            throw new IllegalArgumentException("MetaData must have even number of elements (key-value pairs).");
+            throw new IllegalArgumentException(
+                    "MetaData must have even number of elements (key-value pairs).");
         }
         Map<String, String> map = new HashMap<>();
         for (int i = 0; i < keyValues.length; i += 2) {

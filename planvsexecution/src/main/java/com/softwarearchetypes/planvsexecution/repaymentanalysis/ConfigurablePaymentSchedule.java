@@ -5,7 +5,6 @@ import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.Lat
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.ModificationRule;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.OnTimePaymentCondition;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.PaymentScheduleModifier;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,8 @@ public class ConfigurablePaymentSchedule {
     private final List<ModificationRule> rules;
     private final Set<ModificationRule> appliedOnceRules;
 
-    private ConfigurablePaymentSchedule(PaymentSchedule initialSchedule, List<ModificationRule> rules) {
+    private ConfigurablePaymentSchedule(
+            PaymentSchedule initialSchedule, List<ModificationRule> rules) {
         this.activeSchedule = initialSchedule;
         this.rules = new ArrayList<>(rules);
         this.appliedOnceRules = new HashSet<>();
@@ -31,7 +31,8 @@ public class ConfigurablePaymentSchedule {
         return List.copyOf(rules);
     }
 
-    ConfigurablePaymentSchedule fulfilled(List<ModificationRule> fulfilledRules, DeltaResult deltaResult) {
+    ConfigurablePaymentSchedule fulfilled(
+            List<ModificationRule> fulfilledRules, DeltaResult deltaResult) {
         for (ModificationRule rule : fulfilledRules) {
             if (alreadyApplied(rule)) {
                 continue;
@@ -68,17 +69,11 @@ public class ConfigurablePaymentSchedule {
         }
 
         public Builder onLatePayment(int count, PaymentScheduleModifier modifier) {
-            return addRule(ModificationRule.once(
-                    LatePaymentCondition.atLeast(count),
-                    modifier
-            ));
+            return addRule(ModificationRule.once(LatePaymentCondition.atLeast(count), modifier));
         }
 
         public Builder onOnTimePayment(int count, PaymentScheduleModifier modifier) {
-            return addRule(ModificationRule.once(
-                    OnTimePaymentCondition.atLeast(count),
-                    modifier
-            ));
+            return addRule(ModificationRule.once(OnTimePaymentCondition.atLeast(count), modifier));
         }
 
         public ConfigurablePaymentSchedule build() {

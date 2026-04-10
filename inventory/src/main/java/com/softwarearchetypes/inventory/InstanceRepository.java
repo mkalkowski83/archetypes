@@ -3,9 +3,7 @@ package com.softwarearchetypes.inventory;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Repository for ProductInstance entities.
- */
+/** Repository for ProductInstance entities. */
 interface InstanceRepository {
 
     void save(ProductInstance instance);

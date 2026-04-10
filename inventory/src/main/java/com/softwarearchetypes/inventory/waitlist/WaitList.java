@@ -8,8 +8,8 @@ import java.util.Queue;
 import java.util.function.Predicate;
 
 /**
- * Generic waitlist with configurable selection policy.
- * Supports FIFO, Priority, and Criteria-based selection.
+ * Generic waitlist with configurable selection policy. Supports FIFO, Priority, and Criteria-based
+ * selection.
  */
 class WaitList<T> {
 
@@ -18,7 +18,11 @@ class WaitList<T> {
     private final Queue<WaitListEntry<T>> queue;
     private final WaitListSelectionPolicy<T> policy;
 
-    WaitList(WaitListId id, int capacity, Queue<WaitListEntry<T>> queue, WaitListSelectionPolicy<T> policy) {
+    WaitList(
+            WaitListId id,
+            int capacity,
+            Queue<WaitListEntry<T>> queue,
+            WaitListSelectionPolicy<T> policy) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Capacity must be positive");
         }
@@ -30,11 +34,7 @@ class WaitList<T> {
 
     static <T> WaitList<T> fifo(int capacity) {
         return new WaitList<>(
-                WaitListId.random(),
-                capacity,
-                new LinkedList<>(),
-                new FifoSelectionPolicy<>()
-        );
+                WaitListId.random(), capacity, new LinkedList<>(), new FifoSelectionPolicy<>());
     }
 
     static <T> WaitList<T> priority(int capacity) {
@@ -42,17 +42,12 @@ class WaitList<T> {
                 WaitListId.random(),
                 capacity,
                 new PriorityQueue<>(),
-                new PrioritySelectionPolicy<>()
-        );
+                new PrioritySelectionPolicy<>());
     }
 
     static <T> WaitList<T> criteria(int capacity) {
         return new WaitList<>(
-                WaitListId.random(),
-                capacity,
-                new LinkedList<>(),
-                new CriteriaSelectionPolicy<>()
-        );
+                WaitListId.random(), capacity, new LinkedList<>(), new CriteriaSelectionPolicy<>());
     }
 
     WaitListId id() {
@@ -62,8 +57,7 @@ class WaitList<T> {
     boolean add(WaitListEntry<T> entry) {
         if (queue.size() >= capacity) {
             throw new IllegalStateException(
-                    "Waitlist full - capacity: " + capacity + ", current size: " + queue.size()
-            );
+                    "Waitlist full - capacity: " + capacity + ", current size: " + queue.size());
         }
         return queue.add(entry);
     }

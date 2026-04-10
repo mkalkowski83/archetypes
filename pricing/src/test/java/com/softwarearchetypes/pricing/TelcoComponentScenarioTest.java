@@ -1,58 +1,65 @@
 package com.softwarearchetypes.pricing;
 
+import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
+import static java.time.Clock.fixed;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
-
-import com.softwarearchetypes.quantity.money.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
-import static java.time.Clock.fixed;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Telecom billing scenario using Component semantic composition.
- * <p>
- * Scenario: Monthly mobile subscription bill with:
- * - Base fee: 45 PLN = 25 PLN network maintenance + 20 PLN commission
- * - Data overage: linear charging above 5GB data limit
- * - Roaming overage: 1.5 PLN per minute above 30 minutes limit
+ *
+ * <p>Scenario: Monthly mobile subscription bill with: - Base fee: 45 PLN = 25 PLN network
+ * maintenance + 20 PLN commission - Data overage: linear charging above 5GB data limit - Roaming
+ * overage: 1.5 PLN per minute above 30 minutes limit
  */
 class TelcoComponentScenarioTest {
 
-    static final Instant NOW = LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
     private PricingFacade facade = PricingConfiguration.inMemory(clock).pricingFacade();
 
     @BeforeEach
     void setUp() {
         // Setup calculators (price lists) with specific values
-        facade.addCalculator("network-maintenance", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "network-maintenance",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(25))));
 
-        facade.addCalculator("commission", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "commission",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(20))));
 
-        facade.addCalculator("data-overage", CalculatorType.STEP_FUNCTION,
+        facade.addCalculator(
+                "data-overage",
+                CalculatorType.STEP_FUNCTION,
                 Parameters.of(
                         "basePrice", Money.pln(BigDecimal.ZERO),
                         "stepSize", BigDecimal.ONE,
-                        "stepIncrement", BigDecimal.valueOf(2)
-                ));
+                        "stepIncrement", BigDecimal.valueOf(2)));
 
-        facade.addCalculator("roaming-overage", CalculatorType.STEP_FUNCTION,
+        facade.addCalculator(
+                "roaming-overage",
+                CalculatorType.STEP_FUNCTION,
                 Parameters.of(
                         "basePrice", Money.pln(BigDecimal.ZERO),
                         "stepSize", BigDecimal.ONE,
-                        "stepIncrement", BigDecimal.valueOf(1.5)
-                ));
+                        "stepIncrement", BigDecimal.valueOf(1.5)));
 
-        facade.addCalculator("percentage-rate", CalculatorType.PERCENTAGE,
+        facade.addCalculator(
+                "percentage-rate",
+                CalculatorType.PERCENTAGE,
                 Parameters.of("percentageRate", BigDecimal.valueOf(23)));
     }
 
@@ -63,10 +70,7 @@ class TelcoComponentScenarioTest {
         facade.createSimpleComponent("commission-component", "commission");
 
         facade.createCompositeComponent(
-                "base-fee",
-                Map.of(),
-                "network-maintenance-component", "commission-component"
-        );
+                "base-fee", Map.of(), "network-maintenance-component", "commission-component");
 
         // when: calculate base fee
         Money result = facade.calculateComponent("base-fee", Parameters.empty());
@@ -74,7 +78,8 @@ class TelcoComponentScenarioTest {
         // then: base fee should be 45 PLN (25 + 20)
         assertEquals(Money.pln(BigDecimal.valueOf(45)), result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("base-fee", Parameters.empty());
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("base-fee", Parameters.empty());
         assertThat(breakdown)
                 .hasName("base-fee")
                 .hasTotal(Money.pln(BigDecimal.valueOf(45)))
@@ -89,16 +94,10 @@ class TelcoComponentScenarioTest {
         facade.createSimpleComponent("data-overage-component", "data-overage");
 
         facade.createCompositeComponent(
-                "base-fee",
-                Map.of(),
-                "network-maintenance-component", "commission-component"
-        );
+                "base-fee", Map.of(), "network-maintenance-component", "commission-component");
 
         facade.createCompositeComponent(
-                "monthly-bill",
-                Map.of(),
-                "base-fee", "data-overage-component"
-        );
+                "monthly-bill", Map.of(), "base-fee", "data-overage-component");
 
         // when: customer used 8 GB (3 GB above 5GB limit)
         Parameters usageParams = Parameters.of("quantity", BigDecimal.valueOf(3));
@@ -107,7 +106,8 @@ class TelcoComponentScenarioTest {
         // then: 45 PLN base + 6 PLN data overage (3 GB * 2 PLN)
         assertEquals(Money.pln(BigDecimal.valueOf(51)), result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("monthly-bill", usageParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("monthly-bill", usageParams);
         assertThat(breakdown)
                 .hasName("monthly-bill")
                 .hasTotal(Money.pln(BigDecimal.valueOf(51)))
@@ -132,16 +132,10 @@ class TelcoComponentScenarioTest {
         facade.createSimpleComponent("roaming-overage-component", "roaming-overage");
 
         facade.createCompositeComponent(
-                "base-fee",
-                Map.of(),
-                "network-maintenance-component", "commission-component"
-        );
+                "base-fee", Map.of(), "network-maintenance-component", "commission-component");
 
         facade.createCompositeComponent(
-                "monthly-bill",
-                Map.of(),
-                "base-fee", "roaming-overage-component"
-        );
+                "monthly-bill", Map.of(), "base-fee", "roaming-overage-component");
 
         // when: customer used 50 roaming minutes (20 minutes above 30-minute limit)
         Parameters usageParams = Parameters.of("quantity", BigDecimal.valueOf(20));
@@ -159,16 +153,10 @@ class TelcoComponentScenarioTest {
         facade.createSimpleComponent("data-overage-component", "data-overage");
 
         facade.createCompositeComponent(
-                "base-fee",
-                Map.of(),
-                "network-maintenance-component", "commission-component"
-        );
+                "base-fee", Map.of(), "network-maintenance-component", "commission-component");
 
         facade.createCompositeComponent(
-                "net-amount",
-                Map.of(),
-                "base-fee", "data-overage-component"
-        );
+                "net-amount", Map.of(), "base-fee", "data-overage-component");
 
         // and: VAT component that depends on net amount
         facade.createSimpleComponent("vat-component", "percentage-rate");
@@ -176,13 +164,9 @@ class TelcoComponentScenarioTest {
         // and: total bill with VAT depending on net amount
         facade.createCompositeComponent(
                 "total-bill",
-                Map.of(
-                        "vat-component", Map.of(
-                                "baseAmount", new ValueOf("net-amount")
-                        )
-                ),
-                "net-amount", "vat-component"
-        );
+                Map.of("vat-component", Map.of("baseAmount", new ValueOf("net-amount"))),
+                "net-amount",
+                "vat-component");
 
         // when: customer used 3 GB overage
         Parameters usageParams = Parameters.of("quantity", BigDecimal.valueOf(3));
@@ -198,21 +182,13 @@ class TelcoComponentScenarioTest {
         assertEquals(expectedTotal, result);
 
         // and: breakdown shows dependency
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-bill", usageParams);
-        assertThat(breakdown)
-                .hasName("total-bill")
-                .hasTotal(expectedTotal)
-                .hasChildrenCount(2);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-bill", usageParams);
+        assertThat(breakdown).hasName("total-bill").hasTotal(expectedTotal).hasChildrenCount(2);
 
-        assertThat(breakdown)
-                .child("net-amount")
-                .hasTotal(expectedNet)
-                .hasChildrenCount(2);
+        assertThat(breakdown).child("net-amount").hasTotal(expectedNet).hasChildrenCount(2);
 
-        assertThat(breakdown)
-                .child("vat-component")
-                .hasTotal(expectedVAT)
-                .hasNoChildren();
+        assertThat(breakdown).child("vat-component").hasTotal(expectedVAT).hasNoChildren();
     }
 
     @Test
@@ -223,20 +199,15 @@ class TelcoComponentScenarioTest {
         facade.createSimpleComponent("data-overage-component", "data-overage");
 
         facade.createCompositeComponent(
-                "base-fee",
-                Map.of(),
-                "network-maintenance-component", "commission-component"
-        );
+                "base-fee", Map.of(), "network-maintenance-component", "commission-component");
 
         facade.createCompositeComponent(
-                "monthly-bill",
-                Map.of(),
-                "base-fee", "data-overage-component"
-        );
+                "monthly-bill", Map.of(), "base-fee", "data-overage-component");
 
         // when: get detailed breakdown for 3 GB overage
         Parameters usageParams = Parameters.of("quantity", BigDecimal.valueOf(3));
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("monthly-bill", usageParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("monthly-bill", usageParams);
 
         // then: verify complete hierarchy with fluent assertions
         assertThat(breakdown)

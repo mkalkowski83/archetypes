@@ -1,11 +1,10 @@
 package com.softwarearchetypes.inventory.waitlist;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 class WaitListTest {
 
@@ -42,9 +41,9 @@ class WaitListTest {
     void criteriaSelectsFirstMatchingEntry() {
         // given
         WaitList<Integer> waitList = WaitList.criteria(10);
-        waitList.add(WaitListEntry.of(500));  // too big
-        waitList.add(WaitListEntry.of(200));  // fits
-        waitList.add(WaitListEntry.of(100));  // also fits but second
+        waitList.add(WaitListEntry.of(500)); // too big
+        waitList.add(WaitListEntry.of(200)); // fits
+        waitList.add(WaitListEntry.of(100)); // also fits but second
 
         // when - select first that fits in 300
         Optional<WaitListEntry<Integer>> selected = waitList.selectNext(qty -> qty <= 300);

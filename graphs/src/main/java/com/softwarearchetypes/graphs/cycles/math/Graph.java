@@ -1,9 +1,8 @@
 package com.softwarearchetypes.graphs.cycles.math;
 
-
 import java.util.*;
 
-//AI-generated -> TODO replace with a library
+// AI-generated -> TODO replace with a library
 public class Graph<T, P> {
 
     private final Map<Node<T>, List<Edge<T, P>>> adjacencyMatrix = new HashMap<>();
@@ -20,7 +19,8 @@ public class Graph<T, P> {
 
         for (Node<T> node : adjacencyMatrix.keySet()) {
             if (!visited.contains(node)) {
-                Optional<Path<T, P>> cycle = findCycleDFS(node, visited, inStack, new ArrayList<>());
+                Optional<Path<T, P>> cycle =
+                        findCycleDFS(node, visited, inStack, new ArrayList<>());
                 if (cycle.isPresent()) {
                     return cycle;
                 }
@@ -29,7 +29,8 @@ public class Graph<T, P> {
         return Optional.empty();
     }
 
-    private Optional<Path<T, P>> findCycleDFS(Node<T> current, Set<Node<T>> visited, Set<Node<T>> inStack, List<Edge<T, P>> path) {
+    private Optional<Path<T, P>> findCycleDFS(
+            Node<T> current, Set<Node<T>> visited, Set<Node<T>> inStack, List<Edge<T, P>> path) {
         visited.add(current);
         inStack.add(current);
 
@@ -94,7 +95,5 @@ public class Graph<T, P> {
                 }
             }
         }
-
     }
 }
-

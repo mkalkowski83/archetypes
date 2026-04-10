@@ -5,5 +5,4 @@ class CompanyRegisteredIdentifiersTest extends PartyRegisteredIdentifiersTest<Co
     CompanyRegisteredIdentifiersTest() {
         super(Company.class);
     }
-
 }

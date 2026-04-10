@@ -1,6 +1,5 @@
 package com.softwarearchetypes.inventory.availability;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public record ResourceId(UUID id) {

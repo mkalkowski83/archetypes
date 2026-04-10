@@ -1,15 +1,11 @@
 package com.softwarearchetypes.ordering;
 
 /**
- * Immutable snapshot of party data at the time of order creation.
- * This is a historical record - even if the party's data changes later,
- * the order retains the values that were valid when it was created.
+ * Immutable snapshot of party data at the time of order creation. This is a historical record -
+ * even if the party's data changes later, the order retains the values that were valid when it was
+ * created.
  */
-record PartySnapshot(
-    PartyId partyId,
-    String name,
-    String contactInfo
-) {
+record PartySnapshot(PartyId partyId, String name, String contactInfo) {
     public PartySnapshot {
         if (partyId == null) {
             throw new IllegalArgumentException("PartyId cannot be null");

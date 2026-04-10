@@ -1,11 +1,10 @@
 package com.softwarearchetypes.accounting.postingrules;
 
+import com.softwarearchetypes.accounting.AccountingFacade;
+import com.softwarearchetypes.accounting.EntryView;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
-
-import com.softwarearchetypes.accounting.AccountingFacade;
-import com.softwarearchetypes.accounting.EntryView;
 
 public class PostingContext {
 
@@ -14,11 +13,16 @@ public class PostingContext {
     private final Instant executionTime;
     private final BusinessContext businessContext;
 
-    public PostingContext(List<EntryView> triggeringEntries, AccountingFacade accountingFacade, Clock clock) {
+    public PostingContext(
+            List<EntryView> triggeringEntries, AccountingFacade accountingFacade, Clock clock) {
         this(triggeringEntries, accountingFacade, clock.instant(), BusinessContext.empty());
     }
 
-    public PostingContext(List<EntryView> triggeringEntries, AccountingFacade accountingFacade, Instant executionTime, BusinessContext businessContext) {
+    public PostingContext(
+            List<EntryView> triggeringEntries,
+            AccountingFacade accountingFacade,
+            Instant executionTime,
+            BusinessContext businessContext) {
         this.triggeringEntries = List.copyOf(triggeringEntries);
         this.accountingFacade = accountingFacade;
         this.executionTime = executionTime;

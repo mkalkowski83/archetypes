@@ -1,7 +1,6 @@
 package com.softwarearchetypes.inventory.reservation;
 
 import com.softwarearchetypes.inventory.availability.OwnerId;
-
 import java.util.List;
 import java.util.Optional;
 

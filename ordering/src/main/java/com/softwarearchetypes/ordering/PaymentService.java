@@ -1,39 +1,30 @@
 package com.softwarearchetypes.ordering;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.softwarearchetypes.quantity.money.Money;
-
 /**
- * Service responsible for processing payments.
- * Different implementations can handle different payment models:
- * - Immediate authorize & capture (e-commerce)
- * - Two-step authorize then capture
- * - Refunds and partial refunds
+ * Service responsible for processing payments. Different implementations can handle different
+ * payment models: - Immediate authorize & capture (e-commerce) - Two-step authorize then capture -
+ * Refunds and partial refunds
  */
 interface PaymentService {
 
     /**
-     * Authorize and capture payment immediately.
-     * Used in e-commerce where payment must succeed before order confirmation.
+     * Authorize and capture payment immediately. Used in e-commerce where payment must succeed
+     * before order confirmation.
      */
     PaymentResult authorizeAndCapture(PaymentRequest request);
 
-    /**
-     * Refund the entire payment for an order.
-     */
+    /** Refund the entire payment for an order. */
     void refund(OrderId orderId, Money amount, String reason);
 
-    /**
-     * Partial refund (e.g., when removing a line from confirmed order).
-     */
+    /** Partial refund (e.g., when removing a line from confirmed order). */
     void partialRefund(OrderId orderId, Money amount);
 
-    /**
-     * Additional charge (e.g., when adding quantity to confirmed order).
-     */
+    /** Additional charge (e.g., when adding quantity to confirmed order). */
     void additionalCharge(OrderId orderId, Money amount);
 }
 
@@ -43,11 +34,7 @@ enum PaymentStatus {
     PENDING
 }
 
-record PaymentRequest(
-        OrderId orderId,
-        Money amount,
-        String paymentMethod
-) {
+record PaymentRequest(OrderId orderId, Money amount, String paymentMethod) {
     public static Builder builder() {
         return new Builder();
     }
@@ -78,11 +65,7 @@ record PaymentRequest(
     }
 }
 
-record PaymentResult(
-        PaymentStatus status,
-        String transactionId,
-        String failureReason
-) {
+record PaymentResult(PaymentStatus status, String transactionId, String failureReason) {
     public static PaymentResult success(String transactionId) {
         return new PaymentResult(PaymentStatus.CAPTURED, transactionId, null);
     }
@@ -132,10 +115,8 @@ class FixablePaymentService implements PaymentService {
     }
 
     @Override
-    public void partialRefund(OrderId orderId, Money amount) {
-    }
+    public void partialRefund(OrderId orderId, Money amount) {}
 
     @Override
-    public void additionalCharge(OrderId orderId, Money amount) {
-    }
+    public void additionalCharge(OrderId orderId, Money amount) {}
 }

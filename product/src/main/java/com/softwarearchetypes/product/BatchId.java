@@ -2,9 +2,7 @@ package com.softwarearchetypes.product;
 
 import java.util.UUID;
 
-/**
- * Unique identifier for a Batch.
- */
+/** Unique identifier for a Batch. */
 record BatchId(UUID value) {
 
     static BatchId newOne() {

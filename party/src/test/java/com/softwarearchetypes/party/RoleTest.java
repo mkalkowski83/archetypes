@@ -1,52 +1,52 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
 import static com.softwarearchetypes.party.RoleFixture.someRoleName;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
+
 class RoleTest {
 
     @Test
     void twoRolesShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         Role firstRole = Role.of(someRoleName());
         Role secondRole = Role.of(someRoleName());
 
-        //expect
+        // expect
         assertNotEquals(firstRole, secondRole);
     }
 
     @Test
     void twoRolesShouldBeEqualWhenCreatedForTheSameValue() {
-        //given
+        // given
         String value = someRoleName();
 
-        //expect
+        // expect
         assertEquals(Role.of(value), Role.of(value));
     }
 
     @Test
     void roleIsConvertibleToTextualValueItWasCreatedFrom() {
-        //given
+        // given
         String value = someRoleName();
         Role role = Role.of(value);
 
-        //expect
+        // expect
         assertEquals(value, role.asString());
     }
 
     @Test
     void shouldNotAllowToCreateRoleForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> Role.of(null));
     }
 
     @Test
     void shouldNotAllowToCreateRoleForEmptyValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> Role.of(""));
     }
 }

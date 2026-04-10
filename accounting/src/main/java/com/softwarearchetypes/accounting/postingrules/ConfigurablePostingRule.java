@@ -1,10 +1,9 @@
 package com.softwarearchetypes.accounting.postingrules;
 
-import java.util.List;
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 import com.softwarearchetypes.accounting.Transaction;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import java.util.List;
 
 class ConfigurablePostingRule implements PostingRule {
 
@@ -15,8 +14,13 @@ class ConfigurablePostingRule implements PostingRule {
     private final PostingCalculator postingCalculator;
     private final int priority;
 
-    public ConfigurablePostingRule(PostingRuleId id, String name, EligibilityCondition eligibilityCondition,
-                                   AccountFinder accountFinder, PostingCalculator postingCalculator, int priority) {
+    public ConfigurablePostingRule(
+            PostingRuleId id,
+            String name,
+            EligibilityCondition eligibilityCondition,
+            AccountFinder accountFinder,
+            PostingCalculator postingCalculator,
+            int priority) {
         checkArgument(id != null, "PostingRule ID must be defined");
         checkArgument(name != null && !name.isBlank(), "PostingRule name must be defined");
         checkArgument(eligibilityCondition != null, "EligibilityCondition must be defined");
@@ -31,8 +35,12 @@ class ConfigurablePostingRule implements PostingRule {
         this.priority = priority;
     }
 
-    public ConfigurablePostingRule(PostingRuleId id, String name, EligibilityCondition eligibilityCondition,
-                                   AccountFinder accountFinder, PostingCalculator postingCalculator) {
+    public ConfigurablePostingRule(
+            PostingRuleId id,
+            String name,
+            EligibilityCondition eligibilityCondition,
+            AccountFinder accountFinder,
+            PostingCalculator postingCalculator) {
         this(id, name, eligibilityCondition, accountFinder, postingCalculator, 100);
     }
 

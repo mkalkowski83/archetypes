@@ -10,7 +10,6 @@ class PartyRelationshipViewMapper {
                 relationship.to().partyId(),
                 relationship.to().role().asString(),
                 relationship.name().asString(),
-                relationship.validity()
-        );
+                relationship.validity());
     }
 }

@@ -1,64 +1,74 @@
 package com.softwarearchetypes.pricing;
 
+import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
+import static java.time.Clock.fixed;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Map;
-
-import com.softwarearchetypes.quantity.money.Money;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.softwarearchetypes.pricing.ComponentBreakdownAssert.assertThat;
-import static java.time.Clock.fixed;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Banking pricing scenarios using Component semantic composition.
- * <p>
- * Scenarios:
- * - Loan with insurance depending on principal
- * - Account fees with tiered structure
- * - Portfolio management with performance-based fees
+ *
+ * <p>Scenarios: - Loan with insurance depending on principal - Account fees with tiered structure -
+ * Portfolio management with performance-based fees
  */
 class BankingComponentScenarioTest {
 
-    static final Instant NOW = LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
     private final PricingFacade facade = PricingConfiguration.inMemory(clock).pricingFacade();
 
     @BeforeEach
     void setUp() {
         // Loan calculators
-        facade.addCalculator("loan-interest", CalculatorType.SIMPLE_INTEREST,
+        facade.addCalculator(
+                "loan-interest",
+                CalculatorType.SIMPLE_INTEREST,
                 Parameters.of("annualRate", BigDecimal.valueOf(5.5)));
 
-        facade.addCalculator("insurance-rate", CalculatorType.PERCENTAGE,
+        facade.addCalculator(
+                "insurance-rate",
+                CalculatorType.PERCENTAGE,
                 Parameters.of("percentageRate", BigDecimal.valueOf(2)));
 
-        facade.addCalculator("processing-fee", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "processing-fee",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(500))));
 
         // Account fees
-        facade.addCalculator("monthly-account-fee", CalculatorType.SIMPLE_FIXED,
+        facade.addCalculator(
+                "monthly-account-fee",
+                CalculatorType.SIMPLE_FIXED,
                 Parameters.of("amount", Money.pln(BigDecimal.valueOf(15))));
 
-        facade.addCalculator("transaction-fee", CalculatorType.STEP_FUNCTION,
+        facade.addCalculator(
+                "transaction-fee",
+                CalculatorType.STEP_FUNCTION,
                 Parameters.of(
                         "basePrice", Money.pln(BigDecimal.ZERO),
                         "stepSize", BigDecimal.ONE,
-                        "stepIncrement", BigDecimal.valueOf(0.50)
-                ));
+                        "stepIncrement", BigDecimal.valueOf(0.50)));
 
         // Portfolio management
-        facade.addCalculator("management-fee", CalculatorType.PERCENTAGE,
+        facade.addCalculator(
+                "management-fee",
+                CalculatorType.PERCENTAGE,
                 Parameters.of("percentageRate", BigDecimal.valueOf(1.5)));
 
-        facade.addCalculator("performance-fee", CalculatorType.PERCENTAGE,
+        facade.addCalculator(
+                "performance-fee",
+                CalculatorType.PERCENTAGE,
                 Parameters.of("percentageRate", BigDecimal.valueOf(20)));
     }
 
@@ -70,27 +80,18 @@ class BankingComponentScenarioTest {
         facade.createSimpleComponent("processing", "processing-fee");
 
         // insurance depends on principal + interest
-        facade.createCompositeComponent(
-                "loan-base",
-                Map.of(),
-                "principal-interest", "processing"
-        );
+        facade.createCompositeComponent("loan-base", Map.of(), "principal-interest", "processing");
 
         facade.createCompositeComponent(
                 "total-loan-cost",
-                Map.of(
-                        "loan-insurance", Map.of(
-                                "baseAmount", new ValueOf("loan-base")
-                        )
-                ),
-                "loan-base", "loan-insurance"
-        );
+                Map.of("loan-insurance", Map.of("baseAmount", new ValueOf("loan-base"))),
+                "loan-base",
+                "loan-insurance");
 
         // when: loan of 100,000 PLN for 1 year
-        Parameters loanParams = Parameters.of(
-                "base", Money.pln(BigDecimal.valueOf(100000)),
-                "unit", ChronoUnit.YEARS
-        );
+        Parameters loanParams =
+                Parameters.of(
+                        "base", Money.pln(BigDecimal.valueOf(100000)), "unit", ChronoUnit.YEARS);
 
         Money result = facade.calculateComponent("total-loan-cost", loanParams);
 
@@ -106,21 +107,16 @@ class BankingComponentScenarioTest {
 
         assertEquals(expectedTotal, result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-loan-cost", loanParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-loan-cost", loanParams);
         assertThat(breakdown)
                 .hasName("total-loan-cost")
                 .hasTotal(expectedTotal)
                 .hasChildrenCount(2);
 
-        assertThat(breakdown)
-                .child("loan-base")
-                .hasTotal(expectedBase)
-                .hasChildrenCount(2);
+        assertThat(breakdown).child("loan-base").hasTotal(expectedBase).hasChildrenCount(2);
 
-        assertThat(breakdown)
-                .child("loan-insurance")
-                .hasTotal(expectedInsurance)
-                .hasNoChildren();
+        assertThat(breakdown).child("loan-insurance").hasTotal(expectedInsurance).hasNoChildren();
     }
 
     @Test
@@ -130,10 +126,7 @@ class BankingComponentScenarioTest {
         facade.createSimpleComponent("transaction-fees", "transaction-fee");
 
         facade.createCompositeComponent(
-                "total-account-fees",
-                Map.of(),
-                "monthly-fee", "transaction-fees"
-        );
+                "total-account-fees", Map.of(), "monthly-fee", "transaction-fees");
 
         // when: customer made 50 transactions above free limit
         Parameters accountParams = Parameters.of("quantity", BigDecimal.valueOf(50));
@@ -143,11 +136,9 @@ class BankingComponentScenarioTest {
         Money expected = Money.pln(BigDecimal.valueOf(40));
         assertEquals(expected, result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-account-fees", accountParams);
-        assertThat(breakdown)
-                .hasName("total-account-fees")
-                .hasTotal(expected)
-                .hasChildrenCount(2);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-account-fees", accountParams);
+        assertThat(breakdown).hasName("total-account-fees").hasTotal(expected).hasChildrenCount(2);
     }
 
     @Test
@@ -160,18 +151,13 @@ class BankingComponentScenarioTest {
         // performance fee on gains above benchmark
         facade.createCompositeComponent(
                 "total-management-fees",
-                Map.of(
-                        "performance-bonus", Map.of(
-                                "baseAmount", new ValueOf("base-management")
-                        )
-                ),
-                "base-management", "performance-bonus"
-        );
+                Map.of("performance-bonus", Map.of("baseAmount", new ValueOf("base-management"))),
+                "base-management",
+                "performance-bonus");
 
         // when: portfolio worth 1,000,000 PLN
-        Parameters portfolioParams = Parameters.of(
-                "baseAmount", Money.pln(BigDecimal.valueOf(1000000))
-        );
+        Parameters portfolioParams =
+                Parameters.of("baseAmount", Money.pln(BigDecimal.valueOf(1000000)));
 
         Money result = facade.calculateComponent("total-management-fees", portfolioParams);
 
@@ -185,7 +171,8 @@ class BankingComponentScenarioTest {
 
         assertEquals(expectedTotal, result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-management-fees", portfolioParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("total-management-fees", portfolioParams);
         assertThat(breakdown)
                 .hasName("total-management-fees")
                 .hasTotal(expectedTotal)
@@ -193,9 +180,7 @@ class BankingComponentScenarioTest {
                 .child("base-management")
                 .hasTotal(expectedBase);
 
-        assertThat(breakdown)
-                .child("performance-bonus")
-                .hasTotal(expectedPerformance);
+        assertThat(breakdown).child("performance-bonus").hasTotal(expectedPerformance);
     }
 
     @Test
@@ -208,19 +193,15 @@ class BankingComponentScenarioTest {
         // insurance depends on sum of interest + processing
         facade.createCompositeComponent(
                 "financing-costs",
-                Map.of(
-                        "insurance", Map.of(
-                                "baseAmount", new SumOf("interest", "processing")
-                        )
-                ),
-                "interest", "processing", "insurance"
-        );
+                Map.of("insurance", Map.of("baseAmount", new SumOf("interest", "processing"))),
+                "interest",
+                "processing",
+                "insurance");
 
         // when: loan parameters
-        Parameters loanParams = Parameters.of(
-                "base", Money.pln(BigDecimal.valueOf(200000)),
-                "unit", ChronoUnit.YEARS
-        );
+        Parameters loanParams =
+                Parameters.of(
+                        "base", Money.pln(BigDecimal.valueOf(200000)), "unit", ChronoUnit.YEARS);
 
         Money result = facade.calculateComponent("financing-costs", loanParams);
 
@@ -236,22 +217,17 @@ class BankingComponentScenarioTest {
 
         assertEquals(expectedTotal, result);
 
-        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("financing-costs", loanParams);
+        ComponentBreakdown breakdown =
+                facade.calculateComponentBreakdown("financing-costs", loanParams);
         assertThat(breakdown)
                 .hasName("financing-costs")
                 .hasTotal(expectedTotal)
                 .hasChildrenCount(3);
 
-        assertThat(breakdown)
-                .child("interest")
-                .hasTotal(expectedInterest);
+        assertThat(breakdown).child("interest").hasTotal(expectedInterest);
 
-        assertThat(breakdown)
-                .child("processing")
-                .hasTotal(expectedProcessing);
+        assertThat(breakdown).child("processing").hasTotal(expectedProcessing);
 
-        assertThat(breakdown)
-                .child("insurance")
-                .hasTotal(expectedInsurance);
+        assertThat(breakdown).child("insurance").hasTotal(expectedInsurance);
     }
 }

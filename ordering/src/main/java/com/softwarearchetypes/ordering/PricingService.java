@@ -1,12 +1,11 @@
 package com.softwarearchetypes.ordering;
 
+import com.softwarearchetypes.quantity.Quantity;
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-
-import com.softwarearchetypes.quantity.Quantity;
-import com.softwarearchetypes.quantity.money.Money;
 
 interface PricingService {
 
@@ -18,8 +17,7 @@ record PricingContext(
         Quantity quantity,
         OrderParties parties,
         OrderLineSpecification specification,
-        LocalDateTime pricingTime
-) {
+        LocalDateTime pricingTime) {
 
     static PricingContext forOrderLine(OrderLine line, OrderParties effectiveParties) {
         return new PricingContext(
@@ -27,8 +25,7 @@ record PricingContext(
                 line.quantity(),
                 effectiveParties,
                 line.specification(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
     }
 }
 
@@ -51,7 +48,8 @@ class FixablePricingService implements PricingService {
         this.pricingFunction = ctx -> new CalculatedPricing(unitPrice, totalPrice);
     }
 
-    void willCalculateWithBreakdown(Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown) {
+    void willCalculateWithBreakdown(
+            Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown) {
         this.pricingFunction = ctx -> new CalculatedPricing(unitPrice, totalPrice, breakdown);
     }
 

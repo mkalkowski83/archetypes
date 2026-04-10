@@ -3,8 +3,8 @@ package com.softwarearchetypes.planvsexecution.productionanalysis;
 import java.util.UUID;
 
 /**
- * Represents planned production for a product - the PLAN entity.
- * Simple: product ID and target quantity. No dates, no complexity.
+ * Represents planned production for a product - the PLAN entity. Simple: product ID and target
+ * quantity. No dates, no complexity.
  */
 public record PlannedProduction(UUID id, String productId, int targetQuantity) {
 

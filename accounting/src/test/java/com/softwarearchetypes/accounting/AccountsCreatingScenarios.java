@@ -1,17 +1,5 @@
 package com.softwarearchetypes.accounting;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result;
-
 import static com.softwarearchetypes.accounting.CreateAccount.generateAssetAccount;
 import static com.softwarearchetypes.accounting.CreateAccount.generateOffBalanceAccount;
 import static com.softwarearchetypes.quantity.money.Money.pln;
@@ -20,24 +8,36 @@ import static java.time.Clock.fixed;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.softwarearchetypes.common.Result;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+
 class AccountsCreatingScenarios {
 
-    static final Instant NOW = LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
 
-    AccountingFacade facade = AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
+    AccountingFacade facade =
+            AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
 
     // ========== Account Types Creation ==========
 
     @Test
     void can_create_asset_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         CreateAccount request = generateAssetAccount(accountId, "Cash");
 
-        //when
+        // when
         Result<String, AccountId> result = facade.createAccount(request);
 
-        //then
+        // then
         assertTrue(result.success());
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
@@ -48,14 +48,14 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_create_liability_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         CreateAccount request = new CreateAccount(accountId, "Customer Deposits", "LIABILITY");
 
-        //when
+        // when
         Result<String, AccountId> result = facade.createAccount(request);
 
-        //then
+        // then
         assertTrue(result.success());
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
@@ -65,14 +65,14 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_create_revenue_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         CreateAccount request = new CreateAccount(accountId, "Sales Revenue", "REVENUE");
 
-        //when
+        // when
         Result<String, AccountId> result = facade.createAccount(request);
 
-        //then
+        // then
         assertTrue(result.success());
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
@@ -81,14 +81,14 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_create_expense_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         CreateAccount request = new CreateAccount(accountId, "Commission Expenses", "EXPENSE");
 
-        //when
+        // when
         Result<String, AccountId> result = facade.createAccount(request);
 
-        //then
+        // then
         assertTrue(result.success());
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
@@ -97,14 +97,14 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_create_off_balance_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         CreateAccount request = generateOffBalanceAccount(accountId, "Fleet Card Limit");
 
-        //when
+        // when
         Result<String, AccountId> result = facade.createAccount(request);
 
-        //then
+        // then
         assertTrue(result.success());
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
@@ -115,35 +115,36 @@ class AccountsCreatingScenarios {
 
     @Test
     void cannot_create_account_with_duplicate_id() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         facade.createAccount(generateAssetAccount(accountId, "First Account"));
 
-        //when
-        Result<String, AccountId> result = facade.createAccount(generateAssetAccount(accountId, "Second Account"));
+        // when
+        Result<String, AccountId> result =
+                facade.createAccount(generateAssetAccount(accountId, "Second Account"));
 
-        //then
+        // then
         assertThat(result.success()).isFalse();
         assertThat(result.getFailure()).contains("already exists");
     }
 
     @Test
     void can_create_multiple_accounts_at_once() {
-        //given
+        // given
         AccountId cash = AccountId.generate();
         AccountId receivables = AccountId.generate();
         AccountId payables = AccountId.generate();
 
-        Set<CreateAccount> requests = Set.of(
-                generateAssetAccount(cash, "Cash"),
-                generateAssetAccount(receivables, "Receivables"),
-                new CreateAccount(payables, "Payables", "LIABILITY")
-        );
+        Set<CreateAccount> requests =
+                Set.of(
+                        generateAssetAccount(cash, "Cash"),
+                        generateAssetAccount(receivables, "Receivables"),
+                        new CreateAccount(payables, "Payables", "LIABILITY"));
 
-        //when
+        // when
         Result<String, Set<AccountId>> result = facade.createAccounts(requests);
 
-        //then
+        // then
         assertTrue(result.success());
         assertThat(facade.findAccount(cash)).isPresent();
         assertThat(facade.findAccount(receivables)).isPresent();
@@ -152,21 +153,21 @@ class AccountsCreatingScenarios {
 
     @Test
     void cannot_create_accounts_when_some_already_exist() {
-        //given
+        // given
         AccountId existing = AccountId.generate();
         facade.createAccount(generateAssetAccount(existing, "Existing"));
 
-        //and
+        // and
         AccountId newAccount = AccountId.generate();
-        Set<CreateAccount> requests = Set.of(
-                generateAssetAccount(existing, "Existing Again"),
-                generateAssetAccount(newAccount, "New Account")
-        );
+        Set<CreateAccount> requests =
+                Set.of(
+                        generateAssetAccount(existing, "Existing Again"),
+                        generateAssetAccount(newAccount, "New Account"));
 
-        //when
+        // when
         Result<String, Set<AccountId>> result = facade.createAccounts(requests);
 
-        //then
+        // then
         assertThat(result.success()).isFalse();
         assertThat(result.getFailure()).contains("already exists");
     }
@@ -175,24 +176,26 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_create_accounts_with_initial_balances() {
-        //given
+        // given
         AccountId cash = AccountId.generate();
         AccountId receivables = AccountId.generate();
 
-        Set<CreateAccount> requests = Set.of(
-                generateAssetAccount(cash, "Cash"),
-                generateAssetAccount(receivables, "Receivables")
-        );
+        Set<CreateAccount> requests =
+                Set.of(
+                        generateAssetAccount(cash, "Cash"),
+                        generateAssetAccount(receivables, "Receivables"));
 
-        AccountAmounts initialBalances = AccountAmounts.of(Map.of(
-                cash, pln(1000),
-                receivables, pln(-1000)
-        ));
+        AccountAmounts initialBalances =
+                AccountAmounts.of(
+                        Map.of(
+                                cash, pln(1000),
+                                receivables, pln(-1000)));
 
-        //when
-        Result<String, Set<AccountId>> result = facade.createAccountsWithInitialBalances(requests, initialBalances);
+        // when
+        Result<String, Set<AccountId>> result =
+                facade.createAccountsWithInitialBalances(requests, initialBalances);
 
-        //then
+        // then
         assertTrue(result.success());
         assertThat(facade.balance(cash)).hasValue(pln(1000));
         assertThat(facade.balance(receivables)).hasValue(pln(-1000));
@@ -202,23 +205,23 @@ class AccountsCreatingScenarios {
 
     @Test
     void can_find_all_accounts() {
-        //given
+        // given
         AccountId acc1 = AccountId.generate();
         AccountId acc2 = AccountId.generate();
         facade.createAccount(generateAssetAccount(acc1, "Account 1"));
         facade.createAccount(generateAssetAccount(acc2, "Account 2"));
 
-        //when
+        // when
         List<AccountView> allAccounts = facade.findAll();
 
-        //then
+        // then
         assertThat(allAccounts).hasSizeGreaterThanOrEqualTo(2);
         assertThat(allAccounts).extracting(AccountView::id).contains(acc1, acc2);
     }
 
     @Test
     void can_find_multiple_accounts_by_ids() {
-        //given
+        // given
         AccountId acc1 = AccountId.generate();
         AccountId acc2 = AccountId.generate();
         AccountId acc3 = AccountId.generate();
@@ -226,23 +229,23 @@ class AccountsCreatingScenarios {
         facade.createAccount(generateAssetAccount(acc2, "Account 2"));
         facade.createAccount(generateAssetAccount(acc3, "Account 3"));
 
-        //when
+        // when
         List<AccountView> accounts = facade.findAccounts(Set.of(acc1, acc3));
 
-        //then
+        // then
         assertThat(accounts).hasSize(2);
         assertThat(accounts).extracting(AccountView::id).containsExactlyInAnyOrder(acc1, acc3);
     }
 
     @Test
     void find_account_returns_empty_for_non_existing_account() {
-        //given
+        // given
         AccountId nonExisting = AccountId.generate();
 
-        //when
+        // when
         Optional<AccountView> account = facade.findAccount(nonExisting);
 
-        //then
+        // then
         assertThat(account).isEmpty();
     }
 
@@ -250,14 +253,14 @@ class AccountsCreatingScenarios {
 
     @Test
     void account_name_is_preserved() {
-        //given
+        // given
         String expectedName = "My Special Account Name";
         AccountId accountId = AccountId.generate();
 
-        //when
+        // when
         facade.createAccount(generateAssetAccount(accountId, expectedName));
 
-        //then
+        // then
         Optional<AccountView> account = facade.findAccount(accountId);
         assertThat(account).isPresent();
         assertThat(account.get().name()).isEqualTo(expectedName);

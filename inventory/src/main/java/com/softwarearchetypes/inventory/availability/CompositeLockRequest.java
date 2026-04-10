@@ -8,8 +8,8 @@ public record CompositeLockRequest(
         ResourceId resourceId,
         Map<ResourceId, LockRequest> componentRequests,
         OwnerId owner,
-        LockDuration duration
-) implements LockRequest {
+        LockDuration duration)
+        implements LockRequest {
 
     public CompositeLockRequest {
         Objects.requireNonNull(componentRequests, "componentRequests cannot be null");
@@ -20,11 +20,16 @@ public record CompositeLockRequest(
         }
     }
 
-    public static CompositeLockRequest of(Map<ResourceId, LockRequest> componentRequests, OwnerId owner, LockDuration duration) {
+    public static CompositeLockRequest of(
+            Map<ResourceId, LockRequest> componentRequests, OwnerId owner, LockDuration duration) {
         return new CompositeLockRequest(null, componentRequests, owner, duration);
     }
 
-    public static CompositeLockRequest withId(ResourceId resourceId, Map<ResourceId, LockRequest> componentRequests, OwnerId owner, LockDuration duration) {
+    public static CompositeLockRequest withId(
+            ResourceId resourceId,
+            Map<ResourceId, LockRequest> componentRequests,
+            OwnerId owner,
+            LockDuration duration) {
         return new CompositeLockRequest(resourceId, componentRequests, owner, duration);
     }
 

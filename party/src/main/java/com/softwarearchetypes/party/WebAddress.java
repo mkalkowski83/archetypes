@@ -1,26 +1,34 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
 import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
 import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
 import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
 import com.softwarearchetypes.party.events.WebAddressDefined;
 import com.softwarearchetypes.party.events.WebAddressRemoved;
 import com.softwarearchetypes.party.events.WebAddressUpdated;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 final class WebAddress extends Address {
 
     private final WebAddressDetails webAddressDetails;
 
-    WebAddress(AddressId id, PartyId partyId, WebAddressDetails webAddressDetails, Set<AddressUseType> useTypes) {
+    WebAddress(
+            AddressId id,
+            PartyId partyId,
+            WebAddressDetails webAddressDetails,
+            Set<AddressUseType> useTypes) {
         super(id, partyId, useTypes);
         this.webAddressDetails = webAddressDetails;
     }
 
-    WebAddress(AddressId id, PartyId partyId, WebAddressDetails webAddressDetails, Set<AddressUseType> useTypes, Validity validity) {
+    WebAddress(
+            AddressId id,
+            PartyId partyId,
+            WebAddressDetails webAddressDetails,
+            Set<AddressUseType> useTypes,
+            Validity validity) {
         super(id, partyId, useTypes, validity);
         this.webAddressDetails = webAddressDetails;
     }
@@ -32,12 +40,20 @@ final class WebAddress extends Address {
 
     @Override
     public AddressUpdateSucceeded toAddressUpdateSucceededEvent() {
-        return new WebAddressUpdated(id().asString(), partyId().asString(), webAddressDetails.url(), useTypesAsStringSet());
+        return new WebAddressUpdated(
+                id().asString(),
+                partyId().asString(),
+                webAddressDetails.url(),
+                useTypesAsStringSet());
     }
 
     @Override
     public AddressDefinitionSucceeded toAddressDefinitionSucceededEvent() {
-        return new WebAddressDefined(id().asString(), partyId().asString(), webAddressDetails.url(), useTypesAsStringSet());
+        return new WebAddressDefined(
+                id().asString(),
+                partyId().asString(),
+                webAddressDetails.url(),
+                useTypesAsStringSet());
     }
 
     @Override

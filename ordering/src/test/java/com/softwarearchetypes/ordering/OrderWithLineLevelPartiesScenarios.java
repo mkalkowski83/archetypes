@@ -1,18 +1,15 @@
 package com.softwarearchetypes.ordering;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.softwarearchetypes.ordering.commands.CreateOrderCommand;
-
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
- * Multi-location delivery scenario:
- * Company orders equipment to be delivered to different branches.
+ * Multi-location delivery scenario: Company orders equipment to be delivered to different branches.
  * Line-level parties override order-level receiver per line.
  */
 class OrderWithLineLevelPartiesScenarios {
@@ -23,26 +20,46 @@ class OrderWithLineLevelPartiesScenarios {
     @Test
     void orderWithDifferentReceiversPerLine() {
         // when
-        OrderView order = facade.handle(new CreateOrderCommand(
-                List.of(
-                        new CreateOrderCommand.OrderPartyData("company-abc", "ABC Corp", "abc@corp.com",
-                                Set.of("ORDERER", "PAYER", "RECEIVER")),
-                        new CreateOrderCommand.OrderPartyData("it-supplier", "IT Supplies", "it@supplies.com",
-                                Set.of("EXECUTOR"))
-                ),
-                List.of(
-                        new CreateOrderCommand.OrderLineData("LAPTOP-DELL-5540", 5, "pieces",
-                                Map.of("ram", "16GB"),
-                                List.of(new CreateOrderCommand.OrderPartyData(
-                                        "branch-warsaw", "Warsaw Branch", "warsaw@abc.com",
-                                        Set.of("RECEIVER")))),
-                        new CreateOrderCommand.OrderLineData("MONITOR-LG-27UK850", 5, "pieces",
-                                Map.of("resolution", "4K"),
-                                List.of(new CreateOrderCommand.OrderPartyData(
-                                        "branch-cracow", "Cracow Branch", "cracow@abc.com",
-                                        Set.of("RECEIVER"))))
-                )
-        )).getSuccess();
+        OrderView order =
+                facade.handle(
+                                new CreateOrderCommand(
+                                        List.of(
+                                                new CreateOrderCommand.OrderPartyData(
+                                                        "company-abc",
+                                                        "ABC Corp",
+                                                        "abc@corp.com",
+                                                        Set.of("ORDERER", "PAYER", "RECEIVER")),
+                                                new CreateOrderCommand.OrderPartyData(
+                                                        "it-supplier",
+                                                        "IT Supplies",
+                                                        "it@supplies.com",
+                                                        Set.of("EXECUTOR"))),
+                                        List.of(
+                                                new CreateOrderCommand.OrderLineData(
+                                                        "LAPTOP-DELL-5540",
+                                                        5,
+                                                        "pieces",
+                                                        Map.of("ram", "16GB"),
+                                                        List.of(
+                                                                new CreateOrderCommand
+                                                                        .OrderPartyData(
+                                                                        "branch-warsaw",
+                                                                        "Warsaw Branch",
+                                                                        "warsaw@abc.com",
+                                                                        Set.of("RECEIVER")))),
+                                                new CreateOrderCommand.OrderLineData(
+                                                        "MONITOR-LG-27UK850",
+                                                        5,
+                                                        "pieces",
+                                                        Map.of("resolution", "4K"),
+                                                        List.of(
+                                                                new CreateOrderCommand
+                                                                        .OrderPartyData(
+                                                                        "branch-cracow",
+                                                                        "Cracow Branch",
+                                                                        "cracow@abc.com",
+                                                                        Set.of("RECEIVER")))))))
+                        .getSuccess();
 
         // then
         assertEquals(2, order.lines().size());

@@ -1,16 +1,13 @@
 package com.softwarearchetypes.product;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Tests for SelectedInstance record.
- */
+/** Tests for SelectedInstance record. */
 class SelectedInstanceTest {
 
     private ProductType laptop;
@@ -22,51 +19,51 @@ class SelectedInstanceTest {
 
     @BeforeEach
     void setUp() {
-        laptop = Product.builder(
+        laptop =
+                Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Business Laptop"),
                                 ProductDescription.of("Professional laptop"))
-                        .asProductType(
-                                Unit.pieces(),
-                                ProductTrackingStrategy.INDIVIDUALLY_TRACKED
-                        ).build();
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.INDIVIDUALLY_TRACKED)
+                        .build();
 
-        mouse = Product.builder(
-                               UuidProductIdentifier.random(),
-                               ProductName.of("Wireless Mouse"),
-                               ProductDescription.of("Ergonomic mouse"))
-                       .asProductType(
-                               Unit.pieces(),
-                               ProductTrackingStrategy.BATCH_TRACKED)
-                       .build();
+        mouse =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Wireless Mouse"),
+                                ProductDescription.of("Ergonomic mouse"))
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.BATCH_TRACKED)
+                        .build();
 
-        bundle = Product.builder(
+        bundle =
+                Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Workstation Bundle"),
-                                ProductDescription.of("Complete setup")
-                        ).asPackageType()
+                                ProductDescription.of("Complete setup"))
+                        .asPackageType()
                         .withRequiredChoice("laptop", laptop.id())
                         .build();
 
-        laptopInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        laptopInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        mouseInstance = new InstanceBuilder(InstanceId.newOne())
-                .withBatch(BatchId.newOne())
-                .asProductInstance(mouse)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        mouseInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withBatch(BatchId.newOne())
+                        .asProductInstance(mouse)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        bundleInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("BUNDLE-001"))
-                .asPackageInstance(bundle)
-                .withSelection(java.util.List.of(
-                        new SelectedInstance(laptopInstance, 1)
-                ))
-                .build();
+        bundleInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("BUNDLE-001"))
+                        .asPackageInstance(bundle)
+                        .withSelection(java.util.List.of(new SelectedInstance(laptopInstance, 1)))
+                        .build();
     }
 
     @Test
@@ -97,23 +94,29 @@ class SelectedInstanceTest {
 
     @Test
     void shouldRejectNullInstance() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new SelectedInstance(null, 1);
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new SelectedInstance(null, 1);
+                });
     }
 
     @Test
     void shouldRejectZeroQuantity() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new SelectedInstance(laptopInstance, 0);
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new SelectedInstance(laptopInstance, 0);
+                });
     }
 
     @Test
     void shouldRejectNegativeQuantity() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new SelectedInstance(laptopInstance, -1);
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    new SelectedInstance(laptopInstance, -1);
+                });
     }
 
     @Test
@@ -229,17 +232,19 @@ class SelectedInstanceTest {
     @Test
     void shouldDistinguishBetweenDifferentInstancesOfSameProduct() {
         // Two different instances of same product type
-        ProductInstance laptop1 = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance laptop1 =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        ProductInstance laptop2 = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-002"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance laptop2 =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-002"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         SelectedInstance selected1 = new SelectedInstance(laptop1, 1);
         SelectedInstance selected2 = new SelectedInstance(laptop2, 1);

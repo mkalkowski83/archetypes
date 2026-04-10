@@ -1,105 +1,121 @@
 package com.softwarearchetypes.accounting;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result;
-import com.softwarearchetypes.quantity.money.Money;
-
 import static com.softwarearchetypes.accounting.EntryView.EntryType.CREDIT;
 import static com.softwarearchetypes.accounting.EntryView.EntryType.DEBIT;
 import static com.softwarearchetypes.accounting.RandomFixture.randomStringWithPrefixOf;
 import static com.softwarearchetypes.accounting.TransactionType.TRANSFER;
 import static com.softwarearchetypes.quantity.money.Money.pln;
 import static com.softwarearchetypes.quantity.money.Money.zeroPln;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.assertj.core.api.Assertions.assertThat;
-
 import static java.time.Clock.fixed;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.softwarearchetypes.common.Result;
+import com.softwarearchetypes.quantity.money.Money;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class AccountingCreditDebitScenarios {
 
-    static final Instant TUESDAY_10_00 = LocalDateTime.of(2022, 2, 2, 10, 0).atZone(ZoneId.systemDefault()).toInstant();
-    static final Instant TUESDAY_11_00 = LocalDateTime.of(2022, 2, 2, 11, 0).atZone(ZoneId.systemDefault()).toInstant();
-    static final Instant TUESDAY_12_00 = LocalDateTime.of(2022, 2, 2, 12, 0).atZone(ZoneId.systemDefault()).toInstant();
-    static final Instant NOW = LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant TUESDAY_10_00 =
+            LocalDateTime.of(2022, 2, 2, 10, 0).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant TUESDAY_11_00 =
+            LocalDateTime.of(2022, 2, 2, 11, 0).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant TUESDAY_12_00 =
+            LocalDateTime.of(2022, 2, 2, 12, 0).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
 
-    AccountingFacade facade = AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
+    AccountingFacade facade =
+            AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
 
     @Test
     void should_return_zero_balance_for_empty_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
-        //and
-        assertTrue(facade.createAccount(CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc"))).success());
+        // and
+        assertTrue(
+                facade.createAccount(
+                                CreateAccount.generateAssetAccount(
+                                        accountId, randomStringWithPrefixOf("acc")))
+                        .success());
 
-        //when
+        // when
         Optional<Money> balance = facade.balance(accountId);
 
-        //then
+        // then
         assertThat(balance).hasValue(zeroPln());
     }
 
     @Test
     void should_have_no_transactions_registered_for_empty_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
-        //and
-        assertTrue(facade.createAccount(CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc"))).success());
+        // and
+        assertTrue(
+                facade.createAccount(
+                                CreateAccount.generateAssetAccount(
+                                        accountId, randomStringWithPrefixOf("acc")))
+                        .success());
 
-        //when
+        // when
         List<TransactionId> transactions = facade.findTransactionIdsFor(accountId);
 
-        //then
+        // then
         assertThat(transactions).isEmpty();
     }
 
     @Test
     void should_return_single_entry_balance() {
-        //given
+        // given
         AccountId creditedAccount = generateAssetAccount();
-        //and
+        // and
         AccountId debitedAccount = generateAssetAccount();
 
-        //and
-        Result result = facade.transfer(debitedAccount, creditedAccount, pln(100), TUESDAY_10_00, TUESDAY_10_00);
+        // and
+        Result result =
+                facade.transfer(
+                        debitedAccount, creditedAccount, pln(100), TUESDAY_10_00, TUESDAY_10_00);
         assertTrue(result.success());
 
-        //when
+        // when
         Optional<Money> creditAccountBalance = facade.balance(creditedAccount);
         Optional<Money> debitAccountBalance = facade.balance(debitedAccount);
 
-        //then
+        // then
         assertThat(creditAccountBalance).hasValue(pln(100));
         assertThat(debitAccountBalance).hasValue(pln(-100));
-
     }
 
     @Test
     void should_find_the_same_transaction_executed_on_accounts() {
-        //given
+        // given
         AccountId creditedAccount = generateAssetAccount();
-        //and
+        // and
         AccountId debitedAccount = generateAssetAccount();
 
-        //and
-        Result result = facade.transfer(debitedAccount, creditedAccount, pln(100), TUESDAY_10_00, TUESDAY_10_00);
+        // and
+        Result result =
+                facade.transfer(
+                        debitedAccount, creditedAccount, pln(100), TUESDAY_10_00, TUESDAY_10_00);
         assertTrue(result.success());
 
-        //when
-        List<TransactionId> creditedAccountTransactions = facade.findTransactionIdsFor(creditedAccount);
-        List<TransactionId> debitedAccountTransactions = facade.findTransactionIdsFor(debitedAccount);
+        // when
+        List<TransactionId> creditedAccountTransactions =
+                facade.findTransactionIdsFor(creditedAccount);
+        List<TransactionId> debitedAccountTransactions =
+                facade.findTransactionIdsFor(debitedAccount);
 
-        //then
+        // then
         assertThat(creditedAccountTransactions).hasSize(1);
         assertThat(debitedAccountTransactions).hasSize(1);
-        assertThat(creditedAccountTransactions.getFirst()).isEqualTo(debitedAccountTransactions.getFirst());
+        assertThat(creditedAccountTransactions.getFirst())
+                .isEqualTo(debitedAccountTransactions.getFirst());
     }
 
     @Test
@@ -109,15 +125,16 @@ class AccountingCreditDebitScenarios {
         AccountId debitedAccount1 = generateAssetAccount();
         AccountId debitedAccount2 = generateAssetAccount();
 
-        Transaction transaction = facade.transaction()
-                                        .withTypeOf(TRANSFER)
-                                        .occurredAt(TUESDAY_10_00)
-                                        .appliesAt(TUESDAY_10_00)
-                                        .executing()
-                                        .creditTo(creditedAccount, pln(100))
-                                        .debitFrom(debitedAccount1, pln(60))
-                                        .debitFrom(debitedAccount2, pln(40))
-                                        .build();
+        Transaction transaction =
+                facade.transaction()
+                        .withTypeOf(TRANSFER)
+                        .occurredAt(TUESDAY_10_00)
+                        .appliesAt(TUESDAY_10_00)
+                        .executing()
+                        .creditTo(creditedAccount, pln(100))
+                        .debitFrom(debitedAccount1, pln(60))
+                        .debitFrom(debitedAccount2, pln(40))
+                        .build();
 
         Result result = facade.execute(transaction);
         assertTrue(result.success());
@@ -127,37 +144,40 @@ class AccountingCreditDebitScenarios {
 
         // then
         TransactionViewAssert.assertThat(view)
-                             .hasId(transaction.id())
-                             .hasType(TRANSFER)
-                             .occurredAt(TUESDAY_10_00)
-                             .appliesAt(TUESDAY_10_00)
-                             .containsEntries()
-                             .containExactlyOneEntry(creditedAccount, CREDIT, pln(100))
-                             .containExactlyOneEntry(debitedAccount1, DEBIT, pln(-60))
-                             .containExactlyOneEntry(debitedAccount2, DEBIT, pln(-40))
-                             .containExactly(3)
-                             .allOccurredAt(TUESDAY_10_00)
-                             .allHaveTransactionId(transaction.id());
+                .hasId(transaction.id())
+                .hasType(TRANSFER)
+                .occurredAt(TUESDAY_10_00)
+                .appliesAt(TUESDAY_10_00)
+                .containsEntries()
+                .containExactlyOneEntry(creditedAccount, CREDIT, pln(100))
+                .containExactlyOneEntry(debitedAccount1, DEBIT, pln(-60))
+                .containExactlyOneEntry(debitedAccount2, DEBIT, pln(-40))
+                .containExactly(3)
+                .allOccurredAt(TUESDAY_10_00)
+                .allHaveTransactionId(transaction.id());
     }
 
     @Test
     void should_support_going_back_in_time() {
-        //given
+        // given
         AccountId account = generateAssetAccount();
-        //and
+        // and
         AccountId paymentAccount = generateAssetAccount();
 
-        //when
-        Result resultTransaction = facade.transfer(paymentAccount, account, pln(100), TUESDAY_10_00, TUESDAY_10_00);
-        Result resultTransaction2 = facade.transfer(account, paymentAccount, pln(30), TUESDAY_11_00, TUESDAY_11_00);
-        Result resultTransaction3 = facade.transfer(account, paymentAccount, pln(30), TUESDAY_12_00, TUESDAY_12_00);
+        // when
+        Result resultTransaction =
+                facade.transfer(paymentAccount, account, pln(100), TUESDAY_10_00, TUESDAY_10_00);
+        Result resultTransaction2 =
+                facade.transfer(account, paymentAccount, pln(30), TUESDAY_11_00, TUESDAY_11_00);
+        Result resultTransaction3 =
+                facade.transfer(account, paymentAccount, pln(30), TUESDAY_12_00, TUESDAY_12_00);
 
-        //then
+        // then
         assertThat(resultTransaction.success()).isTrue();
         assertThat(resultTransaction2.success()).isTrue();
         assertThat(resultTransaction3.success()).isTrue();
 
-        //and
+        // and
         assertThat(facade.balanceAsOf(account, TUESDAY_10_00)).hasValue(pln(100));
         assertThat(facade.balanceAsOf(account, TUESDAY_11_00)).hasValue(pln(70));
         assertThat(facade.balance(account)).hasValue(pln(40));
@@ -165,27 +185,30 @@ class AccountingCreditDebitScenarios {
 
     @Test
     void should_return_balances_for_multiple_accounts_as_of_given_time() {
-        //given
+        // given
         AccountId acc1 = generateAssetAccount();
         AccountId acc2 = generateAssetAccount();
 
-        //and
+        // and
         AccountId paymentAccount = generateAssetAccount();
 
-        //when
-        Result resultTransaction1 = facade.transfer(paymentAccount, acc1, pln(100), TUESDAY_10_00, TUESDAY_10_00);
-        Result resultTransaction2 = facade.transfer(paymentAccount, acc2, pln(200), TUESDAY_10_00, TUESDAY_10_00);
-        Result resultTransaction3 = facade.transfer(acc2, paymentAccount, pln(50), TUESDAY_11_00, TUESDAY_11_00);
+        // when
+        Result resultTransaction1 =
+                facade.transfer(paymentAccount, acc1, pln(100), TUESDAY_10_00, TUESDAY_10_00);
+        Result resultTransaction2 =
+                facade.transfer(paymentAccount, acc2, pln(200), TUESDAY_10_00, TUESDAY_10_00);
+        Result resultTransaction3 =
+                facade.transfer(acc2, paymentAccount, pln(50), TUESDAY_11_00, TUESDAY_11_00);
 
-        //then
+        // then
         assertThat(resultTransaction1.success()).isTrue();
         assertThat(resultTransaction2.success()).isTrue();
         assertThat(resultTransaction3.success()).isTrue();
 
-        //when
+        // when
         Balances balances = facade.balancesAsOf(Set.of(acc1, acc2), TUESDAY_11_00);
 
-        //then
+        // then
         assertThat(balances.balances())
                 .containsOnlyKeys(acc1, acc2)
                 .containsEntry(acc1, pln(100))
@@ -193,9 +216,9 @@ class AccountingCreditDebitScenarios {
     }
 
     AccountId generateAssetAccount() {
-        CreateAccount accountCreation = CreateAccount.generateAssetAccount(RandomFixture.randomStringWithPrefixOf("acc"));
+        CreateAccount accountCreation =
+                CreateAccount.generateAssetAccount(RandomFixture.randomStringWithPrefixOf("acc"));
         assertTrue(facade.createAccount(accountCreation).success());
         return accountCreation.accountId();
     }
-
 }

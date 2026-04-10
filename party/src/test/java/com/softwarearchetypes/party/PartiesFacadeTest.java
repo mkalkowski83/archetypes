@@ -1,8 +1,13 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-
-import org.junit.jupiter.api.Test;
+import static com.softwarearchetypes.party.OrganizationNameFixture.someOrganizationName;
+import static com.softwarearchetypes.party.PersonalDataFixture.somePersonalData;
+import static com.softwarearchetypes.party.RegisteredIdentifierFixture.someRegisteredIdentifier;
+import static com.softwarearchetypes.party.RoleFixture.someRole;
+import static com.softwarearchetypes.party.RoleFixture.someRoleSetOfSize;
+import static com.softwarearchetypes.party.RoleFixture.stringSetFrom;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.commands.AddRegisteredIdentifierCommand;
@@ -22,135 +27,169 @@ import com.softwarearchetypes.party.events.RegisteredIdentifierAdded;
 import com.softwarearchetypes.party.events.RegisteredIdentifierRemoved;
 import com.softwarearchetypes.party.events.RoleAdded;
 import com.softwarearchetypes.party.events.RoleRemoved;
-
-import static com.softwarearchetypes.party.OrganizationNameFixture.someOrganizationName;
-import static com.softwarearchetypes.party.PersonalDataFixture.somePersonalData;
-import static com.softwarearchetypes.party.RegisteredIdentifierFixture.someRegisteredIdentifier;
-import static com.softwarearchetypes.party.RoleFixture.someRole;
-import static com.softwarearchetypes.party.RoleFixture.someRoleSetOfSize;
-import static com.softwarearchetypes.party.RoleFixture.stringSetFrom;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class PartiesFacadeTest {
 
     private final PartyConfiguration configuration = PartyConfiguration.inMemory();
     private final PartiesFacade partiesFacade = configuration.partiesFacade();
     private final PartiesQueries partiesQueries = configuration.partiesQueries();
-    private final PartiesTestEventListener testEventListener = new PartiesTestEventListener(configuration.eventPublisher());
+    private final PartiesTestEventListener testEventListener =
+            new PartiesTestEventListener(configuration.eventPublisher());
 
     @Test
     void canRegisterPerson() {
-        //given
+        // given
         PersonalData personalData = somePersonalData();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterPersonCommand(personalData.firstName(), personalData.lastName(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterPersonCommand(
+                                personalData.firstName(),
+                                personalData.lastName(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals("PERSON", result.getSuccess().partyType());
     }
 
     @Test
     void personRegisteredEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         PersonalData personalData = somePersonalData();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterPersonCommand(personalData.firstName(), personalData.lastName(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterPersonCommand(
+                                personalData.firstName(),
+                                personalData.lastName(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         String partyId = result.getSuccess().partyId().asString();
-        PersonRegistered expectedEvent = new PersonRegistered(partyId, personalData.firstName(), personalData.lastName(),
-                Set.of(identifier.asString()), stringSetFrom(roles));
+        PersonRegistered expectedEvent =
+                new PersonRegistered(
+                        partyId,
+                        personalData.firstName(),
+                        personalData.lastName(),
+                        Set.of(identifier.asString()),
+                        stringSetFrom(roles));
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canRegisterCompany() {
-        //given
+        // given
         OrganizationName organizationName = someOrganizationName();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterCompanyCommand(organizationName.value(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterCompanyCommand(
+                                organizationName.value(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals("COMPANY", result.getSuccess().partyType());
     }
 
     @Test
     void companyRegisteredEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         OrganizationName organizationName = someOrganizationName();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterCompanyCommand(organizationName.value(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterCompanyCommand(
+                                organizationName.value(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         String partyId = result.getSuccess().partyId().asString();
-        CompanyRegistered expectedEvent = new CompanyRegistered(partyId, organizationName.value(),
-                Set.of(identifier.asString()), stringSetFrom(roles));
+        CompanyRegistered expectedEvent =
+                new CompanyRegistered(
+                        partyId,
+                        organizationName.value(),
+                        Set.of(identifier.asString()),
+                        stringSetFrom(roles));
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canRegisterOrganizationUnit() {
-        //given
+        // given
         OrganizationName organizationName = someOrganizationName();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterOrganizationUnitCommand(organizationName.value(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterOrganizationUnitCommand(
+                                organizationName.value(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         assertTrue(result.success());
         assertEquals("ORGANIZATION_UNIT", result.getSuccess().partyType());
     }
 
     @Test
     void organizationUnitRegisteredEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         OrganizationName organizationName = someOrganizationName();
         Set<Role> roles = someRoleSetOfSize(3);
         RegisteredIdentifier identifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterOrganizationUnitCommand(organizationName.value(), stringSetFrom(roles), Set.of(identifier)));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterOrganizationUnitCommand(
+                                organizationName.value(),
+                                stringSetFrom(roles),
+                                Set.of(identifier)));
 
-        //then
+        // then
         String partyId = result.getSuccess().partyId().asString();
-        OrganizationUnitRegistered expectedEvent = new OrganizationUnitRegistered(partyId, organizationName.value(),
-                Set.of(identifier.asString()), stringSetFrom(roles));
+        OrganizationUnitRegistered expectedEvent =
+                new OrganizationUnitRegistered(
+                        partyId,
+                        organizationName.value(),
+                        Set.of(identifier.asString()),
+                        stringSetFrom(roles));
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canAddRoleToParty() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         Role newRole = someRole();
 
-        //when
-        Result<String, PartyId> result = partiesFacade.handle(new AddRoleCommand(partyId, newRole.name()));
+        // when
+        Result<String, PartyId> result =
+                partiesFacade.handle(new AddRoleCommand(partyId, newRole.name()));
 
-        //then
+        // then
         assertTrue(result.success());
         PartyView updatedParty = partiesQueries.findBy(partyId).orElseThrow();
         assertTrue(updatedParty.roles().contains(newRole.name()));
@@ -158,57 +197,59 @@ class PartiesFacadeTest {
 
     @Test
     void roleAddedEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         Role newRole = someRole();
 
-        //when
+        // when
         partiesFacade.handle(new AddRoleCommand(partyId, newRole.name()));
 
-        //then
+        // then
         RoleAdded expectedEvent = new RoleAdded(partyId.asString(), newRole.asString());
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canRemoveRoleFromParty() {
-        //given
+        // given
         Role role = someRole();
         PartyId partyId = registerSomePerson();
         partiesFacade.handle(new AddRoleCommand(partyId, role.name()));
 
-        //when
-        Result<String, PartyId> result = partiesFacade.handle(new RemoveRoleCommand(partyId, role.name()));
+        // when
+        Result<String, PartyId> result =
+                partiesFacade.handle(new RemoveRoleCommand(partyId, role.name()));
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void roleRemovedEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         Role role = someRole();
         PartyId partyId = registerSomePerson();
         partiesFacade.handle(new AddRoleCommand(partyId, role.name()));
 
-        //when
+        // when
         partiesFacade.handle(new RemoveRoleCommand(partyId, role.name()));
 
-        //then
+        // then
         RoleRemoved expectedEvent = new RoleRemoved(partyId.asString(), role.asString());
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canAddRegisteredIdentifierToParty() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         RegisteredIdentifier newIdentifier = someRegisteredIdentifier();
 
-        //when
-        Result<String, PartyId> result = partiesFacade.handle(new AddRegisteredIdentifierCommand(partyId, newIdentifier));
+        // when
+        Result<String, PartyId> result =
+                partiesFacade.handle(new AddRegisteredIdentifierCommand(partyId, newIdentifier));
 
-        //then
+        // then
         assertTrue(result.success());
         PartyView updatedParty = partiesQueries.findBy(partyId).orElseThrow();
         assertTrue(updatedParty.registeredIdentifiers().contains(newIdentifier));
@@ -216,130 +257,148 @@ class PartiesFacadeTest {
 
     @Test
     void registeredIdentifierAddedEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         RegisteredIdentifier newIdentifier = someRegisteredIdentifier();
 
-        //when
+        // when
         partiesFacade.handle(new AddRegisteredIdentifierCommand(partyId, newIdentifier));
 
-        //then
-        RegisteredIdentifierAdded expectedEvent = new RegisteredIdentifierAdded(partyId.asString(),
-                newIdentifier.type(), newIdentifier.asString());
+        // then
+        RegisteredIdentifierAdded expectedEvent =
+                new RegisteredIdentifierAdded(
+                        partyId.asString(), newIdentifier.type(), newIdentifier.asString());
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canRemoveRegisteredIdentifierFromParty() {
-        //given
+        // given
         RegisteredIdentifier identifier = someRegisteredIdentifier();
         PartyId partyId = registerSomePerson();
         partiesFacade.handle(new AddRegisteredIdentifierCommand(partyId, identifier));
 
-        //when
-        Result<String, PartyId> result = partiesFacade.handle(new RemoveRegisteredIdentifierCommand(partyId, identifier));
+        // when
+        Result<String, PartyId> result =
+                partiesFacade.handle(new RemoveRegisteredIdentifierCommand(partyId, identifier));
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void registeredIdentifierRemovedEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         RegisteredIdentifier identifier = someRegisteredIdentifier();
         PartyId partyId = registerSomePerson();
         partiesFacade.handle(new AddRegisteredIdentifierCommand(partyId, identifier));
 
-        //when
+        // when
         partiesFacade.handle(new RemoveRegisteredIdentifierCommand(partyId, identifier));
 
-        //then
-        RegisteredIdentifierRemoved expectedEvent = new RegisteredIdentifierRemoved(partyId.asString(),
-                identifier.type(), identifier.asString());
+        // then
+        RegisteredIdentifierRemoved expectedEvent =
+                new RegisteredIdentifierRemoved(
+                        partyId.asString(), identifier.type(), identifier.asString());
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void canUpdatePersonalDataOfExistingPerson() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         PersonalData newPersonalData = somePersonalData();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new UpdatePersonalDataCommand(partyId, newPersonalData.firstName(), newPersonalData.lastName()));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new UpdatePersonalDataCommand(
+                                partyId, newPersonalData.firstName(), newPersonalData.lastName()));
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void personalDataUpdatedEventIsEmittedWhenOperationSucceeds() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         PersonalData newPersonalData = somePersonalData();
 
-        //when
-        partiesFacade.handle(new UpdatePersonalDataCommand(partyId, newPersonalData.firstName(), newPersonalData.lastName()));
+        // when
+        partiesFacade.handle(
+                new UpdatePersonalDataCommand(
+                        partyId, newPersonalData.firstName(), newPersonalData.lastName()));
 
-        //then
-        PersonalDataUpdated expectedEvent = new PersonalDataUpdated(partyId.asString(),
-                newPersonalData.firstName(), newPersonalData.lastName());
+        // then
+        PersonalDataUpdated expectedEvent =
+                new PersonalDataUpdated(
+                        partyId.asString(),
+                        newPersonalData.firstName(),
+                        newPersonalData.lastName());
         assertTrue(testEventListener.thereIsAnEventEqualTo(expectedEvent));
     }
 
     @Test
     void cannotUpdatePersonalDataOfOrganization() {
-        //given
+        // given
         PartyId partyId = registerSomeCompany();
         PersonalData newPersonalData = somePersonalData();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new UpdatePersonalDataCommand(partyId, newPersonalData.firstName(), newPersonalData.lastName()));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new UpdatePersonalDataCommand(
+                                partyId, newPersonalData.firstName(), newPersonalData.lastName()));
 
-        //then
+        // then
         assertTrue(result.failure());
     }
 
     @Test
     void cannotUpdateOrganizationNameOfPerson() {
-        //given
+        // given
         PartyId partyId = registerSomePerson();
         OrganizationName newName = someOrganizationName();
 
-        //when
-        Result<String, PartyView> result = partiesFacade.handle(
-                new UpdateOrganizationNameCommand(partyId, newName.value()));
+        // when
+        Result<String, PartyView> result =
+                partiesFacade.handle(new UpdateOrganizationNameCommand(partyId, newName.value()));
 
-        //then
+        // then
         assertTrue(result.failure());
     }
 
     @Test
     void addRoleShouldFailWhenPartyDoesNotExist() {
-        //given
+        // given
         PartyId nonExistingPartyId = PartyId.random();
         Role role = someRole();
 
-        //when
-        Result<String, PartyId> result = partiesFacade.handle(new AddRoleCommand(nonExistingPartyId, role.name()));
+        // when
+        Result<String, PartyId> result =
+                partiesFacade.handle(new AddRoleCommand(nonExistingPartyId, role.name()));
 
-        //then
+        // then
         assertTrue(result.failure());
     }
 
     private PartyId registerSomePerson() {
         PersonalData personalData = somePersonalData();
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterPersonCommand(personalData.firstName(), personalData.lastName(), Set.of(), Set.of()));
+        Result<String, PartyView> result =
+                partiesFacade.handle(
+                        new RegisterPersonCommand(
+                                personalData.firstName(),
+                                personalData.lastName(),
+                                Set.of(),
+                                Set.of()));
         return result.getSuccess().partyId();
     }
 
     private PartyId registerSomeCompany() {
         OrganizationName name = someOrganizationName();
-        Result<String, PartyView> result = partiesFacade.handle(
-                new RegisterCompanyCommand(name.value(), Set.of(), Set.of()));
+        Result<String, PartyView> result =
+                partiesFacade.handle(new RegisterCompanyCommand(name.value(), Set.of(), Set.of()));
         return result.getSuccess().partyId();
     }
 }

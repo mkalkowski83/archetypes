@@ -3,8 +3,8 @@ package com.softwarearchetypes.planvsexecution.productionanalysis;
 import java.util.List;
 
 /**
- * A production plan - collection of planned production targets.
- * This is the PLAN aggregate: "We want to produce these quantities."
+ * A production plan - collection of planned production targets. This is the PLAN aggregate: "We
+ * want to produce these quantities."
  */
 public record ProductionPlan(List<PlannedProduction> targets) {
 
@@ -17,14 +17,13 @@ public record ProductionPlan(List<PlannedProduction> targets) {
     }
 
     public int totalTargetQuantity() {
-        return targets.stream()
-                .mapToInt(PlannedProduction::targetQuantity)
-                .sum();
+        return targets.stream().mapToInt(PlannedProduction::targetQuantity).sum();
     }
 
     @Override
     public String toString() {
-        return String.format("ProductionPlan[%d products, total=%d units]",
+        return String.format(
+                "ProductionPlan[%d products, total=%d units]",
                 targets.size(), totalTargetQuantity());
     }
 }

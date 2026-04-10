@@ -1,17 +1,16 @@
 package com.softwarearchetypes.product;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 /**
- * Tests for InstanceBuilder and the unified building approach for ProductInstance and PackageInstance.
+ * Tests for InstanceBuilder and the unified building approach for ProductInstance and
+ * PackageInstance.
  */
 class InstanceBuilderTest {
 
@@ -23,29 +22,31 @@ class InstanceBuilderTest {
 
     @BeforeEach
     void setUp() {
-        colorFeature = ProductFeatureType.withAllowedValues("Color", "Silver", "Space Gray", "Black");
+        colorFeature =
+                ProductFeatureType.withAllowedValues("Color", "Silver", "Space Gray", "Black");
         storageFeature = ProductFeatureType.withAllowedValues("Storage", "512GB", "1024GB");
 
-        laptop = Product.builder(
+        laptop =
+                Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Business Laptop"),
                                 ProductDescription.of("Professional laptop"))
-                        .asProductType(
-                                Unit.pieces(),
-                                ProductTrackingStrategy.INDIVIDUALLY_TRACKED)
+                        .asProductType(Unit.pieces(), ProductTrackingStrategy.INDIVIDUALLY_TRACKED)
                         .withOptionalFeature(colorFeature)
                         .withOptionalFeature(storageFeature)
                         .build();
 
-        mouse = ProductType.builder(
-                UuidProductIdentifier.random(),
-                ProductName.of("Wireless Mouse"),
-                ProductDescription.of("Ergonomic mouse"),
-                Unit.pieces(),
-                ProductTrackingStrategy.BATCH_TRACKED
-        ).build();
+        mouse =
+                ProductType.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Wireless Mouse"),
+                                ProductDescription.of("Ergonomic mouse"),
+                                Unit.pieces(),
+                                ProductTrackingStrategy.BATCH_TRACKED)
+                        .build();
 
-        bundle = Product.builder(
+        bundle =
+                Product.builder(
                                 UuidProductIdentifier.random(),
                                 ProductName.of("Workstation Bundle"),
                                 ProductDescription.of("Complete setup"))
@@ -53,7 +54,6 @@ class InstanceBuilderTest {
                         .withRequiredChoice("laptop", laptop.id())
                         .withRequiredChoice("mouse", mouse.id())
                         .build();
-
     }
 
     @Test
@@ -61,11 +61,12 @@ class InstanceBuilderTest {
         InstanceId id = InstanceId.newOne();
         SerialNumber serial = SerialNumber.of("LAPTOP-123");
 
-        ProductInstance instance = new InstanceBuilder(id)
-                .withSerial(serial)
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(id)
+                        .withSerial(serial)
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertNotNull(instance);
         assertEquals(id, instance.id());
@@ -80,11 +81,12 @@ class InstanceBuilderTest {
         InstanceId id = InstanceId.newOne();
         BatchId batch = BatchId.newOne();
 
-        ProductInstance instance = new InstanceBuilder(id)
-                .withBatch(batch)
-                .asProductInstance(mouse)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(id)
+                        .withBatch(batch)
+                        .asProductInstance(mouse)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertNotNull(instance);
         assertEquals(id, instance.id());
@@ -100,12 +102,13 @@ class InstanceBuilderTest {
         SerialNumber serial = SerialNumber.of("LAPTOP-123");
         BatchId batch = BatchId.newOne();
 
-        ProductInstance instance = new InstanceBuilder(id)
-                .withSerial(serial)
-                .withBatch(batch)
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(id)
+                        .withSerial(serial)
+                        .withBatch(batch)
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertNotNull(instance);
         assertTrue(instance.serialNumber().isPresent());
@@ -116,12 +119,13 @@ class InstanceBuilderTest {
 
     @Test
     void shouldBuildProductInstanceWithFeatures() {
-        ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-123"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .withFeature(colorFeature, "Silver")
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-123"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .withFeature(colorFeature, "Silver")
+                        .build();
 
         assertNotNull(instance);
         assertEquals(1, instance.features().size());
@@ -131,13 +135,14 @@ class InstanceBuilderTest {
 
     @Test
     void shouldBuildProductInstanceWithMultipleFeatures() {
-        ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-123"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .withFeature(colorFeature, "Silver")
-                .withFeature(storageFeature, "512GB")
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-123"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .withFeature(colorFeature, "Silver")
+                        .withFeature(storageFeature, "512GB")
+                        .build();
 
         assertNotNull(instance);
         assertEquals(2, instance.features().size());
@@ -149,12 +154,13 @@ class InstanceBuilderTest {
     void shouldBuildProductInstanceWithFeatureInstance() {
         ProductFeatureInstance featureInstance = new ProductFeatureInstance(colorFeature, "Black");
 
-        ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-123"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .withFeature(featureInstance)
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-123"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .withFeature(featureInstance)
+                        .build();
 
         assertNotNull(instance);
         assertEquals(1, instance.features().size());
@@ -163,29 +169,32 @@ class InstanceBuilderTest {
 
     @Test
     void shouldBuildPackageInstanceWithSerial() {
-        ProductInstance laptopInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance laptopInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        ProductInstance mouseInstance = new InstanceBuilder(InstanceId.newOne())
-                .withBatch(BatchId.newOne())
-                .asProductInstance(mouse)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance mouseInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withBatch(BatchId.newOne())
+                        .asProductInstance(mouse)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         InstanceId packageId = InstanceId.newOne();
         SerialNumber packageSerial = SerialNumber.of("BUNDLE-001");
 
-        PackageInstance packageInstance = new InstanceBuilder(packageId)
-                .withSerial(packageSerial)
-                .asPackageInstance(bundle)
-                .withSelection(List.of(
-                        new SelectedInstance(laptopInstance, 1),
-                        new SelectedInstance(mouseInstance, 1)
-                ))
-                .build();
+        PackageInstance packageInstance =
+                new InstanceBuilder(packageId)
+                        .withSerial(packageSerial)
+                        .asPackageInstance(bundle)
+                        .withSelection(
+                                List.of(
+                                        new SelectedInstance(laptopInstance, 1),
+                                        new SelectedInstance(mouseInstance, 1)))
+                        .build();
 
         assertNotNull(packageInstance);
         assertEquals(packageId, packageInstance.id());
@@ -197,40 +206,43 @@ class InstanceBuilderTest {
 
     @Test
     void shouldBuildPackageInstanceWithBatch() {
-        ProductInstance laptopInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance laptopInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        ProductInstance mouseInstance = new InstanceBuilder(InstanceId.newOne())
-                .withBatch(BatchId.newOne())
-                .asProductInstance(mouse)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance mouseInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withBatch(BatchId.newOne())
+                        .asProductInstance(mouse)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         // For this test, create batch-tracked package
-        PackageType batchBundle = Product.builder(
-                                                 UuidProductIdentifier.random(),
-                                                 ProductName.of("Batch Bundle"),
-                                                 ProductDescription.of("Batch tracked")
-                                         )
-                                         .asPackageType()
-                                         .withTrackingStrategy(ProductTrackingStrategy.BATCH_TRACKED)
-                                         .withRequiredChoice("laptop", laptop.id())
-                                         .withRequiredChoice("mouse", mouse.id())
-                                         .build();
+        PackageType batchBundle =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Batch Bundle"),
+                                ProductDescription.of("Batch tracked"))
+                        .asPackageType()
+                        .withTrackingStrategy(ProductTrackingStrategy.BATCH_TRACKED)
+                        .withRequiredChoice("laptop", laptop.id())
+                        .withRequiredChoice("mouse", mouse.id())
+                        .build();
 
         BatchId packageBatch = BatchId.newOne();
 
-        PackageInstance packageInstance = new InstanceBuilder(InstanceId.newOne())
-                .withBatch(packageBatch)
-                .asPackageInstance(batchBundle)
-                .withSelection(List.of(
-                        new SelectedInstance(laptopInstance, 1),
-                        new SelectedInstance(mouseInstance, 1)
-                ))
-                .build();
+        PackageInstance packageInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withBatch(packageBatch)
+                        .asPackageInstance(batchBundle)
+                        .withSelection(
+                                List.of(
+                                        new SelectedInstance(laptopInstance, 1),
+                                        new SelectedInstance(mouseInstance, 1)))
+                        .build();
 
         assertNotNull(packageInstance);
         assertFalse(packageInstance.serialNumber().isPresent());
@@ -241,13 +253,14 @@ class InstanceBuilderTest {
     @Test
     void shouldSupportFluentBuildingStyle() {
         // Demonstrates the fluent API similar to ProductBuilder
-        ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .withBatch(BatchId.newOne())
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .withFeature(colorFeature, "Space Gray")
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .withBatch(BatchId.newOne())
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .withFeature(colorFeature, "Space Gray")
+                        .build();
 
         assertNotNull(instance);
         assertTrue(instance.serialNumber().isPresent());
@@ -262,29 +275,28 @@ class InstanceBuilderTest {
 
         // Build product instance
         InstanceBuilder builder1 = new InstanceBuilder(id1);
-        ProductInstance productInstance = builder1
-                .withSerial(SerialNumber.of("PROD-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance productInstance =
+                builder1.withSerial(SerialNumber.of("PROD-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         // Build package instance
         InstanceBuilder builder2 = new InstanceBuilder(id2);
-        PackageInstance packageInstance = builder2
-                .withSerial(SerialNumber.of("PKG-001"))
-                .asPackageInstance(bundle)
-                .withSelection(List.of(
-                        new SelectedInstance(productInstance, 1),
-                        new SelectedInstance(
-                                new InstanceBuilder(InstanceId.newOne())
-                                        .withBatch(BatchId.newOne())
-                                        .asProductInstance(mouse)
-                                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                                        .build(),
-                                1
-                        )
-                ))
-                .build();
+        PackageInstance packageInstance =
+                builder2.withSerial(SerialNumber.of("PKG-001"))
+                        .asPackageInstance(bundle)
+                        .withSelection(
+                                List.of(
+                                        new SelectedInstance(productInstance, 1),
+                                        new SelectedInstance(
+                                                new InstanceBuilder(InstanceId.newOne())
+                                                        .withBatch(BatchId.newOne())
+                                                        .asProductInstance(mouse)
+                                                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                                                        .build(),
+                                                1)))
+                        .build();
 
         assertNotNull(productInstance);
         assertNotNull(packageInstance);
@@ -297,12 +309,13 @@ class InstanceBuilderTest {
         SerialNumber serial = SerialNumber.of("COMMON-001");
         BatchId batch = BatchId.newOne();
 
-        ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(serial)
-                .withBatch(batch)
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(serial)
+                        .withBatch(batch)
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertEquals(serial, instance.serialNumber().get());
         assertEquals(batch, instance.batchId().get());
@@ -313,27 +326,30 @@ class InstanceBuilderTest {
         SerialNumber serial = SerialNumber.of("COMMON-001");
         BatchId batch = BatchId.newOne();
 
-        ProductInstance laptopInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("LAPTOP-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance laptopInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        ProductInstance mouseInstance = new InstanceBuilder(InstanceId.newOne())
-                .withBatch(BatchId.newOne())
-                .asProductInstance(mouse)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance mouseInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withBatch(BatchId.newOne())
+                        .asProductInstance(mouse)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
-        PackageInstance instance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(serial)
-                .withBatch(batch)
-                .asPackageInstance(bundle)
-                .withSelection(List.of(
-                        new SelectedInstance(laptopInstance, 1),
-                        new SelectedInstance(mouseInstance, 1)
-                ))
-                .build();
+        PackageInstance instance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(serial)
+                        .withBatch(batch)
+                        .asPackageInstance(bundle)
+                        .withSelection(
+                                List.of(
+                                        new SelectedInstance(laptopInstance, 1),
+                                        new SelectedInstance(mouseInstance, 1)))
+                        .build();
 
         assertEquals(serial, instance.serialNumber().get());
         assertEquals(batch, instance.batchId().get());
@@ -342,32 +358,32 @@ class InstanceBuilderTest {
     @Test
     void shouldDemonstrateParallelStructureWithProductBuilder() {
         // ProductBuilder: defines TYPES
-        PackageType packageType = Product.builder(
-                                                 UuidProductIdentifier.random(),
-                                                 ProductName.of("Test Package"),
-                                                 ProductDescription.of("Test")
-                                         )
-                                         .asPackageType()
-                                         .withRequiredChoice("laptop", laptop.id())
-                                         .build();
+        PackageType packageType =
+                Product.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Test Package"),
+                                ProductDescription.of("Test"))
+                        .asPackageType()
+                        .withRequiredChoice("laptop", laptop.id())
+                        .build();
 
         assertNotNull(packageType);
 
         // InstanceBuilder: creates INSTANCES
-        PackageInstance packageInstance = new InstanceBuilder(InstanceId.newOne())
-                .withSerial(SerialNumber.of("INSTANCE-001"))
-                .asPackageInstance(packageType)
-                .withSelection(List.of(
-                        new SelectedInstance(
-                                new InstanceBuilder(InstanceId.newOne())
-                                        .withSerial(SerialNumber.of("LAPTOP-001"))
-                                        .asProductInstance(laptop)
-                                        .withQuantity(Quantity.of(1, Unit.pieces()))
-                                        .build(),
-                                1
-                        )
-                ))
-                .build();
+        PackageInstance packageInstance =
+                new InstanceBuilder(InstanceId.newOne())
+                        .withSerial(SerialNumber.of("INSTANCE-001"))
+                        .asPackageInstance(packageType)
+                        .withSelection(
+                                List.of(
+                                        new SelectedInstance(
+                                                new InstanceBuilder(InstanceId.newOne())
+                                                        .withSerial(SerialNumber.of("LAPTOP-001"))
+                                                        .asProductInstance(laptop)
+                                                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                                                        .build(),
+                                                1)))
+                        .build();
 
         assertNotNull(packageInstance);
         assertEquals(packageType, packageInstance.packageType());
@@ -377,11 +393,12 @@ class InstanceBuilderTest {
     void shouldCreateInstanceWithGeneratedId() {
         InstanceId generatedId = InstanceId.newOne();
 
-        ProductInstance instance = new InstanceBuilder(generatedId)
-                .withSerial(SerialNumber.of("AUTO-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(generatedId)
+                        .withSerial(SerialNumber.of("AUTO-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertEquals(generatedId, instance.id());
     }
@@ -391,11 +408,12 @@ class InstanceBuilderTest {
         String explicitIdValue = "123e4567-e89b-12d3-a456-426614174000";
         InstanceId explicitId = InstanceId.of(explicitIdValue);
 
-        ProductInstance instance = new InstanceBuilder(explicitId)
-                .withSerial(SerialNumber.of("EXPLICIT-001"))
-                .asProductInstance(laptop)
-                .withQuantity(Quantity.of(1, Unit.pieces()))
-                .build();
+        ProductInstance instance =
+                new InstanceBuilder(explicitId)
+                        .withSerial(SerialNumber.of("EXPLICIT-001"))
+                        .asProductInstance(laptop)
+                        .withQuantity(Quantity.of(1, Unit.pieces()))
+                        .build();
 
         assertEquals(explicitId, instance.id());
         assertEquals(explicitIdValue, instance.id().value().toString());

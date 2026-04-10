@@ -1,46 +1,44 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
 
 class PartyIdTest {
 
     @Test
     void twoPartyIdsShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         PartyId firstPartyId = PartyId.of(UUID.randomUUID());
         PartyId secondPartyId = PartyId.of(UUID.randomUUID());
 
-        //expect
+        // expect
         assertNotEquals(firstPartyId, secondPartyId);
     }
 
     @Test
     void twoPartyIdsShouldBeEqualWhenCreatedForTheSameValue() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
 
-        //expect
+        // expect
         assertEquals(PartyId.of(value), PartyId.of(value));
     }
 
     @Test
     void partyIdIsConvertibleToTheValueItWasCreatedFrom() {
-        //given
+        // given
         UUID value = UUID.randomUUID();
         PartyId partyId = PartyId.of(value);
 
-        //expect
+        // expect
         assertEquals(value.toString(), partyId.asString());
     }
 
     @Test
     void shouldNotAllowToCreatePartyIdForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> PartyId.of(null));
     }
-
 }

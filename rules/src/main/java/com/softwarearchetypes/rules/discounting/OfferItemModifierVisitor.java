@@ -1,14 +1,13 @@
 package com.softwarearchetypes.rules.discounting;
 
-
+import com.softwarearchetypes.quantity.money.Percentage;
 import com.softwarearchetypes.rules.discounting.client.ClientStatusVisitor;
 import com.softwarearchetypes.rules.discounting.offer.modifiers.simple.PercentageOfferItemModifier;
-import com.softwarearchetypes.quantity.money.Percentage;
 
 public class OfferItemModifierVisitor implements ClientStatusVisitor<OfferItemModifier> {
     @Override
     public OfferItemModifier visitStandard() {
-        return new PercentageOfferItemModifier("My friend",Percentage.ofFraction(0.05));
+        return new PercentageOfferItemModifier("My friend", Percentage.ofFraction(0.05));
     }
 
     @Override

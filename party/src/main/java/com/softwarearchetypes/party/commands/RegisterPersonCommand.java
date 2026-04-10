@@ -7,5 +7,4 @@ public record RegisterPersonCommand(
         String firstName,
         String lastName,
         Set<String> roles,
-        Set<RegisteredIdentifier> registeredIdentifiers) {
-}
+        Set<RegisteredIdentifier> registeredIdentifiers) {}

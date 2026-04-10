@@ -1,17 +1,5 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
-import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
-import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
-import com.softwarearchetypes.party.events.GeoAddressDefined;
-import com.softwarearchetypes.party.events.GeoAddressRemoved;
-import com.softwarearchetypes.party.events.GeoAddressUpdated;
-
 import static com.softwarearchetypes.common.CollectionFixture.stringSetFrom;
 import static com.softwarearchetypes.party.GeoAddressFixture.someGeoAddressDetails;
 import static com.softwarearchetypes.party.GeoAddressFixture.someUseTypes;
@@ -19,20 +7,30 @@ import static com.softwarearchetypes.party.GeoAddressFixture.someUseTypesDiffere
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.softwarearchetypes.party.events.AddressDefinitionSucceeded;
+import com.softwarearchetypes.party.events.AddressRemovalSucceeded;
+import com.softwarearchetypes.party.events.AddressUpdateSucceeded;
+import com.softwarearchetypes.party.events.GeoAddressDefined;
+import com.softwarearchetypes.party.events.GeoAddressRemoved;
+import com.softwarearchetypes.party.events.GeoAddressUpdated;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
+
 class GeoAddressTest {
 
     @Test
     void geoAddressShouldContainDataPassedWhenCreatingIt() {
-        //given
+        // given
         AddressId addressId = AddressId.random();
         PartyId partyId = PartyId.random();
         GeoAddress.GeoAddressDetails geoAddressDetails = someGeoAddressDetails();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress address = new GeoAddress(addressId, partyId, geoAddressDetails, useTypes);
 
-        //expect
+        // expect
         assertEquals(addressId, address.id());
         assertEquals(partyId, address.partyId());
         assertEquals(geoAddressDetails, address.addressDetails());
@@ -41,127 +39,162 @@ class GeoAddressTest {
 
     @Test
     void shouldCreateAddressDefinitionSucceededEventFromGeoAddress() {
-        //given
-        GeoAddress address = new GeoAddress(AddressId.random(), PartyId.random(), someGeoAddressDetails(), someUseTypes());
+        // given
+        GeoAddress address =
+                new GeoAddress(
+                        AddressId.random(),
+                        PartyId.random(),
+                        someGeoAddressDetails(),
+                        someUseTypes());
 
-        //when
+        // when
         AddressDefinitionSucceeded event = address.toAddressDefinitionSucceededEvent();
 
-        //then
+        // then
         assertEquals(event, geoAddressDefinedEventFor(address));
     }
 
     @Test
     void shouldCreateAddressRemovalSucceededEventFromGeoAddress() {
-        //given
-        GeoAddress address = new GeoAddress(AddressId.random(), PartyId.random(), someGeoAddressDetails(), someUseTypes());
+        // given
+        GeoAddress address =
+                new GeoAddress(
+                        AddressId.random(),
+                        PartyId.random(),
+                        someGeoAddressDetails(),
+                        someUseTypes());
 
-        //when
+        // when
         AddressRemovalSucceeded event = address.toAddressRemovalSucceededEvent();
 
-        //then
+        // then
         assertEquals(event, geoAddressRemovedEventFor(address));
     }
 
     @Test
     void shouldCreateAddressUpdateSucceededEventFromGeoAddress() {
-        //given
-        GeoAddress address = new GeoAddress(AddressId.random(), PartyId.random(), someGeoAddressDetails(), someUseTypes());
+        // given
+        GeoAddress address =
+                new GeoAddress(
+                        AddressId.random(),
+                        PartyId.random(),
+                        someGeoAddressDetails(),
+                        someUseTypes());
 
-        //when
+        // when
         AddressUpdateSucceeded event = address.toAddressUpdateSucceededEvent();
 
-        //then
+        // then
         assertEquals(event, geoAddressUpdatedEventFrom(address.id(), address.partyId(), address));
     }
 
     @Test
     void twoGeoAddressObjectShouldNotBeEqualWhenHavingDifferentIds() {
-        //given
+        // given
         PartyId partyId = PartyId.random();
         GeoAddress.GeoAddressDetails geoAddressDetails = someGeoAddressDetails();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress first = new GeoAddress(AddressId.random(), partyId, geoAddressDetails, useTypes);
-        GeoAddress second = new GeoAddress(AddressId.random(), partyId, geoAddressDetails, useTypes);
+        GeoAddress second =
+                new GeoAddress(AddressId.random(), partyId, geoAddressDetails, useTypes);
 
-        //expect
+        // expect
         assertNotEquals(first, second);
     }
 
     @Test
     void twoGeoAddressObjectShouldNotBeEqualWhenBelongingToDifferentParties() {
-        //given
+        // given
         AddressId addressId = AddressId.random();
         GeoAddress.GeoAddressDetails geoAddressDetails = someGeoAddressDetails();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress first = new GeoAddress(addressId, PartyId.random(), geoAddressDetails, useTypes);
-        GeoAddress second = new GeoAddress(addressId, PartyId.random(), geoAddressDetails, useTypes);
+        GeoAddress second =
+                new GeoAddress(addressId, PartyId.random(), geoAddressDetails, useTypes);
 
-        //expect
+        // expect
         assertNotEquals(first, second);
     }
 
     @Test
     void twoGeoAddressObjectShouldBeEqualWhenHavingTheSameIdAndPartyIdButDifferentDetails() {
-        //given
+        // given
         AddressId addressId = AddressId.random();
         PartyId partyId = PartyId.random();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress first = new GeoAddress(addressId, partyId, someGeoAddressDetails(), useTypes);
         GeoAddress second = new GeoAddress(addressId, partyId, someGeoAddressDetails(), useTypes);
 
-        //expect - same identity (id + partyId) means equal
+        // expect - same identity (id + partyId) means equal
         assertEquals(first, second);
     }
 
     @Test
     void twoGeoAddressObjectShouldBeEqualWhenHavingTheSameIdAndPartyIdButDifferentUseTypes() {
-        //given
+        // given
         AddressId addressId = AddressId.random();
         PartyId partyId = PartyId.random();
         GeoAddress.GeoAddressDetails details = someGeoAddressDetails();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress first = new GeoAddress(addressId, partyId, details, useTypes);
-        GeoAddress second = new GeoAddress(addressId, partyId, details, someUseTypesDifferentThan(useTypes));
+        GeoAddress second =
+                new GeoAddress(addressId, partyId, details, someUseTypesDifferentThan(useTypes));
 
-        //expect - same identity (id + partyId) means equal
+        // expect - same identity (id + partyId) means equal
         assertEquals(first, second);
     }
 
     @Test
     void twoGeoAddressObjectShouldBeEqualWhenHavingTheSameValues() {
-        //given
+        // given
         AddressId id = AddressId.random();
         PartyId partyId = PartyId.random();
         GeoAddress.GeoAddressDetails details = someGeoAddressDetails();
         Set<AddressUseType> useTypes = someUseTypes();
 
-        //and
+        // and
         GeoAddress first = new GeoAddress(id, partyId, details, useTypes);
         GeoAddress second = new GeoAddress(id, partyId, details, useTypes);
 
-        //expect
+        // expect
         assertEquals(first, second);
     }
 
-    private static GeoAddressUpdated geoAddressUpdatedEventFrom(AddressId id, PartyId partyId, GeoAddress newAddress) {
-        return new GeoAddressUpdated(id.asString(), partyId.asString(), newAddress.name(), newAddress.street(), newAddress.building(),
-                newAddress.flat(), newAddress.city(), newAddress.zip().asString(), newAddress.locale().toString(),
+    private static GeoAddressUpdated geoAddressUpdatedEventFrom(
+            AddressId id, PartyId partyId, GeoAddress newAddress) {
+        return new GeoAddressUpdated(
+                id.asString(),
+                partyId.asString(),
+                newAddress.name(),
+                newAddress.street(),
+                newAddress.building(),
+                newAddress.flat(),
+                newAddress.city(),
+                newAddress.zip().asString(),
+                newAddress.locale().toString(),
                 newAddress.useTypes().stream().map(Enum::toString).collect(Collectors.toSet()));
     }
 
     private static GeoAddressDefined geoAddressDefinedEventFor(GeoAddress address) {
-        return new GeoAddressDefined(address.id().asString(), address.partyId().asString(),
-                address.name(), address.street(), address.building(), address.flat(), address.city(),
-                address.zip().asString(), address.locale().toString(), stringSetFrom(address.useTypes()));
+        return new GeoAddressDefined(
+                address.id().asString(),
+                address.partyId().asString(),
+                address.name(),
+                address.street(),
+                address.building(),
+                address.flat(),
+                address.city(),
+                address.zip().asString(),
+                address.locale().toString(),
+                stringSetFrom(address.useTypes()));
     }
 
     private static GeoAddressRemoved geoAddressRemovedEventFor(GeoAddress address) {

@@ -1,13 +1,12 @@
 package com.softwarearchetypes.planvsexecution.productionanalysis.tolerance;
 
-import com.softwarearchetypes.planvsexecution.productionanalysis.PlannedProduction;
 import com.softwarearchetypes.planvsexecution.productionanalysis.ActualProduction;
-
+import com.softwarearchetypes.planvsexecution.productionanalysis.PlannedProduction;
 import java.util.List;
 
 /**
- * Combines multiple tolerance strategies.
- * All strategies must match for the result to be considered a match.
+ * Combines multiple tolerance strategies. All strategies must match for the result to be considered
+ * a match.
  */
 class CombinedTolerance implements ToleranceStrategy {
 

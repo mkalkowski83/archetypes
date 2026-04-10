@@ -5,22 +5,15 @@ import java.time.LocalDate;
 /**
  * PROBLEM 2: Plan and execution in ONE entity + mutability
  *
- * This entity tries to be EVERYTHING:
- * - It holds the PLAN (plannedDate, plannedQuantity)
- * - It holds the EXECUTION (actualDate, actualQuantity)
- * - It calculates DELTA (calculateDelta method)
- * - It mutates when execution happens (updateActualDelivery)
+ * <p>This entity tries to be EVERYTHING: - It holds the PLAN (plannedDate, plannedQuantity) - It
+ * holds the EXECUTION (actualDate, actualQuantity) - It calculates DELTA (calculateDelta method) -
+ * It mutates when execution happens (updateActualDelivery)
  *
- * Problems:
- * - Cannot compare different plans with same execution
- * - Cannot compare same plan with different executions
- * - Simulations mutate production data
- * - No combinatorics of comparisons
- * - Plan and execution are INTERTWINED
- * - Changing one affects the other
- * - Cannot answer: "how would this execution look against previous plan?"
- * - Cannot answer: "how would this execution look against alternative plan?"
- * - Cannot simulate without copying/flags/"simulation mode"
+ * <p>Problems: - Cannot compare different plans with same execution - Cannot compare same plan with
+ * different executions - Simulations mutate production data - No combinatorics of comparisons -
+ * Plan and execution are INTERTWINED - Changing one affects the other - Cannot answer: "how would
+ * this execution look against previous plan?" - Cannot answer: "how would this execution look
+ * against alternative plan?" - Cannot simulate without copying/flags/"simulation mode"
  */
 public class DeliveryScheduleEntity {
 
@@ -42,7 +35,8 @@ public class DeliveryScheduleEntity {
     private LocalDate lastModified;
     private String lastModifiedBy;
 
-    public DeliveryScheduleEntity(Long id, Long orderId, LocalDate plannedDate, int plannedQuantity) {
+    public DeliveryScheduleEntity(
+            Long id, Long orderId, LocalDate plannedDate, int plannedQuantity) {
         this.id = id;
         this.orderId = orderId;
         this.plannedDate = plannedDate;
@@ -52,13 +46,11 @@ public class DeliveryScheduleEntity {
     }
 
     /**
-     * PROBLEM: This method MUTATES the entity.
-     * After calling this, the "plan" is still here, but it's contaminated with execution.
+     * PROBLEM: This method MUTATES the entity. After calling this, the "plan" is still here, but
+     * it's contaminated with execution.
      *
-     * You CANNOT now:
-     * - Compare this execution with a different plan
-     * - Simulate "what if" scenarios
-     * - Answer: "what was planned before this execution?"
+     * <p>You CANNOT now: - Compare this execution with a different plan - Simulate "what if"
+     * scenarios - Answer: "what was planned before this execution?"
      */
     public void updateActualDelivery(LocalDate actualDate, int actualQuantity) {
         this.actualDate = actualDate;
@@ -69,10 +61,8 @@ public class DeliveryScheduleEntity {
     }
 
     /**
-     * PROBLEM: Delta is calculated "inside" the entity that holds both plan and execution.
-     * This prevents comparing:
-     * - Same execution with multiple plans
-     * - Multiple executions with same plan
+     * PROBLEM: Delta is calculated "inside" the entity that holds both plan and execution. This
+     * prevents comparing: - Same execution with multiple plans - Multiple executions with same plan
      * - Alternative scenarios
      */
     public DeliveryDelta calculateDelta() {
@@ -98,14 +88,12 @@ public class DeliveryScheduleEntity {
     }
 
     /**
-     * PROBLEM: Trying to update the plan.
-     * But this changes the ENTITY, which already has execution data!
+     * PROBLEM: Trying to update the plan. But this changes the ENTITY, which already has execution
+     * data!
      *
-     * After this change:
-     * - You cannot compare new plan with old plan
-     * - You cannot see what was originally planned
-     * - The delta changes, but you don't know if it's because execution improved
-     *   or because you adjusted the plan
+     * <p>After this change: - You cannot compare new plan with old plan - You cannot see what was
+     * originally planned - The delta changes, but you don't know if it's because execution improved
+     * or because you adjusted the plan
      */
     public void updatePlan(LocalDate newPlannedDate, int newPlannedQuantity, String modifiedBy) {
         this.plannedDate = newPlannedDate;
@@ -122,20 +110,20 @@ public class DeliveryScheduleEntity {
     }
 
     /**
-     * PROBLEM: Trying to simulate.
-     * But simulation uses the SAME entity, so:
-     * - Flags are needed ("simulation mode")
-     * - Copying is needed
-     * - Risk of corrupting production data
+     * PROBLEM: Trying to simulate. But simulation uses the SAME entity, so: - Flags are needed
+     * ("simulation mode") - Copying is needed - Risk of corrupting production data
      */
-    public DeliveryDelta simulateIfDeliveredOn(LocalDate hypotheticalDate, int hypotheticalQuantity) {
+    public DeliveryDelta simulateIfDeliveredOn(
+            LocalDate hypotheticalDate, int hypotheticalQuantity) {
         // Option 1: Mutate this entity (DANGEROUS - corrupts production data!)
         // this.actualDate = hypotheticalDate;
         // this.actualQuantity = hypotheticalQuantity;
         // return calculateDelta();
 
         // Option 2: Create a copy (MESSY - memory overhead, equals/hashcode issues)
-        DeliveryScheduleEntity copy = new DeliveryScheduleEntity(this.id, this.orderId, this.plannedDate, this.plannedQuantity);
+        DeliveryScheduleEntity copy =
+                new DeliveryScheduleEntity(
+                        this.id, this.orderId, this.plannedDate, this.plannedQuantity);
         copy.updateActualDelivery(hypotheticalDate, hypotheticalQuantity);
         return copy.calculateDelta();
 
@@ -147,13 +135,39 @@ public class DeliveryScheduleEntity {
     }
 
     // Getters
-    public Long getId() { return id; }
-    public Long getOrderId() { return orderId; }
-    public LocalDate getPlannedDate() { return plannedDate; }
-    public int getPlannedQuantity() { return plannedQuantity; }
-    public LocalDate getActualDate() { return actualDate; }
-    public int getActualQuantity() { return actualQuantity; }
-    public DeliveryStatus getStatus() { return status; }
-    public LocalDate getLastModified() { return lastModified; }
-    public String getLastModifiedBy() { return lastModifiedBy; }
+    public Long getId() {
+        return id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public LocalDate getPlannedDate() {
+        return plannedDate;
+    }
+
+    public int getPlannedQuantity() {
+        return plannedQuantity;
+    }
+
+    public LocalDate getActualDate() {
+        return actualDate;
+    }
+
+    public int getActualQuantity() {
+        return actualQuantity;
+    }
+
+    public DeliveryStatus getStatus() {
+        return status;
+    }
+
+    public LocalDate getLastModified() {
+        return lastModified;
+    }
+
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
+    }
 }

@@ -6,21 +6,15 @@ import java.util.List;
 /**
  * PROBLEM 1: "Plan" bez źródła prawdy
  *
- * This service reconstructs delivery plan from multiple sources:
- * - Customer SLA
- * - Warehouse capacity
- * - Working calendar
- * - Driver availability
+ * <p>This service reconstructs delivery plan from multiple sources: - Customer SLA - Warehouse
+ * capacity - Working calendar - Driver availability
  *
- * The plan is NOT a first-class entity - it's a CONCLUSION from a query.
+ * <p>The plan is NOT a first-class entity - it's a CONCLUSION from a query.
  *
- * Problems:
- * - Plan has no history (would require versioning ALL source entities)
- * - Plan has no moment of change
- * - Plan cannot be modified independently
- * - Plan is a fragile artifact of SQL JOIN
- * - Changing ANY source entity changes "the plan"
- * - No single source of truth for "what was the plan on date X?"
+ * <p>Problems: - Plan has no history (would require versioning ALL source entities) - Plan has no
+ * moment of change - Plan cannot be modified independently - Plan is a fragile artifact of SQL JOIN
+ * - Changing ANY source entity changes "the plan" - No single source of truth for "what was the
+ * plan on date X?"
  */
 public class DeliveryPlanService {
 
@@ -43,14 +37,13 @@ public class DeliveryPlanService {
     /**
      * This method "calculates" the plan by joining multiple sources.
      *
-     * The plan is IMPLICIT - it exists only as a result of this query.
-     * It has no identity, no lifecycle, no versioning.
+     * <p>The plan is IMPLICIT - it exists only as a result of this query. It has no identity, no
+     * lifecycle, no versioning.
      *
-     * What happens when:
-     * - Customer SLA changes? → "plan" changes, but we don't know what it WAS
-     * - Warehouse capacity changes? → "plan" changes, but we have no history
-     * - Calendar is updated? → "plan" changes, but we can't compare old vs new
-     * - Driver availability changes? → "plan" changes, but we lose the original intention
+     * <p>What happens when: - Customer SLA changes? → "plan" changes, but we don't know what it WAS
+     * - Warehouse capacity changes? → "plan" changes, but we have no history - Calendar is updated?
+     * → "plan" changes, but we can't compare old vs new - Driver availability changes? → "plan"
+     * changes, but we lose the original intention
      */
     public LocalDate calculateDeliveryPlan(Long orderId, Long customerId, LocalDate orderDate) {
         // Step 1: Get customer SLA (from one table)
@@ -83,16 +76,15 @@ public class DeliveryPlanService {
     }
 
     /**
-     * When someone asks: "What was the delivery plan for order X on date Y?"
-     * We CANNOT answer! Because:
-     * - We don't know what the customer SLA was on date Y
-     * - We don't know what the warehouse capacity was on date Y
-     * - We don't know what the calendar looked like on date Y
-     * - We don't know what driver availability was on date Y
+     * When someone asks: "What was the delivery plan for order X on date Y?" We CANNOT answer!
+     * Because: - We don't know what the customer SLA was on date Y - We don't know what the
+     * warehouse capacity was on date Y - We don't know what the calendar looked like on date Y - We
+     * don't know what driver availability was on date Y
      *
-     * The plan is LOST. It only exists "now", never "then".
+     * <p>The plan is LOST. It only exists "now", never "then".
      */
-    public LocalDate recalculateHistoricalPlan(Long orderId, Long customerId, LocalDate orderDate, LocalDate asOf) {
+    public LocalDate recalculateHistoricalPlan(
+            Long orderId, Long customerId, LocalDate orderDate, LocalDate asOf) {
         // IMPOSSIBLE! We have no historical data for:
         // - customer.slaDeliveryDays as of 'asOf' date
         // - warehouse.dailyCapacity as of 'asOf' date
@@ -100,7 +92,6 @@ public class DeliveryPlanService {
         // - driverAvailability as of 'asOf' date
 
         throw new UnsupportedOperationException(
-            "Cannot reconstruct historical plan - no versioning of source entities!"
-        );
+                "Cannot reconstruct historical plan - no versioning of source entities!");
     }
 }

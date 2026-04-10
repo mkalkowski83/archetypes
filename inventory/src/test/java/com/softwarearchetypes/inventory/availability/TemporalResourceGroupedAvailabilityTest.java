@@ -1,12 +1,11 @@
 package com.softwarearchetypes.inventory.availability;
 
-import com.softwarearchetypes.common.Result;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.softwarearchetypes.common.Result;
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class TemporalResourceGroupedAvailabilityTest {
 
@@ -17,12 +16,13 @@ class TemporalResourceGroupedAvailabilityTest {
     @Test
     void canBlockMultipleSlotsAtOnce() {
         // given - hotel room for 3 nights
-        List<TimeSlot> slots = List.of(
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 16)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 17))
-        );
-        TemporalResourceGroupedAvailability stay = TemporalResourceGroupedAvailability.of(ROOM_101, slots);
+        List<TimeSlot> slots =
+                List.of(
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 16)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 17)));
+        TemporalResourceGroupedAvailability stay =
+                TemporalResourceGroupedAvailability.of(ROOM_101, slots);
 
         // when
         Result<String, List<BlockadeId>> result = stay.block(ALICE, LockDuration.indefinite());
@@ -36,16 +36,18 @@ class TemporalResourceGroupedAvailabilityTest {
     @Test
     void failsIfAnySlotsAreUnavailable() {
         // given - room already booked for middle night
-        List<TimeSlot> slots = List.of(
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 16)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 17))
-        );
-        TemporalResourceGroupedAvailability stay = TemporalResourceGroupedAvailability.of(ROOM_101, slots);
+        List<TimeSlot> slots =
+                List.of(
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 16)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 17)));
+        TemporalResourceGroupedAvailability stay =
+                TemporalResourceGroupedAvailability.of(ROOM_101, slots);
 
         // someone books the middle night
-        stay.availabilities().get(1).lock(
-                TemporalLockRequest.indefinite(ROOM_101, slots.get(1), BOB));
+        stay.availabilities()
+                .get(1)
+                .lock(TemporalLockRequest.indefinite(ROOM_101, slots.get(1), BOB));
 
         // when - Alice tries to book all 3 nights
         Result<String, List<BlockadeId>> result = stay.block(ALICE, LockDuration.indefinite());
@@ -59,11 +61,12 @@ class TemporalResourceGroupedAvailabilityTest {
     @Test
     void canReleaseMultipleSlots() {
         // given
-        List<TimeSlot> slots = List.of(
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 16))
-        );
-        TemporalResourceGroupedAvailability stay = TemporalResourceGroupedAvailability.of(ROOM_101, slots);
+        List<TimeSlot> slots =
+                List.of(
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 16)));
+        TemporalResourceGroupedAvailability stay =
+                TemporalResourceGroupedAvailability.of(ROOM_101, slots);
         Result<String, List<BlockadeId>> blockResult = stay.block(ALICE, LockDuration.indefinite());
         List<BlockadeId> blockadeIds = blockResult.getSuccess();
 
@@ -78,17 +81,20 @@ class TemporalResourceGroupedAvailabilityTest {
     @Test
     void tracksMultipleOwners() {
         // given - two separate single-night bookings
-        List<TimeSlot> slots = List.of(
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
-                TimeSlot.ofDay(LocalDate.of(2024, 1, 16))
-        );
-        TemporalResourceGroupedAvailability stay = TemporalResourceGroupedAvailability.of(ROOM_101, slots);
+        List<TimeSlot> slots =
+                List.of(
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 15)),
+                        TimeSlot.ofDay(LocalDate.of(2024, 1, 16)));
+        TemporalResourceGroupedAvailability stay =
+                TemporalResourceGroupedAvailability.of(ROOM_101, slots);
 
         // when
-        stay.availabilities().get(0).lock(
-                TemporalLockRequest.indefinite(ROOM_101, slots.get(0), ALICE));
-        stay.availabilities().get(1).lock(
-                TemporalLockRequest.indefinite(ROOM_101, slots.get(1), BOB));
+        stay.availabilities()
+                .get(0)
+                .lock(TemporalLockRequest.indefinite(ROOM_101, slots.get(0), ALICE));
+        stay.availabilities()
+                .get(1)
+                .lock(TemporalLockRequest.indefinite(ROOM_101, slots.get(1), BOB));
 
         // then
         assertThat(stay.owners()).containsExactlyInAnyOrder(ALICE, BOB);

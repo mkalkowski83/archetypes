@@ -1,8 +1,8 @@
 package com.softwarearchetypes.product;
 
 /**
- * Product - component in composite pattern.
- * Can be either ProductType (leaf - regular product) or PackageType (composite - package of products).
+ * Product - component in composite pattern. Can be either ProductType (leaf - regular product) or
+ * PackageType (composite - package of products).
  */
 interface Product {
     ProductIdentifier id();
@@ -19,7 +19,8 @@ interface Product {
         return applicabilityConstraint().isSatisfiedBy(context);
     }
 
-    static ProductBuilder builder(ProductIdentifier id, ProductName name, ProductDescription description) {
+    static ProductBuilder builder(
+            ProductIdentifier id, ProductName name, ProductDescription description) {
         return new ProductBuilder(id, name, description);
     }
 }

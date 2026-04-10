@@ -1,9 +1,8 @@
 package com.softwarearchetypes.accounting.postingrules;
 
-import java.time.Clock;
-
 import com.softwarearchetypes.accounting.AccountingFacade;
 import com.softwarearchetypes.common.events.EventPublisher;
+import java.time.Clock;
 
 public class PostingRulesConfiguration {
 
@@ -11,22 +10,28 @@ public class PostingRulesConfiguration {
     private final PostingRulesFacade postingRulesFacade;
     private final PostingRulesEventHandler eventHandler;
 
-    PostingRulesConfiguration(PostingRuleRepository postingRuleRepository,
-            PostingRulesFacade postingRulesFacade, PostingRulesEventHandler eventHandler) {
+    PostingRulesConfiguration(
+            PostingRuleRepository postingRuleRepository,
+            PostingRulesFacade postingRulesFacade,
+            PostingRulesEventHandler eventHandler) {
         this.postingRuleRepository = postingRuleRepository;
         this.postingRulesFacade = postingRulesFacade;
         this.eventHandler = eventHandler;
     }
 
-    public static PostingRulesConfiguration inMemory(AccountingFacade accountingFacade, EventPublisher eventPublisher, Clock clock) {
+    public static PostingRulesConfiguration inMemory(
+            AccountingFacade accountingFacade, EventPublisher eventPublisher, Clock clock) {
         PostingRuleRepository postingRuleRepository = new InMemoryPostingRuleRepository();
         PostingRuleExecutor postingRuleExecutor = new PostingRuleExecutor(postingRuleRepository);
-        PostingRulesFacade postingRulesFacade = new PostingRulesFacade(postingRuleRepository, postingRuleExecutor, accountingFacade, clock);
+        PostingRulesFacade postingRulesFacade =
+                new PostingRulesFacade(
+                        postingRuleRepository, postingRuleExecutor, accountingFacade, clock);
         PostingRulesEventHandler eventHandler = new PostingRulesEventHandler(postingRulesFacade);
 
         eventPublisher.register(eventHandler);
 
-        return new PostingRulesConfiguration(postingRuleRepository, postingRulesFacade, eventHandler);
+        return new PostingRulesConfiguration(
+                postingRuleRepository, postingRulesFacade, eventHandler);
     }
 
     public PostingRulesFacade facade() {

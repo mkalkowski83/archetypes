@@ -25,6 +25,5 @@ public class InMemoryEventsPublisher implements EventPublisher {
     public interface InMemoryEventObserver {
 
         void handle(PublishedEvent event);
-
     }
 }

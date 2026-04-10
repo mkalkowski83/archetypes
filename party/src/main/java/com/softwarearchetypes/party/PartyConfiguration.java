@@ -1,6 +1,5 @@
 package com.softwarearchetypes.party;
 
-import com.softwarearchetypes.party.events.EventPublisher;
 import com.softwarearchetypes.party.events.InMemoryEventsPublisher;
 
 class PartyConfiguration {
@@ -15,15 +14,16 @@ class PartyConfiguration {
     private final CapabilitiesQueries capabilitiesQueries;
     private final InMemoryEventsPublisher eventPublisher;
 
-    PartyConfiguration(PartiesFacade partiesFacade,
-                       PartyRelationshipsFacade partyRelationshipsFacade,
-                       AddressesFacade addressesFacade,
-                       CapabilitiesFacade capabilitiesFacade,
-                       PartiesQueries partiesQueries,
-                       PartyRelationshipsQueries partyRelationshipsQueries,
-                       AddressesQueries addressesQueries,
-                       CapabilitiesQueries capabilitiesQueries,
-                       InMemoryEventsPublisher eventPublisher) {
+    PartyConfiguration(
+            PartiesFacade partiesFacade,
+            PartyRelationshipsFacade partyRelationshipsFacade,
+            AddressesFacade addressesFacade,
+            CapabilitiesFacade capabilitiesFacade,
+            PartiesQueries partiesQueries,
+            PartyRelationshipsQueries partyRelationshipsQueries,
+            AddressesQueries addressesQueries,
+            CapabilitiesQueries capabilitiesQueries,
+            InMemoryEventsPublisher eventPublisher) {
         this.partiesFacade = partiesFacade;
         this.partyRelationshipsFacade = partyRelationshipsFacade;
         this.addressesFacade = addressesFacade;
@@ -38,25 +38,36 @@ class PartyConfiguration {
     public static PartyConfiguration inMemory() {
         InMemoryEventsPublisher eventPublisher = new InMemoryEventsPublisher();
         InMemoryPartyRepository partyRepository = new InMemoryPartyRepository();
-        InMemoryPartyRelationshipRepository partyRelationshipRepository = new InMemoryPartyRelationshipRepository();
+        InMemoryPartyRelationshipRepository partyRelationshipRepository =
+                new InMemoryPartyRelationshipRepository();
         InMemoryAddressesRepository addressesRepository = new InMemoryAddressesRepository();
-        InMemoryCapabilitiesRepository capabilitiesRepository = new InMemoryCapabilitiesRepository();
+        InMemoryCapabilitiesRepository capabilitiesRepository =
+                new InMemoryCapabilitiesRepository();
 
-        PartiesFacade partiesFacade = new PartiesFacade(partyRepository, eventPublisher, PartyId::random);
+        PartiesFacade partiesFacade =
+                new PartiesFacade(partyRepository, eventPublisher, PartyId::random);
 
         PartyRoleFactory partyRoleFactory = new PartyRoleFactory();
-        PartyRelationshipFactory partyRelationshipFactory = new PartyRelationshipFactory(PartyRelationshipId::random);
-        PartyRelationshipsFacade partyRelationshipsFacade = new PartyRelationshipsFacade(
-                partyRoleFactory, partyRelationshipFactory, partyRelationshipRepository, partyRepository, eventPublisher);
+        PartyRelationshipFactory partyRelationshipFactory =
+                new PartyRelationshipFactory(PartyRelationshipId::random);
+        PartyRelationshipsFacade partyRelationshipsFacade =
+                new PartyRelationshipsFacade(
+                        partyRoleFactory,
+                        partyRelationshipFactory,
+                        partyRelationshipRepository,
+                        partyRepository,
+                        eventPublisher);
 
         AddressesFacade addressesFacade = new AddressesFacade(addressesRepository, eventPublisher);
 
         PartiesQueries partiesQueries = new PartiesQueries(partyRepository);
-        PartyRelationshipsQueries partyRelationshipsQueries = new PartyRelationshipsQueries(partyRelationshipRepository);
+        PartyRelationshipsQueries partyRelationshipsQueries =
+                new PartyRelationshipsQueries(partyRelationshipRepository);
         AddressesQueries addressesQueries = new AddressesQueries(addressesRepository);
         CapabilitiesQueries capabilitiesQueries = new CapabilitiesQueries(capabilitiesRepository);
 
-        CapabilitiesFacade capabilitiesFacade = new CapabilitiesFacade(capabilitiesRepository, partiesQueries);
+        CapabilitiesFacade capabilitiesFacade =
+                new CapabilitiesFacade(capabilitiesRepository, partiesQueries);
 
         return new PartyConfiguration(
                 partiesFacade,

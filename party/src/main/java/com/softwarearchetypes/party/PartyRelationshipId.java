@@ -1,8 +1,8 @@
 package com.softwarearchetypes.party;
 
-import java.util.UUID;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
+import java.util.UUID;
 
 public record PartyRelationshipId(UUID value) {
 

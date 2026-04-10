@@ -1,20 +1,18 @@
 package com.softwarearchetypes.graphs.influence;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Set;
-
 import static com.softwarearchetypes.graphs.influence.Fixtures.*;
 import static com.softwarearchetypes.graphs.influence.InfluenceMapAssert.assertThat;
+
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class InfluenceMapTest {
 
     @Test
     void shouldCreateInfluenceGraphAsCartesianProductOfPhysicsAndLaboratories() {
         // given
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(THERMAL, CONDUCTIVITY)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder().addInfluence(THERMAL, CONDUCTIVITY).build();
 
         // and
         Set<Laboratory> labs = Set.of(LAB_A, LAB_B, LAB_C);
@@ -23,11 +21,12 @@ class InfluenceMapTest {
         InfrastructureInfluence infrastructureInfluence = emptyInfrastructure();
 
         // when
-        InfluenceMap influence = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(infrastructureInfluence)
-                .withLaboratories(labs)
-                .build();
+        InfluenceMap influence =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(infrastructureInfluence)
+                        .withLaboratories(labs)
+                        .build();
 
         // then
         assertThat(influence)
@@ -46,24 +45,25 @@ class InfluenceMapTest {
     @Test
     void shouldCombinePhysicsCartesianProductWithInfrastructureConstraints() {
         // given
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(THERMAL, CONDUCTIVITY)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder().addInfluence(THERMAL, CONDUCTIVITY).build();
 
         // and
         Set<Laboratory> labs = Set.of(LAB_A, LAB_B);
 
         // and
-        InfrastructureInfluence infrastructureInfluence = InfrastructureInfluence.builder()
-                .addConstraint(SPECTROSCOPY, LAB_A, THERMAL, LAB_B)
-                .build();
+        InfrastructureInfluence infrastructureInfluence =
+                InfrastructureInfluence.builder()
+                        .addConstraint(SPECTROSCOPY, LAB_A, THERMAL, LAB_B)
+                        .build();
 
         // when
-        InfluenceMap influence = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(infrastructureInfluence)
-                .withLaboratories(labs)
-                .build();
+        InfluenceMap influence =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(infrastructureInfluence)
+                        .withLaboratories(labs)
+                        .build();
 
         // then
         assertThat(influence)
@@ -78,25 +78,23 @@ class InfluenceMapTest {
     @Test
     void shouldCreateInfluenceGraphBasedOnLaboratoryAdjacency() {
         // given
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(THERMAL, CONDUCTIVITY)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder().addInfluence(THERMAL, CONDUCTIVITY).build();
 
         // and
-        LaboratoryAdjacency adjacency = LaboratoryAdjacency.builder()
-                .adjacent(LAB_A, LAB_B)
-                .adjacent(LAB_B, LAB_C)
-                .build();
+        LaboratoryAdjacency adjacency =
+                LaboratoryAdjacency.builder().adjacent(LAB_A, LAB_B).adjacent(LAB_B, LAB_C).build();
 
         // and
         InfrastructureInfluence infrastructureInfluence = emptyInfrastructure();
 
         // when
-        InfluenceMap influence = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(infrastructureInfluence)
-                .withLaboratoryAdjacency(adjacency)
-                .build();
+        InfluenceMap influence =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(infrastructureInfluence)
+                        .withLaboratoryAdjacency(adjacency)
+                        .build();
 
         // then
         assertThat(influence)

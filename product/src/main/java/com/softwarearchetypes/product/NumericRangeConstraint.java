@@ -3,10 +3,10 @@ package com.softwarearchetypes.product;
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 /**
- * Restricts integer values to a numeric range [min, max].
- * Example: year of production between 2020 and 2024
+ * Restricts integer values to a numeric range [min, max]. Example: year of production between 2020
+ * and 2024
  *
- * Persistence config example: {"min": 2020, "max": 2024}
+ * <p>Persistence config example: {"min": 2020, "max": 2024}
  */
 class NumericRangeConstraint implements FeatureValueConstraint {
 

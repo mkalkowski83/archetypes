@@ -1,8 +1,8 @@
 package com.softwarearchetypes.planvsexecution.productionanalysis.tolerance;
 
 /**
- * Result of matching a planned order against actual production(s).
- * Encapsulates whether they match and why/why not.
+ * Result of matching a planned order against actual production(s). Encapsulates whether they match
+ * and why/why not.
  */
 public record MatchResult(boolean matched, String reason) {
 

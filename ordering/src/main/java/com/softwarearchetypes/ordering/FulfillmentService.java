@@ -4,19 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Service responsible for fulfillment orchestration.
- * Delegates actual fulfillment to specialized services based on product type.
+ * Service responsible for fulfillment orchestration. Delegates actual fulfillment to specialized
+ * services based on product type.
  */
 interface FulfillmentService {
 
-    /**
-     * Start fulfillment for a confirmed order.
-     */
+    /** Start fulfillment for a confirmed order. */
     void startFulfillment(OrderId orderId);
 
-    /**
-     * Cancel ongoing fulfillment (if possible).
-     */
+    /** Cancel ongoing fulfillment (if possible). */
     void cancelFulfillment(OrderId orderId);
 }
 

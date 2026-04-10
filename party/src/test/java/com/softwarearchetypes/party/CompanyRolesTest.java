@@ -5,5 +5,4 @@ class CompanyRolesTest extends PartyRolesTest<Company> {
     CompanyRolesTest() {
         super(Company.class);
     }
-
 }

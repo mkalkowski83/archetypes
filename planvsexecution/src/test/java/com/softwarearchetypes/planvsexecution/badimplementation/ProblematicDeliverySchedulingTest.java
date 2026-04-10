@@ -1,18 +1,17 @@
 package com.softwarearchetypes.planvsexecution.badimplementation;
 
-import com.softwarearchetypes.planvsexecution.badimplementation.deliveryscheduling.*;
-import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.softwarearchetypes.planvsexecution.badimplementation.deliveryscheduling.*;
+import java.time.LocalDate;
+import org.junit.jupiter.api.Test;
 
 /**
  * This test demonstrates the problems with bad implementations:
  *
- * Problem 1: Plan reconstructed from multiple sources (no single source of truth)
- * Problem 2: Plan and execution in one mutable entity
+ * <p>Problem 1: Plan reconstructed from multiple sources (no single source of truth) Problem 2:
+ * Plan and execution in one mutable entity
  */
 class ProblematicDeliverySchedulingTest {
 
@@ -38,7 +37,8 @@ class ProblematicDeliverySchedulingTest {
         driverRepo.save(new DriverAvailability(1L, "John", orderDate.plusDays(3), true, 10));
         driverRepo.save(new DriverAvailability(2L, "Mike", orderDate.plusDays(7), true, 10));
 
-        DeliveryPlanService planService = new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
+        DeliveryPlanService planService =
+                new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
 
         // when - calculate plan initially
         LocalDate initialPlan = planService.calculateDeliveryPlan(100L, 1L, orderDate);
@@ -74,15 +74,18 @@ class ProblematicDeliverySchedulingTest {
         Warehouse warehouse = new Warehouse(1L, "North", 100, 0);
         warehouseRepo.save(warehouse);
 
-        DeliveryPlanService planService = new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
+        DeliveryPlanService planService =
+                new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
 
         LocalDate orderDate = LocalDate.of(2024, 1, 15);
         LocalDate asOfDate = LocalDate.of(2024, 1, 1);
 
         // when/then - CANNOT reconstruct plan "as it was on 2024-01-01"
-        assertThrows(UnsupportedOperationException.class, () -> {
-            planService.recalculateHistoricalPlan(100L, 1L, orderDate, asOfDate);
-        });
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> {
+                    planService.recalculateHistoricalPlan(100L, 1L, orderDate, asOfDate);
+                });
 
         // PROBLEM: No versioning of source entities = no historical plans!
     }
@@ -104,7 +107,8 @@ class ProblematicDeliverySchedulingTest {
         LocalDate orderDate = LocalDate.of(2024, 1, 15);
         driverRepo.save(new DriverAvailability(1L, "John", orderDate.plusDays(2), true, 10));
 
-        DeliveryPlanService planService = new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
+        DeliveryPlanService planService =
+                new DeliveryPlanService(customerRepo, warehouseRepo, calendar, driverRepo);
 
         // when - calculate plan with capacity
         LocalDate planWithCapacity = planService.calculateDeliveryPlan(100L, 1L, orderDate);
@@ -126,12 +130,8 @@ class ProblematicDeliverySchedulingTest {
     @Test
     void problem2_cannot_compare_execution_with_different_plans() {
         // given - one schedule entity with plan and execution
-        DeliveryScheduleEntity schedule = new DeliveryScheduleEntity(
-                1L,
-                100L,
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryScheduleEntity schedule =
+                new DeliveryScheduleEntity(1L, 100L, LocalDate.of(2024, 1, 20), 100);
 
         // when - execution happens
         schedule.updateActualDelivery(LocalDate.of(2024, 1, 22), 95);
@@ -162,20 +162,14 @@ class ProblematicDeliverySchedulingTest {
     @Test
     void problem2_simulation_creates_messy_copies() {
         // given
-        DeliveryScheduleEntity schedule = new DeliveryScheduleEntity(
-                1L,
-                100L,
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryScheduleEntity schedule =
+                new DeliveryScheduleEntity(1L, 100L, LocalDate.of(2024, 1, 20), 100);
 
         schedule.updateActualDelivery(LocalDate.of(2024, 1, 22), 95);
 
         // when - simulate "what if we delivered on time?"
-        DeliveryDelta simulatedDelta = schedule.simulateIfDeliveredOn(
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryDelta simulatedDelta =
+                schedule.simulateIfDeliveredOn(LocalDate.of(2024, 1, 20), 100);
 
         // then - simulation works, but:
         assertThat(simulatedDelta.type()).isEqualTo(DeltaType.PERFECT_MATCH);
@@ -192,12 +186,8 @@ class ProblematicDeliverySchedulingTest {
     @Test
     void problem2_updating_plan_loses_intention() {
         // given
-        DeliveryScheduleEntity schedule = new DeliveryScheduleEntity(
-                1L,
-                100L,
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryScheduleEntity schedule =
+                new DeliveryScheduleEntity(1L, 100L, LocalDate.of(2024, 1, 20), 100);
 
         // when - business changes the plan
         schedule.updatePlan(LocalDate.of(2024, 1, 25), 120, "jane");
@@ -220,12 +210,8 @@ class ProblematicDeliverySchedulingTest {
     void problem2_cannot_answer_combinatoric_questions() {
         // Scenario: We have ONE execution, but want to compare it with THREE different plans
 
-        DeliveryScheduleEntity schedule = new DeliveryScheduleEntity(
-                1L,
-                100L,
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryScheduleEntity schedule =
+                new DeliveryScheduleEntity(1L, 100L, LocalDate.of(2024, 1, 20), 100);
 
         schedule.updateActualDelivery(LocalDate.of(2024, 1, 22), 95);
 
@@ -250,12 +236,8 @@ class ProblematicDeliverySchedulingTest {
     @Test
     void problem2_mutability_kills_what_if_questions() {
         // given - original schedule
-        DeliveryScheduleEntity schedule = new DeliveryScheduleEntity(
-                1L,
-                100L,
-                LocalDate.of(2024, 1, 20),
-                100
-        );
+        DeliveryScheduleEntity schedule =
+                new DeliveryScheduleEntity(1L, 100L, LocalDate.of(2024, 1, 20), 100);
 
         // Business wants to answer: "What if we had delivered on these three different dates?"
         LocalDate scenario1 = LocalDate.of(2024, 1, 18); // 2 days early

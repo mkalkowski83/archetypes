@@ -2,9 +2,7 @@ package com.softwarearchetypes.product;
 
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
-/**
- * Descriptive name for a Batch (e.g., "Batch 2024-Q1-001", "LOT-20240115-A").
- */
+/** Descriptive name for a Batch (e.g., "Batch 2024-Q1-001", "LOT-20240115-A"). */
 record BatchName(String value) {
 
     BatchName {

@@ -3,7 +3,6 @@ package com.softwarearchetypes.scoring.algebra;
 import com.softwarearchetypes.scoring.ast.CmpOp;
 import com.softwarearchetypes.scoring.ast.Metric;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.List;
 
 public interface Algebra<R> {

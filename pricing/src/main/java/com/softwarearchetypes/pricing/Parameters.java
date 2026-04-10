@@ -1,13 +1,12 @@
 package com.softwarearchetypes.pricing;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import com.softwarearchetypes.quantity.money.Money;
 
 public class Parameters {
     private final Map<String, Object> values;
@@ -19,7 +18,6 @@ public class Parameters {
     public Parameters(Map<String, Object> values) {
         this.values = new HashMap<>(values);
     }
-
 
     public static Parameters empty() {
         return new Parameters();
@@ -37,11 +35,29 @@ public class Parameters {
         return new Parameters(Map.of(k1, v1, k2, v2, k3, v3));
     }
 
-    public static Parameters of(String k1, Object v1, String k2, Object v2, String k3, Object v3, String k4, Object v4) {
+    public static Parameters of(
+            String k1,
+            Object v1,
+            String k2,
+            Object v2,
+            String k3,
+            Object v3,
+            String k4,
+            Object v4) {
         return new Parameters(Map.of(k1, v1, k2, v2, k3, v3, k4, v4));
     }
 
-    public static Parameters of(String k1, Object v1, String k2, Object v2, String k3, Object v3, String k4, Object v4, String k5, Object v5) {
+    public static Parameters of(
+            String k1,
+            Object v1,
+            String k2,
+            Object v2,
+            String k3,
+            Object v3,
+            String k4,
+            Object v4,
+            String k5,
+            Object v5) {
         return new Parameters(Map.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5));
     }
 
@@ -69,7 +85,8 @@ public class Parameters {
             String str = (String) value;
             String[] parts = str.trim().split("\\s+");
             if (parts.length != 2) {
-                throw new IllegalArgumentException("Invalid Money format: " + value + ". Expected format: 'PLN 1999.00'");
+                throw new IllegalArgumentException(
+                        "Invalid Money format: " + value + ". Expected format: 'PLN 1999.00'");
             }
             String currency = parts[0].toUpperCase();
             BigDecimal amount = new BigDecimal(parts[1]);
@@ -103,8 +120,8 @@ public class Parameters {
     }
 
     /**
-     * Returns the timestamp parameter for versioned component calculations.
-     * Used to determine which version of a component to use.
+     * Returns the timestamp parameter for versioned component calculations. Used to determine which
+     * version of a component to use.
      *
      * @return Optional containing timestamp if present, empty otherwise
      */
@@ -116,18 +133,18 @@ public class Parameters {
     }
 
     /**
-     * Returns the timestamp parameter, or throws if not present.
-     * Use for strict validation when timestamp is mandatory.
+     * Returns the timestamp parameter, or throws if not present. Use for strict validation when
+     * timestamp is mandatory.
      *
      * @return timestamp for version lookup
      * @throws IllegalArgumentException if timestamp not present
      */
     public LocalDateTime requireTimestamp() {
-        return timestamp().orElseThrow(() ->
-            new IllegalArgumentException(
-                "Parameters must contain 'timestamp' for versioned calculations"
-            )
-        );
+        return timestamp()
+                .orElseThrow(
+                        () ->
+                                new IllegalArgumentException(
+                                        "Parameters must contain 'timestamp' for versioned calculations"));
     }
 
     public boolean contains(String key) {
@@ -174,10 +191,10 @@ public class Parameters {
     }
 
     /**
-     * Returns a new Parameters instance with an additional key-value pair.
-     * Does not modify this instance (immutable style).
+     * Returns a new Parameters instance with an additional key-value pair. Does not modify this
+     * instance (immutable style).
      *
-     * @param key   parameter name
+     * @param key parameter name
      * @param value parameter value
      * @return new Parameters with the added entry
      */

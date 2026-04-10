@@ -1,11 +1,7 @@
 package com.softwarearchetypes.party;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import static com.softwarearchetypes.common.Preconditions.checkNotNull;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
@@ -20,11 +16,14 @@ import com.softwarearchetypes.party.events.RoleAdded;
 import com.softwarearchetypes.party.events.RoleAdditionSkipped;
 import com.softwarearchetypes.party.events.RoleRemovalSkipped;
 import com.softwarearchetypes.party.events.RoleRemoved;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static com.softwarearchetypes.common.Preconditions.checkNotNull;
-
-public sealed abstract class Party permits Organization, Person {
+public abstract sealed class Party permits Organization, Person {
 
     private final PartyId partyId;
     private final Set<Role> roles;
@@ -34,12 +33,27 @@ public sealed abstract class Party permits Organization, Person {
     private final RegisteredIdentifierDefiningPolicy identifierPolicy;
     private final PartyRoleDefiningPolicy roleDefiningPolicy;
 
-    Party(PartyId partyId, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
-        this(partyId, roles, registeredIdentifiers, version, RegisteredIdentifierDefiningPolicy.all(), PartyRoleDefiningPolicy.alwaysAllow());
+    Party(
+            PartyId partyId,
+            Set<Role> roles,
+            Set<RegisteredIdentifier> registeredIdentifiers,
+            Version version) {
+        this(
+                partyId,
+                roles,
+                registeredIdentifiers,
+                version,
+                RegisteredIdentifierDefiningPolicy.all(),
+                PartyRoleDefiningPolicy.alwaysAllow());
     }
 
-    Party(PartyId partyId, Set<Role> roles, Set<RegisteredIdentifier> registeredIdentifiers, Version version,
-            RegisteredIdentifierDefiningPolicy identifierPolicy, PartyRoleDefiningPolicy roleDefiningPolicy) {
+    Party(
+            PartyId partyId,
+            Set<Role> roles,
+            Set<RegisteredIdentifier> registeredIdentifiers,
+            Version version,
+            RegisteredIdentifierDefiningPolicy identifierPolicy,
+            PartyRoleDefiningPolicy roleDefiningPolicy) {
         checkArgument(partyId != null, "Party Id cannot be null");
         checkArgument(roles != null, "Roles cannot be null");
         checkArgument(registeredIdentifiers != null, "Registered identifiers cannot be null");
@@ -58,12 +72,15 @@ public sealed abstract class Party permits Organization, Person {
         this.registeredIdentifiers = new HashSet<>(registeredIdentifiers);
     }
 
-    private void validateIdentifiers(Set<RegisteredIdentifier> registeredIdentifiers, RegisteredIdentifierDefiningPolicy identifierPolicy) {
+    private void validateIdentifiers(
+            Set<RegisteredIdentifier> registeredIdentifiers,
+            RegisteredIdentifierDefiningPolicy identifierPolicy) {
         for (RegisteredIdentifier identifier : registeredIdentifiers) {
             if (!identifierPolicy.canRegister(this, identifier)) {
                 throw new IllegalArgumentException(
-                        "Registered identifier " + identifier.type() + " is not allowed for this party type"
-                );
+                        "Registered identifier "
+                                + identifier.type()
+                                + " is not allowed for this party type");
             }
         }
     }
@@ -75,8 +92,10 @@ public sealed abstract class Party permits Organization, Person {
                 roles.add(role);
                 events.add(new RoleAdded(partyId.asString(), role.asString()));
             } else {
-                //for idempotency
-                events.add(RoleAdditionSkipped.dueToDuplicationFor(partyId.asString(), role.asString()));
+                // for idempotency
+                events.add(
+                        RoleAdditionSkipped.dueToDuplicationFor(
+                                partyId.asString(), role.asString()));
             }
             return Result.success(this);
         } else {
@@ -90,7 +109,7 @@ public sealed abstract class Party permits Organization, Person {
             roles.remove(role);
             events.add(new RoleRemoved(partyId.asString(), role.asString()));
         } else {
-            //for idempotency
+            // for idempotency
             events.add(RoleRemovalSkipped.dueToMissingRoleFor(partyId.asString(), role.asString()));
         }
         return Result.success(this);
@@ -106,17 +125,19 @@ public sealed abstract class Party permits Organization, Person {
 
         if (!registeredIdentifiers.contains(identifier)) {
             registeredIdentifiers.add(identifier);
-            events.add(new RegisteredIdentifierAdded(partyId.asString(), identifier.type(), identifier.asString()));
+            events.add(
+                    new RegisteredIdentifierAdded(
+                            partyId.asString(), identifier.type(), identifier.asString()));
         } else {
-            //for idempotency
-            events.add(RegisteredIdentifierAdditionSkipped.dueToDataDuplicationFor(partyId.asString(), identifier.type(), identifier.asString()));
+            // for idempotency
+            events.add(
+                    RegisteredIdentifierAdditionSkipped.dueToDataDuplicationFor(
+                            partyId.asString(), identifier.type(), identifier.asString()));
         }
         return Result.success(this);
     }
 
-    /**
-     * Checks if the given identifier can be registered for this party according to the policy.
-     */
+    /** Checks if the given identifier can be registered for this party according to the policy. */
     public boolean canRegister(RegisteredIdentifier identifier) {
         return identifierPolicy.canRegister(this, identifier);
     }
@@ -125,10 +146,14 @@ public sealed abstract class Party permits Organization, Person {
         checkNotNull(identifier, "Registered identifier cannot be null");
         if (registeredIdentifiers.contains(identifier)) {
             registeredIdentifiers.remove(identifier);
-            events.add(new RegisteredIdentifierRemoved(partyId.asString(), identifier.type(), identifier.asString()));
+            events.add(
+                    new RegisteredIdentifierRemoved(
+                            partyId.asString(), identifier.type(), identifier.asString()));
         } else {
-            //for idempotency
-            events.add(RegisteredIdentifierRemovalSkipped.dueToMissingIdentifierFor(partyId.asString(), identifier.type(), identifier.asString()));
+            // for idempotency
+            events.add(
+                    RegisteredIdentifierRemovalSkipped.dueToMissingIdentifierFor(
+                            partyId.asString(), identifier.type(), identifier.asString()));
         }
         return Result.success(this);
     }
@@ -154,7 +179,10 @@ public sealed abstract class Party permits Organization, Person {
     }
 
     public List<PublishedEvent> publishedEvents() {
-        return events.stream().filter(PublishedEvent.class::isInstance).map(PublishedEvent.class::cast).collect(Collectors.toList());
+        return events.stream()
+                .filter(PublishedEvent.class::isInstance)
+                .map(PublishedEvent.class::cast)
+                .collect(Collectors.toList());
     }
 
     abstract PartyRegistered toPartyRegisteredEvent();

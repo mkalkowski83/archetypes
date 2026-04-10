@@ -1,6 +1,5 @@
 package com.softwarearchetypes.inventory.waitlist;
 
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.Queue;
 
@@ -14,9 +13,10 @@ interface WaitListSelectionPolicy<T> {
     /**
      * Select next entry from queue based on policy logic.
      *
-     * @param queue   mutable queue (policy may modify it - remove element)
+     * @param queue mutable queue (policy may modify it - remove element)
      * @param context selection context (predicate, metadata, timestamp)
      * @return selected entry wrapped in Optional, empty if none can be selected
      */
-    Optional<WaitListEntry<T>> selectNext(Queue<WaitListEntry<T>> queue, SelectionContext<T> context);
+    Optional<WaitListEntry<T>> selectNext(
+            Queue<WaitListEntry<T>> queue, SelectionContext<T> context);
 }

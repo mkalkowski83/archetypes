@@ -8,8 +8,7 @@ import java.util.Queue;
 import java.util.function.Function;
 
 /**
- * Quota-based selection policy.
- * Ensures fair distribution across segments (e.g., VIP vs Standard).
+ * Quota-based selection policy. Ensures fair distribution across segments (e.g., VIP vs Standard).
  * Each segment has a quota - max number of entries that can be fulfilled per period.
  */
 class QuotaSelectionPolicy<T> implements WaitListSelectionPolicy<T> {
@@ -24,12 +23,14 @@ class QuotaSelectionPolicy<T> implements WaitListSelectionPolicy<T> {
         this.segmentExtractor = segmentExtractor;
     }
 
-    static <T> QuotaSelectionPolicy<T> of(Map<String, Integer> quotaConfig, Function<T, String> segmentExtractor) {
+    static <T> QuotaSelectionPolicy<T> of(
+            Map<String, Integer> quotaConfig, Function<T, String> segmentExtractor) {
         return new QuotaSelectionPolicy<>(quotaConfig, segmentExtractor);
     }
 
     @Override
-    public Optional<WaitListEntry<T>> selectNext(Queue<WaitListEntry<T>> queue, SelectionContext<T> context) {
+    public Optional<WaitListEntry<T>> selectNext(
+            Queue<WaitListEntry<T>> queue, SelectionContext<T> context) {
         Iterator<WaitListEntry<T>> iterator = queue.iterator();
 
         while (iterator.hasNext()) {

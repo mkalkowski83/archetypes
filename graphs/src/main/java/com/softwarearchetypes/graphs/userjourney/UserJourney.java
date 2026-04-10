@@ -1,16 +1,15 @@
 package com.softwarearchetypes.graphs.userjourney;
 
-import com.softwarearchetypes.graphs.userjourney.Product.ProductType;
-import org.jgrapht.Graph;
-import org.jgrapht.alg.shortestpath.AllDirectedPaths;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import static java.util.stream.Collectors.toSet;
 
+import com.softwarearchetypes.graphs.userjourney.Product.ProductType;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-
-import static java.util.stream.Collectors.toSet;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.shortestpath.AllDirectedPaths;
+import org.jgrapht.graph.DefaultDirectedGraph;
 
 record UserJourney(UserJourneyId userJourneyId, Graph<State, Condition> graph, State currentState) {
 
@@ -19,40 +18,37 @@ record UserJourney(UserJourneyId userJourneyId, Graph<State, Condition> graph, S
     }
 
     Set<CustomerPath> waysToAchieve(ProductType productType) {
-        Set<State> statesWithProduct = graph
-                .vertexSet()
-                .stream()
-                .filter(state -> state.contains(productType))
-                .collect(toSet());
-        return statesWithProduct
-                .stream()
-                .flatMap(targetState ->
-                        new AllDirectedPaths<>(graph).getAllPaths(currentState(), targetState, true, null)
-                                .stream()
-                )
+        Set<State> statesWithProduct =
+                graph.vertexSet().stream()
+                        .filter(state -> state.contains(productType))
+                        .collect(toSet());
+        return statesWithProduct.stream()
+                .flatMap(
+                        targetState ->
+                                new AllDirectedPaths<>(graph)
+                                                .getAllPaths(
+                                                        currentState(), targetState, true, null)
+                                                .stream())
                 .map(graphPath -> CustomerPath.of(graphPath.getEdgeList()))
                 .collect(toSet());
     }
 
     UserJourney onFulfilled(Condition condition) {
         Set<Condition> outgoingEdges = graph.outgoingEdgesOf(currentState);
-        return outgoingEdges
-                .stream()
+        return outgoingEdges.stream()
                 .filter(edge -> edge.equals(condition))
-                .map(graph::getEdgeTarget).findFirst()
+                .map(graph::getEdgeTarget)
+                .findFirst()
                 .map(targetState -> new UserJourney(userJourneyId, graph, targetState))
                 .orElse(this);
     }
 
-    Optional<CustomerPath> optimizedWayToAchieve(ProductType productType, Function<Condition, Double> weightFunction) {
-        return waysToAchieve(productType)
-                .stream()
+    Optional<CustomerPath> optimizedWayToAchieve(
+            ProductType productType, Function<Condition, Double> weightFunction) {
+        return waysToAchieve(productType).stream()
                 .min(Comparator.comparingDouble(path -> path.weight(weightFunction)));
     }
-
-
 }
-
 
 class Builder {
     final UserJourneyId userJourneyId;

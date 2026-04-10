@@ -7,8 +7,7 @@ public record OrderView(
         String status,
         List<OrderLineView> lines,
         List<PartyInOrderView> parties,
-        String totalPrice
-) {
+        String totalPrice) {
 
     static OrderView from(Order order) {
         return new OrderView(
@@ -16,7 +15,6 @@ public record OrderView(
                 order.status().name(),
                 order.lines().stream().map(OrderLineView::from).toList(),
                 order.parties().parties().stream().map(PartyInOrderView::from).toList(),
-                order.totalPrice().map(Object::toString).orElse(null)
-        );
+                order.totalPrice().map(Object::toString).orElse(null));
     }
 }

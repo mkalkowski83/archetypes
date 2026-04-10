@@ -3,10 +3,10 @@ package com.softwarearchetypes.product;
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 /**
- * No constraints - any value of the specified type is valid.
- * Example: any text for a free-form comment field
+ * No constraints - any value of the specified type is valid. Example: any text for a free-form
+ * comment field
  *
- * Persistence config example: {} (empty)
+ * <p>Persistence config example: {} (empty)
  */
 class Unconstrained implements FeatureValueConstraint {
 

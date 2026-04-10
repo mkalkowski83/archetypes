@@ -1,6 +1,5 @@
 package com.softwarearchetypes.ordering;
 
-
 class OrderingConfiguration {
 
     private final OrderingFacade orderingFacade;
@@ -10,12 +9,13 @@ class OrderingConfiguration {
     private final FixableFulfillmentService fulfillmentService;
     private final FixablePricingService pricingService;
 
-    private OrderingConfiguration(OrderingFacade orderingFacade,
-                                  OrderingQueries orderingQueries,
-                                  FixableInventoryService inventoryService,
-                                  FixablePaymentService paymentService,
-                                  FixableFulfillmentService fulfillmentService,
-                                  FixablePricingService pricingService) {
+    private OrderingConfiguration(
+            OrderingFacade orderingFacade,
+            OrderingQueries orderingQueries,
+            FixableInventoryService inventoryService,
+            FixablePaymentService paymentService,
+            FixableFulfillmentService fulfillmentService,
+            FixablePricingService pricingService) {
         this.orderingFacade = orderingFacade;
         this.orderingQueries = orderingQueries;
         this.inventoryService = inventoryService;

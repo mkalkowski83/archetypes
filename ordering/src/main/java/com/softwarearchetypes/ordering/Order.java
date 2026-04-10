@@ -1,19 +1,16 @@
 package com.softwarearchetypes.ordering;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import static com.softwarearchetypes.common.Preconditions.checkState;
 
 import com.softwarearchetypes.quantity.Quantity;
-
 import com.softwarearchetypes.quantity.money.Money;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static com.softwarearchetypes.common.Preconditions.checkState;
 
 class Order {
 
@@ -24,11 +21,12 @@ class Order {
     private final List<Reservation> reservations;
     private final OrderServices services;
 
-    private Order(OrderId id,
-                  OrderStatus status,
-                  List<OrderLine> lines,
-                  OrderParties parties,
-                  OrderServices services) {
+    private Order(
+            OrderId id,
+            OrderStatus status,
+            List<OrderLine> lines,
+            OrderParties parties,
+            OrderServices services) {
         checkArgument(id != null, "OrderId must be defined");
         checkArgument(status != null, "OrderStatus must be defined");
         checkArgument(lines != null, "Lines must be defined");
@@ -64,9 +62,8 @@ class Order {
     }
 
     /**
-     * Returns effective parties for a given order line.
-     * If the line has line-level parties, they override order-level parties for those roles.
-     * Otherwise, order-level parties are used.
+     * Returns effective parties for a given order line. If the line has line-level parties, they
+     * override order-level parties for those roles. Otherwise, order-level parties are used.
      */
     OrderParties getEffectivePartiesFor(OrderLine line) {
         if (line.parties().isEmpty()) {
@@ -93,13 +90,21 @@ class Order {
         checkState(status.canModifyLines(), "Cannot modify lines in status: " + status);
         checkArgument(lineId != null, "OrderLineId must be defined");
         checkArgument(newQuantity != null, "Quantity must be defined");
-        OrderLine existing = lines.stream()
-                .filter(l -> l.id().equals(lineId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Order line not found: " + lineId));
+        OrderLine existing =
+                lines.stream()
+                        .filter(l -> l.id().equals(lineId))
+                        .findFirst()
+                        .orElseThrow(
+                                () -> new IllegalStateException("Order line not found: " + lineId));
         int idx = lines.indexOf(existing);
-        lines.set(idx, new OrderLine(existing.id(), existing.productId(), newQuantity,
-                existing.specification(), existing.parties()));
+        lines.set(
+                idx,
+                new OrderLine(
+                        existing.id(),
+                        existing.productId(),
+                        newQuantity,
+                        existing.specification(),
+                        existing.parties()));
     }
 
     // --- Process methods ---
@@ -121,25 +126,30 @@ class Order {
         checkState(status == OrderStatus.DRAFT, "Only DRAFT orders can be confirmed");
 
         for (OrderLine line : lines) {
-            AllocationResult result = services.inventory().allocate(
-                    AllocationRequest.builder()
-                            .productId(line.productId())
-                            .quantity(line.quantity())
-                            .orderId(this.id)
-                            .build()
-            );
+            AllocationResult result =
+                    services.inventory()
+                            .allocate(
+                                    AllocationRequest.builder()
+                                            .productId(line.productId())
+                                            .quantity(line.quantity())
+                                            .orderId(this.id)
+                                            .build());
             if (result.status() != AllocationStatus.ALLOCATED) {
-                throw new IllegalStateException("Inventory allocation failed for product: "
-                        + line.productId() + ", status: " + result.status());
+                throw new IllegalStateException(
+                        "Inventory allocation failed for product: "
+                                + line.productId()
+                                + ", status: "
+                                + result.status());
             }
         }
 
-        PaymentResult paymentResult = services.payment().authorizeAndCapture(
-                PaymentRequest.builder()
-                        .orderId(this.id)
-                        .amount(totalPrice().orElse(Money.zero("PLN")))
-                        .build()
-        );
+        PaymentResult paymentResult =
+                services.payment()
+                        .authorizeAndCapture(
+                                PaymentRequest.builder()
+                                        .orderId(this.id)
+                                        .amount(totalPrice().orElse(Money.zero("PLN")))
+                                        .build());
         if (paymentResult.status() != PaymentStatus.CAPTURED) {
             throw new IllegalStateException("Payment failed: " + paymentResult.failureReason());
         }
@@ -158,9 +168,11 @@ class Order {
     }
 
     void updateFulfillmentStatus(FulfillmentStatus fulfillmentStatus) {
-        checkState(status == OrderStatus.CONFIRMED || status == OrderStatus.PROCESSING,
+        checkState(
+                status == OrderStatus.CONFIRMED || status == OrderStatus.PROCESSING,
                 "Cannot update fulfillment in status: " + status);
-        if (fulfillmentStatus == FulfillmentStatus.IN_PROGRESS || fulfillmentStatus == FulfillmentStatus.PARTIALLY_COMPLETED) {
+        if (fulfillmentStatus == FulfillmentStatus.IN_PROGRESS
+                || fulfillmentStatus == FulfillmentStatus.PARTIALLY_COMPLETED) {
             this.status = OrderStatus.PROCESSING;
         } else if (fulfillmentStatus == FulfillmentStatus.COMPLETED) {
             this.status = OrderStatus.FULFILLED;
@@ -181,10 +193,11 @@ class Order {
         if (!isFullyPriced()) {
             return Optional.empty();
         }
-        Money total = lines.stream()
-                .map(line -> line.pricing().totalPrice())
-                .reduce(Money::add)
-                .orElse(Money.zero("PLN"));
+        Money total =
+                lines.stream()
+                        .map(line -> line.pricing().totalPrice())
+                        .reduce(Money::add)
+                        .orElse(Money.zero("PLN"));
         return Optional.of(total);
     }
 
@@ -193,10 +206,12 @@ class Order {
     private void applyPricing(OrderLineId lineId, OrderLinePricing pricing) {
         checkArgument(lineId != null, "OrderLineId must be defined");
         checkArgument(pricing != null, "Pricing must be defined");
-        OrderLine line = lines.stream()
-                .filter(l -> l.id().equals(lineId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Order line not found: " + lineId));
+        OrderLine line =
+                lines.stream()
+                        .filter(l -> l.id().equals(lineId))
+                        .findFirst()
+                        .orElseThrow(
+                                () -> new IllegalStateException("Order line not found: " + lineId));
         line.applyPricing(pricing);
     }
 
@@ -224,22 +239,19 @@ class Order {
             return this;
         }
 
-        public Builder addLine(ProductIdentifier productId,
-                              Quantity quantity) {
-            return addLine(line -> line
-                .productId(productId)
-                .quantity(quantity)
-            );
+        public Builder addLine(ProductIdentifier productId, Quantity quantity) {
+            return addLine(line -> line.productId(productId).quantity(quantity));
         }
 
-        public Builder addLine(ProductIdentifier productId,
-                              Quantity quantity,
-                              OrderLineSpecification specification) {
-            return addLine(line -> line
-                .productId(productId)
-                .quantity(quantity)
-                .specification(specification)
-            );
+        public Builder addLine(
+                ProductIdentifier productId,
+                Quantity quantity,
+                OrderLineSpecification specification) {
+            return addLine(
+                    line ->
+                            line.productId(productId)
+                                    .quantity(quantity)
+                                    .specification(specification));
         }
 
         public Order build() {
@@ -294,12 +306,7 @@ class Order {
             checkState(quantity != null, "Quantity must be defined");
 
             return new OrderLine(
-                OrderLineId.generate(),
-                productId,
-                quantity,
-                specification,
-                parties
-            );
+                    OrderLineId.generate(), productId, quantity, specification, parties);
         }
     }
 
@@ -320,7 +327,8 @@ class Order {
             return add("component." + componentName, productId);
         }
 
-        public SpecBuilder componentFeature(String componentName, String featureName, String value) {
+        public SpecBuilder componentFeature(
+                String componentName, String featureName, String value) {
             return add(componentName + "." + featureName, value);
         }
 
@@ -360,8 +368,7 @@ class Order {
 
     @Override
     public String toString() {
-        return "Order{id=%s, status=%s, lines=%d, parties=%s}".formatted(
-            id, status, lines.size(), parties
-        );
+        return "Order{id=%s, status=%s, lines=%d, parties=%s}"
+                .formatted(id, status, lines.size(), parties);
     }
 }

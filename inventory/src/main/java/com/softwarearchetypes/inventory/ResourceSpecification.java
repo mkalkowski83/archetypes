@@ -1,22 +1,19 @@
 package com.softwarearchetypes.inventory;
 
 import com.softwarearchetypes.inventory.availability.TimeSlot;
-
 import java.util.List;
 import java.util.Objects;
 
 /**
- * ResourceSpecification defines what kind of resources are being requested.
- * Used by InventoryEntry to route to appropriate lock handling.
+ * ResourceSpecification defines what kind of resources are being requested. Used by InventoryEntry
+ * to route to appropriate lock handling.
  */
 public sealed interface ResourceSpecification
         permits ResourceSpecification.TemporalSpecification,
                 ResourceSpecification.IndividualSpecification,
                 ResourceSpecification.QuantitySpecification {
 
-    /**
-     * Temporal specification for time-based resources (hotel rooms, appointments, etc.)
-     */
+    /** Temporal specification for time-based resources (hotel rooms, appointments, etc.) */
     record TemporalSpecification(List<TimeSlot> timeSlots) implements ResourceSpecification {
         public TemporalSpecification {
             Objects.requireNonNull(timeSlots, "timeSlots cannot be null");
@@ -34,9 +31,7 @@ public sealed interface ResourceSpecification
         }
     }
 
-    /**
-     * Individual specification for specific instances (specific laptop, specific car, etc.)
-     */
+    /** Individual specification for specific instances (specific laptop, specific car, etc.) */
     record IndividualSpecification(InstanceId instanceId) implements ResourceSpecification {
         public IndividualSpecification {
             Objects.requireNonNull(instanceId, "instanceId cannot be null");
@@ -48,8 +43,8 @@ public sealed interface ResourceSpecification
     }
 
     /**
-     * Quantity specification for pool resources (milk, fuel, etc.)
-     * The actual resource selection is delegated to InventoryEntry.
+     * Quantity specification for pool resources (milk, fuel, etc.) The actual resource selection is
+     * delegated to InventoryEntry.
      */
     record QuantitySpecification() implements ResourceSpecification {
         public static QuantitySpecification instance() {

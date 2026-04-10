@@ -1,17 +1,16 @@
 package com.softwarearchetypes.product;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 import static java.util.stream.Collectors.toSet;
 
+import java.util.Arrays;
+import java.util.Set;
+
 /**
- * ProductSet represents a named collection of products available for selection in a package.
- * This is the "raw material" - a pool of product options without any selection constraints.
- * <p>
- * Example: A laptop package might have ProductSets like "Memory Options" (4GB, 8GB, 16GB),
+ * ProductSet represents a named collection of products available for selection in a package. This
+ * is the "raw material" - a pool of product options without any selection constraints.
+ *
+ * <p>Example: A laptop package might have ProductSets like "Memory Options" (4GB, 8GB, 16GB),
  * "Storage Options" (256GB SSD, 512GB SSD, 1TB SSD), "Accessories" (mouse, keyboard, bag).
  */
 class ProductSet {
@@ -20,7 +19,9 @@ class ProductSet {
 
     ProductSet(String name, Set<ProductIdentifier> products) {
         checkArgument(name != null && !name.isBlank(), "ProductSet name must be defined");
-        checkArgument(products != null && !products.isEmpty(), "ProductSet must contain at least one product");
+        checkArgument(
+                products != null && !products.isEmpty(),
+                "ProductSet must contain at least one product");
         this.name = name;
         this.products = Set.copyOf(products);
     }

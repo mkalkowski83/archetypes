@@ -1,13 +1,12 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
+import static com.softwarearchetypes.party.OrganizationNameFixture.someOrganizationName;
+import static com.softwarearchetypes.party.PersonalDataFixture.someFirstName;
+import static com.softwarearchetypes.party.PersonalDataFixture.someLastName;
 
 import com.softwarearchetypes.party.commands.RegisterCompanyCommand;
 import com.softwarearchetypes.party.commands.RegisterPersonCommand;
-
-import static com.softwarearchetypes.party.PersonalDataFixture.someFirstName;
-import static com.softwarearchetypes.party.PersonalDataFixture.someLastName;
-import static com.softwarearchetypes.party.OrganizationNameFixture.someOrganizationName;
+import java.util.Set;
 
 class CommandFixture {
 

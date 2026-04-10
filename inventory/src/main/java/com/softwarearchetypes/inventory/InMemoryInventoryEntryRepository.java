@@ -22,9 +22,7 @@ class InMemoryInventoryEntryRepository implements InventoryEntryRepository {
 
     @Override
     public Optional<InventoryEntry> findByProductId(ProductIdentifier productId) {
-        return storage.values().stream()
-                .filter(e -> e.productId().equals(productId))
-                .findFirst();
+        return storage.values().stream().filter(e -> e.productId().equals(productId)).findFirst();
     }
 
     @Override

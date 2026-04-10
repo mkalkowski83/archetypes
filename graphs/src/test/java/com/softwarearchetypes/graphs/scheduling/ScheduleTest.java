@@ -1,22 +1,22 @@
 package com.softwarearchetypes.graphs.scheduling;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static com.softwarearchetypes.graphs.scheduling.DependencyType.*;
 import static com.softwarearchetypes.graphs.scheduling.Fixtures.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+import org.junit.jupiter.api.Test;
 
 class ScheduleTest {
 
     @Test
     void simpleLinearProcess() {
         // when
-        Schedule schedule = Process.builder()
-                .addDependency(DRYING, MEASUREMENT, finishToStart("Sample must be dry"))
-                .addDependency(MEASUREMENT, ANALYSIS, dataFlow("Spectrum"))
-                .build();
+        Schedule schedule =
+                Process.builder()
+                        .addDependency(DRYING, MEASUREMENT, finishToStart("Sample must be dry"))
+                        .addDependency(MEASUREMENT, ANALYSIS, dataFlow("Spectrum"))
+                        .build();
 
         // then
         assertEquals(List.of(DRYING, MEASUREMENT, ANALYSIS), schedule.steps());
@@ -27,12 +27,13 @@ class ScheduleTest {
     @Test
     void complexProcessOrder() {
         // when
-        Schedule schedule = Process.builder()
-                .addDependency(DRYING, MEASUREMENT)
-                .addDependency(CALIBRATION, MEASUREMENT)
-                .addDependency(MEASUREMENT, ANALYSIS)
-                .addDependency(ANALYSIS, VALIDATION)
-                .build();
+        Schedule schedule =
+                Process.builder()
+                        .addDependency(DRYING, MEASUREMENT)
+                        .addDependency(CALIBRATION, MEASUREMENT)
+                        .addDependency(MEASUREMENT, ANALYSIS)
+                        .addDependency(ANALYSIS, VALIDATION)
+                        .build();
 
         // then
         assertEquals(5, schedule.size());
@@ -46,9 +47,7 @@ class ScheduleTest {
     @Test
     void singleStepProcess() {
         // when
-        Schedule schedule = Process.builder()
-                .addStep(DRYING)
-                .build();
+        Schedule schedule = Process.builder().addStep(DRYING).build();
 
         // then
         assertEquals(1, schedule.size());
@@ -59,12 +58,13 @@ class ScheduleTest {
     @Test
     void diamondPattern() {
         // when
-        Schedule schedule = Process.builder()
-                .addDependency(PREPARATION, PATH_1)
-                .addDependency(PREPARATION, PATH_2)
-                .addDependency(PATH_1, FINALIZATION)
-                .addDependency(PATH_2, FINALIZATION)
-                .build();
+        Schedule schedule =
+                Process.builder()
+                        .addDependency(PREPARATION, PATH_1)
+                        .addDependency(PREPARATION, PATH_2)
+                        .addDependency(PATH_1, FINALIZATION)
+                        .addDependency(PATH_2, FINALIZATION)
+                        .build();
 
         // then
         assertEquals(4, schedule.size());
@@ -79,12 +79,14 @@ class ScheduleTest {
     @Test
     void cyclicDependencyIsDetected() {
         // when & then
-        assertThrows(IllegalArgumentException.class, () -> {
-            Process.builder()
-                    .addDependency(STEP_1, STEP_2)
-                    .addDependency(STEP_2, STEP_3)
-                    .addDependency(STEP_3, STEP_1)
-                    .build();
-        });
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> {
+                    Process.builder()
+                            .addDependency(STEP_1, STEP_2)
+                            .addDependency(STEP_2, STEP_3)
+                            .addDependency(STEP_3, STEP_1)
+                            .build();
+                });
     }
 }

@@ -1,7 +1,6 @@
 package com.softwarearchetypes.inventory;
 
 import com.softwarearchetypes.inventory.availability.ResourceId;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -10,8 +9,7 @@ public record InventoryEntryView(
         ProductIdentifier productId,
         String productName,
         Set<InstanceId> instanceIds,
-        Map<InstanceId, ResourceId> instanceToResource
-) {
+        Map<InstanceId, ResourceId> instanceToResource) {
 
     static InventoryEntryView from(InventoryEntry entry) {
         return new InventoryEntryView(
@@ -19,7 +17,6 @@ public record InventoryEntryView(
                 entry.productId(),
                 entry.product().name(),
                 entry.instances(),
-                entry.instanceToResourceMap()
-        );
+                entry.instanceToResourceMap());
     }
 }

@@ -3,8 +3,6 @@ package com.softwarearchetypes.inventory.availability;
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.quantity.Quantity;
-import com.softwarearchetypes.quantity.Unit;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -13,9 +11,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * PoolResourceAvailability manages availability of a quantity-based resource pool.
- * Examples: milk (liters), API tokens, parking spots, consulting hours.
- * Competition model: multiple actors can lock portions of the pool simultaneously.
+ * PoolResourceAvailability manages availability of a quantity-based resource pool. Examples: milk
+ * (liters), API tokens, parking spots, consulting hours. Competition model: multiple actors can
+ * lock portions of the pool simultaneously.
  */
 class PoolResourceAvailability implements ResourceAvailability {
 
@@ -27,26 +25,44 @@ class PoolResourceAvailability implements ResourceAvailability {
     private final List<PoolBlockade> blockades;
     private final Version version;
 
-    public PoolResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId, Quantity totalCapacity, Clock clock,
-                                     Quantity withdrawn, List<PoolBlockade> blockades, Version version) {
+    public PoolResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            Quantity totalCapacity,
+            Clock clock,
+            Quantity withdrawn,
+            List<PoolBlockade> blockades,
+            Version version) {
         this.id = Objects.requireNonNull(id, "ResourceAvailabilityId cannot be null");
         this.resourceId = Objects.requireNonNull(resourceId, "ResourceId cannot be null");
         this.totalCapacity = Objects.requireNonNull(totalCapacity, "totalCapacity cannot be null");
         this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
         this.withdrawn = Objects.requireNonNull(withdrawn, "withdrawn cannot be null");
-        this.blockades = new ArrayList<>(Objects.requireNonNull(blockades, "blockades cannot be null"));
+        this.blockades =
+                new ArrayList<>(Objects.requireNonNull(blockades, "blockades cannot be null"));
         this.version = version;
     }
 
-    public PoolResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId, Quantity totalCapacity,
-                                     Quantity withdrawn, List<PoolBlockade> blockades, Version version) {
+    public PoolResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            Quantity totalCapacity,
+            Quantity withdrawn,
+            List<PoolBlockade> blockades,
+            Version version) {
         this(id, resourceId, totalCapacity, Clock.systemUTC(), withdrawn, blockades, version);
     }
 
-    public static PoolResourceAvailability create(ResourceId resourceId, Quantity totalCapacity, Clock clock) {
+    public static PoolResourceAvailability create(
+            ResourceId resourceId, Quantity totalCapacity, Clock clock) {
         return new PoolResourceAvailability(
-                ResourceAvailabilityId.random(), resourceId, totalCapacity, clock,
-                Quantity.of(0, totalCapacity.unit()), new ArrayList<>(), Version.initial());
+                ResourceAvailabilityId.random(),
+                resourceId,
+                totalCapacity,
+                clock,
+                Quantity.of(0, totalCapacity.unit()),
+                new ArrayList<>(),
+                Version.initial());
     }
 
     public static PoolResourceAvailability create(ResourceId resourceId, Quantity totalCapacity) {
@@ -66,25 +82,32 @@ class PoolResourceAvailability implements ResourceAvailability {
     @Override
     public Result<String, BlockadeId> lock(LockRequest request) {
         if (!(request instanceof PoolLockRequest poolRequest)) {
-            return Result.failure("Invalid request type. Expected PoolLockRequest but got: " + request.getClass().getSimpleName());
+            return Result.failure(
+                    "Invalid request type. Expected PoolLockRequest but got: "
+                            + request.getClass().getSimpleName());
         }
 
         if (!poolRequest.resourceId().equals(resourceId)) {
-            return Result.failure("Resource ID mismatch. Expected: " + resourceId + ", got: " + poolRequest.resourceId());
+            return Result.failure(
+                    "Resource ID mismatch. Expected: "
+                            + resourceId
+                            + ", got: "
+                            + poolRequest.resourceId());
         }
 
         Quantity requestedQuantity = poolRequest.quantity();
 
         if (!isAvailable(requestedQuantity)) {
-            return Result.failure("Insufficient quantity. Requested: " + requestedQuantity + ", available: " + availableQuantity());
+            return Result.failure(
+                    "Insufficient quantity. Requested: "
+                            + requestedQuantity
+                            + ", available: "
+                            + availableQuantity());
         }
 
-        PoolBlockade blockade = PoolBlockade.create(
-                poolRequest.owner(),
-                requestedQuantity,
-                poolRequest.duration(),
-                clock
-        );
+        PoolBlockade blockade =
+                PoolBlockade.create(
+                        poolRequest.owner(), requestedQuantity, poolRequest.duration(), clock);
         blockades.add(blockade);
 
         return Result.success(blockade.id());
@@ -120,10 +143,11 @@ class PoolResourceAvailability implements ResourceAvailability {
     public Quantity availableQuantity() {
         Instant now = Instant.now(clock);
 
-        Quantity blocked = blockades.stream()
-                .filter(b -> b.isActive(now))
-                .map(PoolBlockade::quantity)
-                .reduce(Quantity.of(0, totalCapacity.unit()), Quantity::add);
+        Quantity blocked =
+                blockades.stream()
+                        .filter(b -> b.isActive(now))
+                        .map(PoolBlockade::quantity)
+                        .reduce(Quantity.of(0, totalCapacity.unit()), Quantity::add);
 
         return totalCapacity.subtract(withdrawn).subtract(blocked);
     }
@@ -148,9 +172,7 @@ class PoolResourceAvailability implements ResourceAvailability {
 
     public List<PoolBlockade> activeBlockades() {
         Instant now = Instant.now(clock);
-        return blockades.stream()
-                .filter(b -> b.isActive(now))
-                .toList();
+        return blockades.stream().filter(b -> b.isActive(now)).toList();
     }
 
     @Override
@@ -171,10 +193,8 @@ class PoolResourceAvailability implements ResourceAvailability {
     @Override
     public List<BlockadeId> releaseExpired() {
         Instant now = Instant.now(clock);
-        List<BlockadeId> released = blockades.stream()
-                .filter(b -> b.isExpired(now))
-                .map(PoolBlockade::id)
-                .toList();
+        List<BlockadeId> released =
+                blockades.stream().filter(b -> b.isExpired(now)).map(PoolBlockade::id).toList();
         blockades.removeIf(b -> b.isExpired(now));
         return released;
     }

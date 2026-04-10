@@ -5,9 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * In-memory implementation of InstanceRepository for testing.
- */
+/** In-memory implementation of InstanceRepository for testing. */
 class InMemoryInstanceRepository implements InstanceRepository {
 
     private final Map<InstanceId, ProductInstance> instances = new ConcurrentHashMap<>();
@@ -40,9 +38,7 @@ class InMemoryInstanceRepository implements InstanceRepository {
 
     @Override
     public List<ProductInstance> findByProductId(ProductIdentifier productId) {
-        return instances.values().stream()
-                .filter(i -> i.productId().equals(productId))
-                .toList();
+        return instances.values().stream().filter(i -> i.productId().equals(productId)).toList();
     }
 
     @Override

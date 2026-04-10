@@ -5,13 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Links a party snapshot with the roles they play in the order.
- * A party can have multiple roles (e.g., ORDERER and PAYER).
+ * Links a party snapshot with the roles they play in the order. A party can have multiple roles
+ * (e.g., ORDERER and PAYER).
  */
-record PartyInOrder(
-    PartySnapshot party,
-    Set<RoleInOrder> roles
-) {
+record PartyInOrder(PartySnapshot party, Set<RoleInOrder> roles) {
     public PartyInOrder {
         if (party == null) {
             throw new IllegalArgumentException("Party cannot be null");

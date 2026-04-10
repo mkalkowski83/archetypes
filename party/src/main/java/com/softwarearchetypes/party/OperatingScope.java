@@ -1,21 +1,25 @@
 package com.softwarearchetypes.party;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import static com.softwarearchetypes.common.StringUtils.isNotBlank;
+
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static com.softwarearchetypes.common.StringUtils.isNotBlank;
-
 /**
- * Base interface for all operating scopes that constrain capabilities.
- * Operating scopes define WHERE, WHEN, HOW MUCH, etc. a capability applies.
+ * Base interface for all operating scopes that constrain capabilities. Operating scopes define
+ * WHERE, WHEN, HOW MUCH, etc. a capability applies.
  */
-public sealed interface OperatingScope permits
-        OperatingScope.LocationScope, OperatingScope.TemporalScope, OperatingScope.QuantityScope,
-        OperatingScope.SkillLevelScope, OperatingScope.ProtocolScope, OperatingScope.ProductScope,
-        OperatingScope.ResourceScope {
+public sealed interface OperatingScope
+        permits OperatingScope.LocationScope,
+                OperatingScope.TemporalScope,
+                OperatingScope.QuantityScope,
+                OperatingScope.SkillLevelScope,
+                OperatingScope.ProtocolScope,
+                OperatingScope.ProductScope,
+                OperatingScope.ResourceScope {
 
     String scopeType();
 
@@ -62,9 +66,11 @@ public sealed interface OperatingScope permits
 
     // === TemporalScope ===
 
-    record TemporalScope(Set<DayOfWeek> days, LocalTime startTime, LocalTime endTime) implements OperatingScope {
+    record TemporalScope(Set<DayOfWeek> days, LocalTime startTime, LocalTime endTime)
+            implements OperatingScope {
 
-        public static final TemporalScope ALWAYS = new TemporalScope(Set.of(DayOfWeek.values()), LocalTime.MIN, LocalTime.MAX);
+        public static final TemporalScope ALWAYS =
+                new TemporalScope(Set.of(DayOfWeek.values()), LocalTime.MIN, LocalTime.MAX);
 
         public TemporalScope {
             checkArgument(days != null && !days.isEmpty(), "Days cannot be empty");
@@ -82,9 +88,14 @@ public sealed interface OperatingScope permits
 
         public static TemporalScope workingDays(LocalTime start, LocalTime end) {
             return new TemporalScope(
-                    Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY,
-                            DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
-                    start, end);
+                    Set.of(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.TUESDAY,
+                            DayOfWeek.WEDNESDAY,
+                            DayOfWeek.THURSDAY,
+                            DayOfWeek.FRIDAY),
+                    start,
+                    end);
         }
 
         @Override
@@ -96,7 +107,9 @@ public sealed interface OperatingScope permits
         public boolean satisfies(OperatingScope requirement) {
             if (!(requirement instanceof TemporalScope required)) return false;
             boolean daysCovered = days.containsAll(required.days());
-            boolean timesCovered = !startTime.isAfter(required.startTime()) && !endTime.isBefore(required.endTime());
+            boolean timesCovered =
+                    !startTime.isAfter(required.startTime())
+                            && !endTime.isBefore(required.endTime());
             return daysCovered && timesCovered;
         }
 
@@ -109,10 +122,18 @@ public sealed interface OperatingScope permits
 
     record QuantityScope(int maxQuantity, QuantityPeriod period) implements OperatingScope {
 
-        public enum QuantityPeriod { PER_DAY, PER_WEEK, PER_MONTH, PER_YEAR, UNLIMITED }
+        public enum QuantityPeriod {
+            PER_DAY,
+            PER_WEEK,
+            PER_MONTH,
+            PER_YEAR,
+            UNLIMITED
+        }
 
         public QuantityScope {
-            checkArgument(maxQuantity > 0 || period == QuantityPeriod.UNLIMITED, "Max quantity must be positive");
+            checkArgument(
+                    maxQuantity > 0 || period == QuantityPeriod.UNLIMITED,
+                    "Max quantity must be positive");
         }
 
         public static QuantityScope unlimited() {

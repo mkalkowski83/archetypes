@@ -3,14 +3,12 @@ package com.softwarearchetypes.scoring.algebra.score.simplified;
 import com.softwarearchetypes.scoring.algebra.score.Score;
 import com.softwarearchetypes.scoring.ast.Expression;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ExpressionEvaluator {
 
-    private ExpressionEvaluator() {
-    }
+    private ExpressionEvaluator() {}
 
     public static Score eval(Expression expr, WindowContext ctx, ScoringAlgebra alg) {
         if (expr instanceof Expression.And andExpr) {

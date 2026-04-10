@@ -1,7 +1,6 @@
 package com.softwarearchetypes.inventory;
 
 import com.softwarearchetypes.quantity.Quantity;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -9,7 +8,8 @@ import java.util.Objects;
 /**
  * Builder for creating ProductInstance with fluent API.
  *
- * Usage:
+ * <p>Usage:
+ *
  * <pre>
  * ProductInstance instance = new InstanceBuilder(InstanceId.random(), productId)
  *     .withSerial(SerialNumber.of("ABC123"))
@@ -67,12 +67,6 @@ class InstanceBuilder {
 
     public ProductInstance build() {
         return new ProductInstance(
-                id,
-                productId,
-                serialNumber,
-                batchId,
-                quantity,
-                Map.copyOf(features)
-        );
+                id, productId, serialNumber, batchId, quantity, Map.copyOf(features));
     }
 }

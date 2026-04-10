@@ -2,17 +2,16 @@ package com.softwarearchetypes.planvsexecution.productionanalysis;
 
 import com.softwarearchetypes.planvsexecution.productionanalysis.delta.DeltaResult;
 import com.softwarearchetypes.planvsexecution.productionanalysis.modification.ModificationRule;
-import com.softwarearchetypes.planvsexecution.productionanalysis.modification.UnderProductionCondition;
 import com.softwarearchetypes.planvsexecution.productionanalysis.modification.ScheduleModifier;
-
+import com.softwarearchetypes.planvsexecution.productionanalysis.modification.UnderProductionCondition;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
- * A production plan that can be modified based on delta analysis.
- * This is where SIMULATIONS happen - the plan evolves without changing reality.
+ * A production plan that can be modified based on delta analysis. This is where SIMULATIONS happen
+ * - the plan evolves without changing reality.
  */
 public class ConfigurableProductionPlan {
 
@@ -70,10 +69,8 @@ public class ConfigurableProductionPlan {
         }
 
         public Builder onUnderProduction(int minQuantity, ScheduleModifier modifier) {
-            return addRule(ModificationRule.once(
-                    UnderProductionCondition.atLeast(minQuantity),
-                    modifier
-            ));
+            return addRule(
+                    ModificationRule.once(UnderProductionCondition.atLeast(minQuantity), modifier));
         }
 
         public ConfigurableProductionPlan build() {

@@ -1,7 +1,6 @@
 package com.softwarearchetypes.party;
 
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
-import static com.softwarearchetypes.common.StringUtils.isNotBlank;
 
 record PartyRole(PartyId partyId, Role role) {
 
@@ -17,5 +16,4 @@ record PartyRole(PartyId partyId, Role role) {
     static PartyRole of(PartyId partyId, Role role) {
         return new PartyRole(partyId, role);
     }
-
 }

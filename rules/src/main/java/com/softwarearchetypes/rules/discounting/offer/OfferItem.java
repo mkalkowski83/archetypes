@@ -2,8 +2,6 @@ package com.softwarearchetypes.rules.discounting.offer;
 
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.money.Money;
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,8 +14,13 @@ public class OfferItem {
     private Money finalPrice;
     private List<Modification> modifications;
 
-    //package scope for unit testing
-    OfferItem(UUID productId, Quantity quantity, Money basePrice, Money finalPrice, List<Modification> modifications) {
+    // package scope for unit testing
+    OfferItem(
+            UUID productId,
+            Quantity quantity,
+            Money basePrice,
+            Money finalPrice,
+            List<Modification> modifications) {
         this.productId = productId;
         this.quantity = quantity;
         this.basePrice = basePrice;
@@ -34,7 +37,12 @@ public class OfferItem {
         List<Modification> newModifications = new ArrayList<>(modifications.size() + 1);
         newModifications.addAll(modifications);
         newModifications.add(modification);
-        return new OfferItem(productId, quantity, basePrice, newPrice, Collections.unmodifiableList(newModifications));
+        return new OfferItem(
+                productId,
+                quantity,
+                basePrice,
+                newPrice,
+                Collections.unmodifiableList(newModifications));
     }
 
     public Money getBasePrice() {
@@ -55,9 +63,6 @@ public class OfferItem {
 
     @Override
     public String toString() {
-        return "OfferItem{" +
-                "basePrice=" + basePrice +
-                ", finalPrice=" + finalPrice +
-                '}';
+        return "OfferItem{" + "basePrice=" + basePrice + ", finalPrice=" + finalPrice + '}';
     }
 }

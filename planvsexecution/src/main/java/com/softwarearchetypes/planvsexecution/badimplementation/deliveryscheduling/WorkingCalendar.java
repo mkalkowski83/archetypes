@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Working calendar with holidays and non-working days.
- * Part of the problem: delivery plan is reconstructed from multiple entities like this one.
+ * Working calendar with holidays and non-working days. Part of the problem: delivery plan is
+ * reconstructed from multiple entities like this one.
  */
 public class WorkingCalendar {
     private Set<LocalDate> holidays;
@@ -24,7 +24,8 @@ public class WorkingCalendar {
     }
 
     public boolean isWorkingDay(LocalDate date) {
-        return !holidays.contains(date) && !nonWorkingDaysOfWeek.contains(date.getDayOfWeek().getValue());
+        return !holidays.contains(date)
+                && !nonWorkingDaysOfWeek.contains(date.getDayOfWeek().getValue());
     }
 
     public LocalDate addWorkingDays(LocalDate start, int workingDays) {

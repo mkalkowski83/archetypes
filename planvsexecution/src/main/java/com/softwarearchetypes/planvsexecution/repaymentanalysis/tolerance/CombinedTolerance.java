@@ -1,7 +1,6 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance;
 
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
-
 import java.util.List;
 
 class CombinedTolerance implements ToleranceStrategy {

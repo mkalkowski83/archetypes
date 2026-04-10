@@ -4,5 +4,4 @@ record OrderServices(
         PricingService pricing,
         InventoryService inventory,
         PaymentService payment,
-        FulfillmentService fulfillment
-) {}
+        FulfillmentService fulfillment) {}

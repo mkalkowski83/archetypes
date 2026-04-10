@@ -4,11 +4,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Command for reversing an existing transaction.
- * Creates a reversal transaction that inverts all entries of the referenced transaction.
+ * Command for reversing an existing transaction. Creates a reversal transaction that inverts all
+ * entries of the referenced transaction.
  */
 public record ReverseTransactionCommand(
-        UUID refTransactionId,
-        Instant occurredAt,
-        Instant appliesAt
-) {}
+        UUID refTransactionId, Instant occurredAt, Instant appliesAt) {}

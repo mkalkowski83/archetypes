@@ -1,11 +1,9 @@
 package com.softwarearchetypes.ordering;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 import com.softwarearchetypes.quantity.Quantity;
-
 import java.util.List;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 class OrderLine {
 
@@ -16,11 +14,12 @@ class OrderLine {
     private final OrderParties parties;
     private OrderLinePricing pricing;
 
-    OrderLine(OrderLineId id,
-              ProductIdentifier productId,
-              Quantity quantity,
-              OrderLineSpecification specification,
-              OrderParties parties) {
+    OrderLine(
+            OrderLineId id,
+            ProductIdentifier productId,
+            Quantity quantity,
+            OrderLineSpecification specification,
+            OrderParties parties) {
         checkArgument(id != null, "OrderLineId must be defined");
         checkArgument(productId != null, "ProductIdentifier must be defined");
         checkArgument(quantity != null, "Quantity must be defined");
@@ -34,12 +33,13 @@ class OrderLine {
         this.pricing = new NotPricedYet();
     }
 
-    OrderLine(OrderLineId id,
-              ProductIdentifier productId,
-              Quantity quantity,
-              OrderLineSpecification specification,
-              OrderParties parties,
-              OrderLinePricing pricing) {
+    OrderLine(
+            OrderLineId id,
+            ProductIdentifier productId,
+            Quantity quantity,
+            OrderLineSpecification specification,
+            OrderParties parties,
+            OrderLinePricing pricing) {
         this(id, productId, quantity, specification, parties);
         this.pricing = pricing != null ? pricing : new NotPricedYet();
     }
@@ -87,9 +87,13 @@ class OrderLine {
 
     @Override
     public String toString() {
-        return "OrderLine{id=%s, productId=%s, quantity=%s, spec=%s, pricing=%s, parties=%s}".formatted(
-            id, productId, quantity, specification, pricing.getClass().getSimpleName(),
-            hasLineLevelParties() ? parties : "inherited"
-        );
+        return "OrderLine{id=%s, productId=%s, quantity=%s, spec=%s, pricing=%s, parties=%s}"
+                .formatted(
+                        id,
+                        productId,
+                        quantity,
+                        specification,
+                        pricing.getClass().getSimpleName(),
+                        hasLineLevelParties() ? parties : "inherited");
     }
 }

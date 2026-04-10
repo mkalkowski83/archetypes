@@ -5,15 +5,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
-/**
- * Web address (URL) details with validation.
- * Validates URL format and structure.
- */
+/** Web address (URL) details with validation. Validates URL format and structure. */
 record WebAddressDetails(String url) implements AddressDetails {
 
-    private static final Pattern URL_PATTERN = Pattern.compile(
-            "^(https?|ftp)://[a-zA-Z0-9.-]+(:\\d+)?(/.*)?$"
-    );
+    private static final Pattern URL_PATTERN =
+            Pattern.compile("^(https?|ftp)://[a-zA-Z0-9.-]+(:\\d+)?(/.*)?$");
 
     public WebAddressDetails {
         if (url == null || url.isBlank()) {
@@ -37,9 +33,7 @@ record WebAddressDetails(String url) implements AddressDetails {
         return new WebAddressDetails(url);
     }
 
-    /**
-     * Returns the protocol (scheme) of the URL.
-     */
+    /** Returns the protocol (scheme) of the URL. */
     public String protocol() {
         try {
             return new URI(url).getScheme();
@@ -48,9 +42,7 @@ record WebAddressDetails(String url) implements AddressDetails {
         }
     }
 
-    /**
-     * Returns the host part of the URL.
-     */
+    /** Returns the host part of the URL. */
     public String host() {
         try {
             return new URI(url).getHost();

@@ -8,7 +8,8 @@ public record PersonView(
         String lastName,
         Set<String> roles,
         Set<RegisteredIdentifier> registeredIdentifiers,
-        long version) implements PartyView {
+        long version)
+        implements PartyView {
 
     @Override
     public String partyType() {

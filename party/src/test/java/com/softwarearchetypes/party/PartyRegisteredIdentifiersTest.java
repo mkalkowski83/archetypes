@@ -1,17 +1,16 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
+import static com.softwarearchetypes.party.PartyFixture.somePartyOfType;
+import static com.softwarearchetypes.party.RegisteredIdentifierFixture.someRegisteredIdentifier;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.events.RegisteredIdentifierAdded;
 import com.softwarearchetypes.party.events.RegisteredIdentifierAdditionSkipped;
 import com.softwarearchetypes.party.events.RegisteredIdentifierRemovalSkipped;
 import com.softwarearchetypes.party.events.RegisteredIdentifierRemoved;
-
-import static com.softwarearchetypes.party.PartyFixture.somePartyOfType;
-import static com.softwarearchetypes.party.RegisteredIdentifierFixture.someRegisteredIdentifier;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 abstract class PartyRegisteredIdentifiersTest<T extends Party> {
 
@@ -23,120 +22,126 @@ abstract class PartyRegisteredIdentifiersTest<T extends Party> {
 
     @Test
     void shouldAddRegisteredIdentifierToTheParty() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         RegisteredIdentifier id = someRegisteredIdentifier();
 
-        //when
+        // when
         Result<String, Party> result = party.add(id);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldReturnAddedRegisteredIdentifier() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         RegisteredIdentifier id = someRegisteredIdentifier();
 
-        //when
+        // when
         party.add(id);
 
-        //then
+        // then
         assertTrue(party.registeredIdentifiers().contains(id));
     }
 
     @Test
     void shouldGenerateRegisteredIdentifierAddedEventWhenSuccessfullyAddingRegisteredIdentifier() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         RegisteredIdentifier id = someRegisteredIdentifier();
-        RegisteredIdentifierAdded expectedEvent = new RegisteredIdentifierAdded(party.id().asString(), id.type(), id.asString());
+        RegisteredIdentifierAdded expectedEvent =
+                new RegisteredIdentifierAdded(party.id().asString(), id.type(), id.asString());
 
-        //when
+        // when
         party.add(id);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
-    void shouldGenerateRegisteredIdentifierAdditionSkippedEventWhenAddingAlreadyExistingRegisteredIdentifier() {
-        //given
+    void
+            shouldGenerateRegisteredIdentifierAdditionSkippedEventWhenAddingAlreadyExistingRegisteredIdentifier() {
+        // given
         RegisteredIdentifier id = someRegisteredIdentifier();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(id).build();
-        RegisteredIdentifierAdditionSkipped expectedEvent = RegisteredIdentifierAdditionSkipped.dueToDataDuplicationFor(party.id()
-                                                                                                                             .asString(), id.type(), id.asString());
+        RegisteredIdentifierAdditionSkipped expectedEvent =
+                RegisteredIdentifierAdditionSkipped.dueToDataDuplicationFor(
+                        party.id().asString(), id.type(), id.asString());
 
-        //when
+        // when
         party.add(id);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
     void shouldRemoveRegisteredIdentifierFromParty() {
-        //given
+        // given
         RegisteredIdentifier id = someRegisteredIdentifier();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(id).build();
 
-        //when
+        // when
         Result<String, Party> result = party.remove(id);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldNotReturnRemovedRegisteredIdentifier() {
-        //given
+        // given
         RegisteredIdentifier id = someRegisteredIdentifier();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(id).build();
 
-        //when
+        // when
         party.remove(id);
 
-        //then
+        // then
         assertFalse(party.registeredIdentifiers().contains(id));
     }
 
     @Test
-    void shouldGenerateRegisteredIdentifierRemovedEventWhenSuccessfullyAddingRegisteredIdentifier() {
-        //given
+    void
+            shouldGenerateRegisteredIdentifierRemovedEventWhenSuccessfullyAddingRegisteredIdentifier() {
+        // given
         RegisteredIdentifier id = someRegisteredIdentifier();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(id).build();
-        RegisteredIdentifierRemoved expectedEvent = new RegisteredIdentifierRemoved(party.id().asString(), id.type(), id.asString());
+        RegisteredIdentifierRemoved expectedEvent =
+                new RegisteredIdentifierRemoved(party.id().asString(), id.type(), id.asString());
 
-        //when
+        // when
         party.remove(id);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
-    void shouldGenerateRegisteredIdentifierRemovalSkippedEventWhenRemovingNonExistingRegisteredIdentifier() {
-        //given
+    void
+            shouldGenerateRegisteredIdentifierRemovalSkippedEventWhenRemovingNonExistingRegisteredIdentifier() {
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         RegisteredIdentifier idToBeDeleted = someRegisteredIdentifier();
-        RegisteredIdentifierRemovalSkipped expectedEvent = RegisteredIdentifierRemovalSkipped.dueToMissingIdentifierFor(party.id()
-                                                                                                                             .asString(), idToBeDeleted.type(), idToBeDeleted.asString());
+        RegisteredIdentifierRemovalSkipped expectedEvent =
+                RegisteredIdentifierRemovalSkipped.dueToMissingIdentifierFor(
+                        party.id().asString(), idToBeDeleted.type(), idToBeDeleted.asString());
 
-        //when
+        // when
         party.remove(idToBeDeleted);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
-
 }

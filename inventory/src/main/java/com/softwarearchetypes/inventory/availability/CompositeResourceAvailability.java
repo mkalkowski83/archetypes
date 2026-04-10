@@ -4,7 +4,6 @@ import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,10 +12,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * CompositeResourceAvailability manages availability of a bundle of resources.
- * All components must be available for the composite to be available.
- * Examples: car rental (car + GPS + child seat), hotel package (room + breakfast + parking).
- * Competition model: all-or-nothing - all components must be locked together.
+ * CompositeResourceAvailability manages availability of a bundle of resources. All components must
+ * be available for the composite to be available. Examples: car rental (car + GPS + child seat),
+ * hotel package (room + breakfast + parking). Competition model: all-or-nothing - all components
+ * must be locked together.
  */
 class CompositeResourceAvailability implements ResourceAvailability {
 
@@ -26,25 +25,39 @@ class CompositeResourceAvailability implements ResourceAvailability {
     private final Map<BlockadeId, Map<ResourceId, BlockadeId>> compositeBlockades;
     private final Version version;
 
-    CompositeResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId,
-                                   Map<ResourceId, ResourceAvailability> components,
-                                   Map<BlockadeId, Map<ResourceId, BlockadeId>> compositeBlockades,
-                                   Version version) {
+    CompositeResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            Map<ResourceId, ResourceAvailability> components,
+            Map<BlockadeId, Map<ResourceId, BlockadeId>> compositeBlockades,
+            Version version) {
         this.id = Objects.requireNonNull(id, "ResourceAvailabilityId cannot be null");
         this.resourceId = Objects.requireNonNull(resourceId, "ResourceId cannot be null");
-        this.components = new HashMap<>(Objects.requireNonNull(components, "components cannot be null"));
-        this.compositeBlockades = new HashMap<>(Objects.requireNonNull(compositeBlockades, "compositeBlockades cannot be null"));
+        this.components =
+                new HashMap<>(Objects.requireNonNull(components, "components cannot be null"));
+        this.compositeBlockades =
+                new HashMap<>(
+                        Objects.requireNonNull(
+                                compositeBlockades, "compositeBlockades cannot be null"));
         if (components.isEmpty()) {
-            throw new IllegalArgumentException("Composite resource must have at least one component");
+            throw new IllegalArgumentException(
+                    "Composite resource must have at least one component");
         }
         this.version = version;
     }
 
-    static CompositeResourceAvailability create(ResourceId resourceId, Map<ResourceId, ResourceAvailability> components) {
-        return new CompositeResourceAvailability(ResourceAvailabilityId.random(), resourceId, components, new HashMap<>(), Version.initial());
+    static CompositeResourceAvailability create(
+            ResourceId resourceId, Map<ResourceId, ResourceAvailability> components) {
+        return new CompositeResourceAvailability(
+                ResourceAvailabilityId.random(),
+                resourceId,
+                components,
+                new HashMap<>(),
+                Version.initial());
     }
 
-    static CompositeResourceAvailability of(ResourceId resourceId, List<ResourceAvailability> componentList) {
+    static CompositeResourceAvailability of(
+            ResourceId resourceId, List<ResourceAvailability> componentList) {
         Map<ResourceId, ResourceAvailability> components = new HashMap<>();
         for (ResourceAvailability component : componentList) {
             components.put(component.resourceId(), component);
@@ -65,12 +78,15 @@ class CompositeResourceAvailability implements ResourceAvailability {
     @Override
     public Result<String, BlockadeId> lock(LockRequest request) {
         if (!(request instanceof CompositeLockRequest compositeRequest)) {
-            return Result.failure("Invalid request type. Expected CompositeLockRequest but got: " + request.getClass().getSimpleName());
+            return Result.failure(
+                    "Invalid request type. Expected CompositeLockRequest but got: "
+                            + request.getClass().getSimpleName());
         }
 
         // Validate all component requests are present
         for (ResourceId componentId : components.keySet()) {
-            Optional<LockRequest> componentRequest = compositeRequest.getRequestForComponent(componentId);
+            Optional<LockRequest> componentRequest =
+                    compositeRequest.getRequestForComponent(componentId);
             if (componentRequest.isEmpty()) {
                 return Result.failure("Missing lock request for component: " + componentId);
             }
@@ -91,7 +107,8 @@ class CompositeResourceAvailability implements ResourceAvailability {
         for (Map.Entry<ResourceId, ResourceAvailability> entry : components.entrySet()) {
             ResourceId componentId = entry.getKey();
             ResourceAvailability component = entry.getValue();
-            LockRequest componentRequest = compositeRequest.getRequestForComponent(componentId).get();
+            LockRequest componentRequest =
+                    compositeRequest.getRequestForComponent(componentId).get();
 
             Result<String, BlockadeId> lockResult = component.lock(componentRequest);
             if (lockResult.failure()) {
@@ -105,13 +122,15 @@ class CompositeResourceAvailability implements ResourceAvailability {
         if (!failures.isEmpty()) {
             for (Map.Entry<ResourceId, BlockadeId> locked : lockedComponents.entrySet()) {
                 ResourceAvailability component = components.get(locked.getKey());
-                UnlockRequest unlockRequest = UnlockRequest.of(compositeRequest.owner(), locked.getValue());
+                UnlockRequest unlockRequest =
+                        UnlockRequest.of(compositeRequest.owner(), locked.getValue());
                 component.unlock(unlockRequest);
             }
             return Result.failure("Failed to lock components: " + String.join(", ", failures));
         }
 
-        BlockadeId compositeBlockadeId = BlockadeId.composite(new ArrayList<>(lockedComponents.values()));
+        BlockadeId compositeBlockadeId =
+                BlockadeId.composite(new ArrayList<>(lockedComponents.values()));
         compositeBlockades.put(compositeBlockadeId, lockedComponents);
 
         return Result.success(compositeBlockadeId);
@@ -133,7 +152,8 @@ class CompositeResourceAvailability implements ResourceAvailability {
             BlockadeId componentBlockadeId = entry.getValue();
             ResourceAvailability component = components.get(componentId);
 
-            UnlockRequest componentUnlock = UnlockRequest.of(request.requester(), componentBlockadeId);
+            UnlockRequest componentUnlock =
+                    UnlockRequest.of(request.requester(), componentBlockadeId);
             Result<String, BlockadeId> result = component.unlock(componentUnlock);
             if (result.failure()) {
                 failures.add(componentId + ": " + result.getFailure());

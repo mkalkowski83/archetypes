@@ -1,8 +1,6 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance;
 
-
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
-
 import java.util.List;
 
 @FunctionalInterface
@@ -21,8 +19,10 @@ public interface ToleranceStrategy {
                 return otherResult;
             }
             return MatchResult.matched(
-                    "Both criteria matched: " + thisResult.reason() + " and " + otherResult.reason()
-            );
+                    "Both criteria matched: "
+                            + thisResult.reason()
+                            + " and "
+                            + otherResult.reason());
         };
     }
 
@@ -37,8 +37,10 @@ public interface ToleranceStrategy {
                 return otherResult;
             }
             return MatchResult.notMatched(
-                    "Neither criteria matched: " + thisResult.reason() + " or " + otherResult.reason()
-            );
+                    "Neither criteria matched: "
+                            + thisResult.reason()
+                            + " or "
+                            + otherResult.reason());
         };
     }
 

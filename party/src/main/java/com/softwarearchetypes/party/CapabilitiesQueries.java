@@ -1,15 +1,12 @@
 package com.softwarearchetypes.party;
 
+import com.softwarearchetypes.party.OperatingScope.LocationScope;
+import com.softwarearchetypes.party.OperatingScope.SkillLevelScope;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import com.softwarearchetypes.party.OperatingScope.LocationScope;
-import com.softwarearchetypes.party.OperatingScope.SkillLevelScope;
-
-/**
- * Queries for finding parties based on their capabilities.
- */
+/** Queries for finding parties based on their capabilities. */
 public class CapabilitiesQueries {
 
     private final CapabilitiesRepository repository;
@@ -25,9 +22,7 @@ public class CapabilitiesQueries {
     }
 
     public List<Capability> findByType(CapabilityType type) {
-        return repository.findByType(type).stream()
-                .filter(Capability::isCurrentlyValid)
-                .toList();
+        return repository.findByType(type).stream().filter(Capability::isCurrentlyValid).toList();
     }
 
     public List<Capability> findByType(String typeName) {
@@ -38,9 +33,7 @@ public class CapabilitiesQueries {
         return repository.findById(id);
     }
 
-    /**
-     * Find all parties that have a capability of given type.
-     */
+    /** Find all parties that have a capability of given type. */
     public List<PartyId> findPartiesWithCapability(CapabilityType type) {
         return repository.findByType(type).stream()
                 .filter(Capability::isCurrentlyValid)
@@ -49,9 +42,7 @@ public class CapabilitiesQueries {
                 .toList();
     }
 
-    /**
-     * Find all parties that have a capability satisfying the given requirement.
-     */
+    /** Find all parties that have a capability satisfying the given requirement. */
     public List<PartyId> findPartiesSatisfying(CapabilityRequirement requirement) {
         return repository.findByType(requirement.requiredType()).stream()
                 .filter(Capability::isCurrentlyValid)
@@ -61,37 +52,35 @@ public class CapabilitiesQueries {
                 .toList();
     }
 
-    /**
-     * Find all parties that have capabilities at a specific location.
-     */
+    /** Find all parties that have capabilities at a specific location. */
     public List<PartyId> findPartiesAtLocation(CapabilityType type, String location) {
         return repository.findByType(type).stream()
                 .filter(Capability::isCurrentlyValid)
-                .filter(cap -> cap.scope(LocationScope.class)
-                        .map(scope -> scope.includes(location))
-                        .orElse(false))
+                .filter(
+                        cap ->
+                                cap.scope(LocationScope.class)
+                                        .map(scope -> scope.includes(location))
+                                        .orElse(false))
                 .map(Capability::partyId)
                 .distinct()
                 .toList();
     }
 
-    /**
-     * Find all parties with capability of given type and at least given skill level.
-     */
+    /** Find all parties with capability of given type and at least given skill level. */
     public List<PartyId> findPartiesWithSkillLevel(CapabilityType type, SkillLevelScope minLevel) {
         return repository.findByType(type).stream()
                 .filter(Capability::isCurrentlyValid)
-                .filter(cap -> cap.scope(SkillLevelScope.class)
-                        .map(scope -> scope.isAtLeast(minLevel))
-                        .orElse(false))
+                .filter(
+                        cap ->
+                                cap.scope(SkillLevelScope.class)
+                                        .map(scope -> scope.isAtLeast(minLevel))
+                                        .orElse(false))
                 .map(Capability::partyId)
                 .distinct()
                 .toList();
     }
 
-    /**
-     * Find all parties with capability matching custom predicate.
-     */
+    /** Find all parties with capability matching custom predicate. */
     public List<PartyId> findPartiesMatching(CapabilityType type, Predicate<Capability> predicate) {
         return repository.findByType(type).stream()
                 .filter(Capability::isCurrentlyValid)
@@ -101,19 +90,21 @@ public class CapabilitiesQueries {
                 .toList();
     }
 
-    /**
-     * Find capabilities at location with minimum skill level.
-     */
+    /** Find capabilities at location with minimum skill level. */
     public List<Capability> findCapabilitiesAtLocationWithSkill(
             CapabilityType type, String location, SkillLevelScope minLevel) {
         return repository.findByType(type).stream()
                 .filter(Capability::isCurrentlyValid)
-                .filter(cap -> cap.scope(LocationScope.class)
-                        .map(scope -> scope.includes(location))
-                        .orElse(false))
-                .filter(cap -> cap.scope(SkillLevelScope.class)
-                        .map(scope -> scope.isAtLeast(minLevel))
-                        .orElse(false))
+                .filter(
+                        cap ->
+                                cap.scope(LocationScope.class)
+                                        .map(scope -> scope.includes(location))
+                                        .orElse(false))
+                .filter(
+                        cap ->
+                                cap.scope(SkillLevelScope.class)
+                                        .map(scope -> scope.isAtLeast(minLevel))
+                                        .orElse(false))
                 .toList();
     }
 }

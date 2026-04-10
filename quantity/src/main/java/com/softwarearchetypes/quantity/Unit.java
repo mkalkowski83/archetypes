@@ -2,10 +2,7 @@ package com.softwarearchetypes.quantity;
 
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
-/**
- * Unit of measurement for quantities.
- * Examples: kg, l, pcs, m3, m2, hours, etc.
- */
+/** Unit of measurement for quantities. Examples: kg, l, pcs, m3, m2, hours, etc. */
 public record Unit(String symbol, String name) {
 
     public Unit {

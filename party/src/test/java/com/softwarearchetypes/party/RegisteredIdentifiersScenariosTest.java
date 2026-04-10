@@ -1,27 +1,25 @@
 package com.softwarearchetypes.party;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Set;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.commands.AddRegisteredIdentifierCommand;
 import com.softwarearchetypes.party.commands.RegisterCompanyCommand;
 import com.softwarearchetypes.party.commands.RegisterPersonCommand;
 import com.softwarearchetypes.party.commands.RemoveRegisteredIdentifierCommand;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Set;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 /**
- * Scenarios for RegisteredIdentifiers: PESEL, NIP, Passport.
- * Tests Validity periods, expiration, and identifier management.
+ * Scenarios for RegisteredIdentifiers: PESEL, NIP, Passport. Tests Validity periods, expiration,
+ * and identifier management.
  */
 @DisplayName("Registered Identifiers Scenarios")
 class RegisteredIdentifiersScenariosTest {
@@ -59,28 +57,36 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("PESEL with invalid checksum is rejected")
         void peselWithInvalidChecksumIsRejected() {
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> PersonalIdentificationNumber.of("44051401459")); // wrong checksum
         }
 
         @Test
         @DisplayName("PESEL with wrong length is rejected")
         void peselWithWrongLengthIsRejected() {
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> PersonalIdentificationNumber.of("4405140145")); // 10 digits
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> PersonalIdentificationNumber.of("440514014580")); // 12 digits
         }
 
         @Test
         @DisplayName("Person can have PESEL added after registration")
         void personCanHavePeselAddedAfterRegistration() {
-            PartyId personId = partiesFacade.handle(
-                    new RegisterPersonCommand("Maria", "Zielińska", Set.of(), Set.of())).getSuccess().partyId();
+            PartyId personId =
+                    partiesFacade
+                            .handle(
+                                    new RegisterPersonCommand(
+                                            "Maria", "Zielińska", Set.of(), Set.of()))
+                            .getSuccess()
+                            .partyId();
 
             PersonalIdentificationNumber pesel = PersonalIdentificationNumber.of("44051401458");
-            Result<String, PartyId> result = partiesFacade.handle(
-                    new AddRegisteredIdentifierCommand(personId, pesel));
+            Result<String, PartyId> result =
+                    partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, pesel));
 
             assertTrue(result.success());
             PartyView party = partiesQueries.findBy(personId).orElseThrow();
@@ -115,19 +121,25 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("NIP with invalid checksum is rejected")
         void nipWithInvalidChecksumIsRejected() {
-            assertThrows(IllegalArgumentException.class,
+            assertThrows(
+                    IllegalArgumentException.class,
                     () -> TaxNumber.of("1234563219")); // wrong checksum
         }
 
         @Test
         @DisplayName("Company can have NIP added after registration")
         void companyCanHaveNipAddedAfterRegistration() {
-            PartyId companyId = partiesFacade.handle(
-                    new RegisterCompanyCommand("Tech Solutions Sp. z o.o.", Set.of(), Set.of())).getSuccess().partyId();
+            PartyId companyId =
+                    partiesFacade
+                            .handle(
+                                    new RegisterCompanyCommand(
+                                            "Tech Solutions Sp. z o.o.", Set.of(), Set.of()))
+                            .getSuccess()
+                            .partyId();
 
             TaxNumber nip = TaxNumber.of("1234563218");
-            Result<String, PartyId> result = partiesFacade.handle(
-                    new AddRegisteredIdentifierCommand(companyId, nip));
+            Result<String, PartyId> result =
+                    partiesFacade.handle(new AddRegisteredIdentifierCommand(companyId, nip));
 
             assertTrue(result.success());
         }
@@ -181,10 +193,16 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("Person can have passport with future expiration")
         void personCanHavePassportWithFutureExpiration() {
-            PartyId personId = partiesFacade.handle(
-                    new RegisterPersonCommand("Adam", "Kwiatkowski", Set.of(), Set.of())).getSuccess().partyId();
+            PartyId personId =
+                    partiesFacade
+                            .handle(
+                                    new RegisterPersonCommand(
+                                            "Adam", "Kwiatkowski", Set.of(), Set.of()))
+                            .getSuccess()
+                            .partyId();
 
-            Passport passport = Passport.of("GH7890123", Validity.until(Instant.parse("2030-06-15T00:00:00Z")));
+            Passport passport =
+                    Passport.of("GH7890123", Validity.until(Instant.parse("2030-06-15T00:00:00Z")));
             partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, passport));
 
             PartyView party = partiesQueries.findBy(personId).orElseThrow();
@@ -245,12 +263,14 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("Two validity periods can overlap")
         void twoValidityPeriodsCanOverlap() {
-            Validity period1 = Validity.between(
-                    Instant.parse("2024-01-01T00:00:00Z"),
-                    Instant.parse("2024-12-31T00:00:00Z"));
-            Validity period2 = Validity.between(
-                    Instant.parse("2024-06-01T00:00:00Z"),
-                    Instant.parse("2025-06-01T00:00:00Z"));
+            Validity period1 =
+                    Validity.between(
+                            Instant.parse("2024-01-01T00:00:00Z"),
+                            Instant.parse("2024-12-31T00:00:00Z"));
+            Validity period2 =
+                    Validity.between(
+                            Instant.parse("2024-06-01T00:00:00Z"),
+                            Instant.parse("2025-06-01T00:00:00Z"));
 
             assertTrue(period1.overlaps(period2));
             assertTrue(period2.overlaps(period1));
@@ -259,12 +279,14 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("Non-overlapping validity periods do not overlap")
         void nonOverlappingPeriodsDoNotOverlap() {
-            Validity period1 = Validity.between(
-                    Instant.parse("2024-01-01T00:00:00Z"),
-                    Instant.parse("2024-06-01T00:00:00Z"));
-            Validity period2 = Validity.between(
-                    Instant.parse("2024-06-01T00:00:00Z"),
-                    Instant.parse("2024-12-31T00:00:00Z"));
+            Validity period1 =
+                    Validity.between(
+                            Instant.parse("2024-01-01T00:00:00Z"),
+                            Instant.parse("2024-06-01T00:00:00Z"));
+            Validity period2 =
+                    Validity.between(
+                            Instant.parse("2024-06-01T00:00:00Z"),
+                            Instant.parse("2024-12-31T00:00:00Z"));
 
             assertFalse(period1.overlaps(period2)); // end is exclusive
         }
@@ -279,11 +301,17 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("Party can have multiple registered identifiers")
         void partyCanHaveMultipleIdentifiers() {
-            PartyId personId = partiesFacade.handle(
-                    new RegisterPersonCommand("Adam", "Kwiatkowski", Set.of(), Set.of())).getSuccess().partyId();
+            PartyId personId =
+                    partiesFacade
+                            .handle(
+                                    new RegisterPersonCommand(
+                                            "Adam", "Kwiatkowski", Set.of(), Set.of()))
+                            .getSuccess()
+                            .partyId();
 
             PersonalIdentificationNumber pesel = PersonalIdentificationNumber.of("44051401458");
-            Passport passport = Passport.of("JK3456789", Validity.until(Instant.parse("2030-06-15T00:00:00Z")));
+            Passport passport =
+                    Passport.of("JK3456789", Validity.until(Instant.parse("2030-06-15T00:00:00Z")));
 
             partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, pesel));
             partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, passport));
@@ -298,8 +326,13 @@ class RegisteredIdentifiersScenariosTest {
         @DisplayName("Identifier can be removed from party")
         void identifierCanBeRemovedFromParty() {
             PersonalIdentificationNumber pesel = PersonalIdentificationNumber.of("44051401458");
-            PartyId personId = partiesFacade.handle(
-                    new RegisterPersonCommand("Ewa", "Kowalska", Set.of(), Set.of(pesel))).getSuccess().partyId();
+            PartyId personId =
+                    partiesFacade
+                            .handle(
+                                    new RegisterPersonCommand(
+                                            "Ewa", "Kowalska", Set.of(), Set.of(pesel)))
+                            .getSuccess()
+                            .partyId();
 
             partiesFacade.handle(new RemoveRegisteredIdentifierCommand(personId, pesel));
 
@@ -310,17 +343,21 @@ class RegisteredIdentifiersScenariosTest {
         @Test
         @DisplayName("Adding same identifier twice is idempotent")
         void addingSameIdentifierTwiceIsIdempotent() {
-            PartyId personId = partiesFacade.handle(
-                    new RegisterPersonCommand("Tomek", "Nowak", Set.of(), Set.of())).getSuccess().partyId();
+            PartyId personId =
+                    partiesFacade
+                            .handle(new RegisterPersonCommand("Tomek", "Nowak", Set.of(), Set.of()))
+                            .getSuccess()
+                            .partyId();
 
             PersonalIdentificationNumber pesel = PersonalIdentificationNumber.of("44051401458");
             partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, pesel));
             partiesFacade.handle(new AddRegisteredIdentifierCommand(personId, pesel));
 
             PartyView party = partiesQueries.findBy(personId).orElseThrow();
-            long peselCount = party.registeredIdentifiers().stream()
-                    .filter(id -> id.type().equals("PERSONAL_IDENTIFICATION_NUMBER"))
-                    .count();
+            long peselCount =
+                    party.registeredIdentifiers().stream()
+                            .filter(id -> id.type().equals("PERSONAL_IDENTIFICATION_NUMBER"))
+                            .count();
             assertEquals(1, peselCount);
         }
     }

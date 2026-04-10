@@ -1,17 +1,17 @@
 package com.softwarearchetypes.product;
 
 import com.softwarearchetypes.quantity.Quantity;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Builder for creating both ProductInstance and PackageInstance with fluent API.
- * <p>
- * Common attributes (id, serial, batch) are set in the main builder.
- * Type-specific attributes are set in specialized inner builders returned by asProductInstance() or asPackageInstance().
- * <p>
- * Usage:
+ *
+ * <p>Common attributes (id, serial, batch) are set in the main builder. Type-specific attributes
+ * are set in specialized inner builders returned by asProductInstance() or asPackageInstance().
+ *
+ * <p>Usage:
+ *
  * <pre>
  * ProductInstance instance = new InstanceBuilder(InstanceId.newOne())
  *     .withSerial(SerialNumber.of("ABC123"))
@@ -42,41 +42,37 @@ class InstanceBuilder {
         this.id = id;
     }
 
-    /**
-     * Sets serial number for the instance.
-     */
+    /** Sets serial number for the instance. */
     public InstanceBuilder withSerial(SerialNumber serialNumber) {
         this.serialNumber = serialNumber;
         return this;
     }
 
-    /**
-     * Sets batch ID for the instance.
-     */
+    /** Sets batch ID for the instance. */
     public InstanceBuilder withBatch(BatchId batchId) {
         this.batchId = batchId;
         return this;
     }
 
     /**
-     * Starts building a ProductInstance.
-     * Returns specialized builder for ProductInstance-specific attributes.
+     * Starts building a ProductInstance. Returns specialized builder for ProductInstance-specific
+     * attributes.
      */
     public ProductInstanceBuilder asProductInstance(ProductType productType) {
         return new ProductInstanceBuilder(productType);
     }
 
     /**
-     * Starts building a PackageInstance.
-     * Returns specialized builder for PackageInstance-specific attributes.
+     * Starts building a PackageInstance. Returns specialized builder for PackageInstance-specific
+     * attributes.
      */
     public PackageInstanceBuilder asPackageInstance(PackageType packageType) {
         return new PackageInstanceBuilder(packageType);
     }
 
     /**
-     * Specialized builder for ProductInstance.
-     * Has access to common fields from outer InstanceBuilder.
+     * Specialized builder for ProductInstance. Has access to common fields from outer
+     * InstanceBuilder.
      */
     public class ProductInstanceBuilder {
         private final ProductType productType;
@@ -104,13 +100,14 @@ class InstanceBuilder {
 
         public ProductInstance build() {
             ProductFeatureInstances featureInstances = new ProductFeatureInstances(features);
-            return new ProductInstance(id, productType, serialNumber, batchId, quantity, featureInstances);
+            return new ProductInstance(
+                    id, productType, serialNumber, batchId, quantity, featureInstances);
         }
     }
 
     /**
-     * Specialized builder for PackageInstance.
-     * Has access to common fields from outer InstanceBuilder.
+     * Specialized builder for PackageInstance. Has access to common fields from outer
+     * InstanceBuilder.
      */
     public class PackageInstanceBuilder {
         private final PackageType packageType;

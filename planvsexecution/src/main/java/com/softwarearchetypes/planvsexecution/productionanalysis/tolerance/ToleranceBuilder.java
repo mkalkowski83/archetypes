@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder for creating tolerance strategies.
- * Fluent API for composing different tolerance interpretations.
+ * Builder for creating tolerance strategies. Fluent API for composing different tolerance
+ * interpretations.
  */
 public class ToleranceBuilder {
 
@@ -15,7 +15,8 @@ public class ToleranceBuilder {
         return new ExactMatch();
     }
 
-    public static ToleranceStrategy quantityTolerance(double percentageTolerance, int absoluteTolerance) {
+    public static ToleranceStrategy quantityTolerance(
+            double percentageTolerance, int absoluteTolerance) {
         return new QuantityTolerance(percentageTolerance, absoluteTolerance);
     }
 

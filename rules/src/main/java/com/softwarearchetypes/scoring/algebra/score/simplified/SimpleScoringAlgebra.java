@@ -4,7 +4,6 @@ import com.softwarearchetypes.scoring.algebra.score.Score;
 import com.softwarearchetypes.scoring.ast.CmpOp;
 import com.softwarearchetypes.scoring.ast.Metric;
 import com.softwarearchetypes.scoring.context.WindowContext;
-
 import java.util.List;
 
 public class SimpleScoringAlgebra implements ScoringAlgebra {

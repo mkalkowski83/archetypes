@@ -1,12 +1,11 @@
 package com.softwarearchetypes.party;
 
+import com.softwarearchetypes.party.events.InMemoryEventsPublisher;
+import com.softwarearchetypes.party.events.PublishedEvent;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Predicate;
-
-import com.softwarearchetypes.party.events.InMemoryEventsPublisher;
-import com.softwarearchetypes.party.events.PublishedEvent;
 
 class PartiesTestEventListener implements InMemoryEventsPublisher.InMemoryEventObserver {
 

@@ -2,9 +2,9 @@ package com.softwarearchetypes.rules.discounting.offer.modifiers.simple;
 
 import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.quantity.money.Percentage;
-import com.softwarearchetypes.rules.discounting.offer.modifiers.NamedOfferItemModifier;
 import com.softwarearchetypes.rules.discounting.offer.Modification;
 import com.softwarearchetypes.rules.discounting.offer.OfferItem;
+import com.softwarearchetypes.rules.discounting.offer.modifiers.NamedOfferItemModifier;
 
 public class PercentageOfferItemModifier extends NamedOfferItemModifier {
     private final Percentage percentage;

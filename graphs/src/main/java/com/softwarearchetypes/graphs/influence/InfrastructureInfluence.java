@@ -4,7 +4,6 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-
 class InfrastructureInfluence {
     private final Graph<InfluenceUnit, DefaultEdge> graph;
 
@@ -21,10 +20,14 @@ class InfrastructureInfluence {
     }
 
     static class Builder {
-        private final Graph<InfluenceUnit, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        private final Graph<InfluenceUnit, DefaultEdge> graph =
+                new DefaultDirectedGraph<>(DefaultEdge.class);
 
-        Builder addConstraint(PhysicsProcess fromProcess, Laboratory fromLab,
-                              PhysicsProcess toProcess, Laboratory toLab) {
+        Builder addConstraint(
+                PhysicsProcess fromProcess,
+                Laboratory fromLab,
+                PhysicsProcess toProcess,
+                Laboratory toLab) {
             InfluenceUnit from = new InfluenceUnit(fromProcess, fromLab);
             InfluenceUnit to = new InfluenceUnit(toProcess, toLab);
             graph.addVertex(from);

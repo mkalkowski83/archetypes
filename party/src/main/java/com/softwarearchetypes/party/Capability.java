@@ -1,21 +1,21 @@
 package com.softwarearchetypes.party;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * Capability represents what a specific party can do, constrained by operating scopes and validity period.
- * Each capability is assigned to exactly one party.
+ * Capability represents what a specific party can do, constrained by operating scopes and validity
+ * period. Each capability is assigned to exactly one party.
  *
- * Examples:
- * - Dr. Smith has MedicalImaging capability at Hospital A, working hours, max 20 scans/day, valid until 2025
- * - FastLogistics company has GoodsDelivery capability for Warsaw region with ADR certification, valid until 2026
- * - Backend Team has SoftwareDevelopment capability for API Gateway at Senior level, always valid
+ * <p>Examples: - Dr. Smith has MedicalImaging capability at Hospital A, working hours, max 20
+ * scans/day, valid until 2025 - FastLogistics company has GoodsDelivery capability for Warsaw
+ * region with ADR certification, valid until 2026 - Backend Team has SoftwareDevelopment capability
+ * for API Gateway at Senior level, always valid
  */
 final class Capability {
 
@@ -25,7 +25,12 @@ final class Capability {
     private final List<OperatingScope> scopes;
     private final Validity validity;
 
-    private Capability(CapabilityId id, PartyId partyId, CapabilityType type, List<OperatingScope> scopes, Validity validity) {
+    private Capability(
+            CapabilityId id,
+            PartyId partyId,
+            CapabilityType type,
+            List<OperatingScope> scopes,
+            Validity validity) {
         this.id = Objects.requireNonNull(id, "CapabilityId cannot be null");
         this.partyId = Objects.requireNonNull(partyId, "PartyId cannot be null");
         this.type = Objects.requireNonNull(type, "CapabilityType cannot be null");
@@ -67,10 +72,7 @@ final class Capability {
 
     @SuppressWarnings("unchecked")
     public <T extends OperatingScope> Optional<T> scope(Class<T> scopeClass) {
-        return scopes.stream()
-                .filter(scopeClass::isInstance)
-                .map(s -> (T) s)
-                .findFirst();
+        return scopes.stream().filter(scopeClass::isInstance).map(s -> (T) s).findFirst();
     }
 
     public boolean hasScope(Class<? extends OperatingScope> scopeClass) {
@@ -78,8 +80,8 @@ final class Capability {
     }
 
     /**
-     * Checks if this capability satisfies a requirement.
-     * The capability must be valid, have the same type, and all scopes must satisfy the requirement's scopes.
+     * Checks if this capability satisfies a requirement. The capability must be valid, have the
+     * same type, and all scopes must satisfy the requirement's scopes.
      */
     public boolean satisfies(CapabilityRequirement requirement) {
         if (!isCurrentlyValid()) {
@@ -96,9 +98,7 @@ final class Capability {
         return true;
     }
 
-    /**
-     * Checks if this capability satisfies a requirement at a specific instant.
-     */
+    /** Checks if this capability satisfies a requirement at a specific instant. */
     public boolean satisfiesAt(CapabilityRequirement requirement, Instant at) {
         if (!isValidAt(at)) {
             return false;
@@ -185,6 +185,7 @@ final class Capability {
 
     @Override
     public String toString() {
-        return "Capability{partyId=%s, type=%s, scopes=%d, validity=%s}".formatted(partyId, type, scopes.size(), validity);
+        return "Capability{partyId=%s, type=%s, scopes=%d, validity=%s}"
+                .formatted(partyId, type, scopes.size(), validity);
     }
 }

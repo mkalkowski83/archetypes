@@ -5,15 +5,14 @@ import com.softwarearchetypes.product.ProductCommands.*;
 import com.softwarearchetypes.product.ProductQueries.*;
 import com.softwarearchetypes.product.ProductViews.*;
 import com.softwarearchetypes.quantity.Unit;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * ProductFacade - main API for managing ProductTypes.
- * Accepts commands and queries with simple types, returns views.
+ * ProductFacade - main API for managing ProductTypes. Accepts commands and queries with simple
+ * types, returns views.
  */
 public class ProductFacade {
 
@@ -31,9 +30,7 @@ public class ProductFacade {
     // Commands
     // ============================================
 
-    /**
-     * Defines a new ProductType in the system.
-     */
+    /** Defines a new ProductType in the system. */
     public Result<String, ProductIdentifier> handle(DefineProductType command) {
         try {
             // Parse domain objects from simple types
@@ -82,22 +79,17 @@ public class ProductFacade {
     // Queries
     // ============================================
 
-    /**
-     * Finds a ProductType by its identifier.
-     */
+    /** Finds a ProductType by its identifier. */
     public Optional<ProductTypeView> findBy(FindProductTypeCriteria criteria) {
-        return repository.findByIdValue(criteria.productId())
-            .map(this::toProductTypeView);
+        return repository.findByIdValue(criteria.productId()).map(this::toProductTypeView);
     }
 
-    /**
-     * Finds ProductTypes by tracking strategy.
-     */
+    /** Finds ProductTypes by tracking strategy. */
     public Set<ProductTypeView> findBy(FindByTrackingStrategyCriteria criteria) {
         var strategy = parseTrackingStrategy(criteria.trackingStrategy());
         return repository.findByTrackingStrategy(strategy).stream()
-            .map(this::toProductTypeView)
-            .collect(Collectors.toSet());
+                .map(this::toProductTypeView)
+                .collect(Collectors.toSet());
     }
 
     // ============================================
@@ -109,8 +101,11 @@ public class ProductFacade {
             case "UUID" -> UuidProductIdentifier.of(value);
             case "ISBN" -> IsbnProductIdentifier.of(value);
             case "GTIN" -> GtinProductIdentifier.of(value);
-            default -> throw new IllegalArgumentException("Unknown product identifier type: " + type +
-                ". Supported types: UUID, ISBN, GTIN");
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unknown product identifier type: "
+                                    + type
+                                    + ". Supported types: UUID, ISBN, GTIN");
         };
     }
 
@@ -147,15 +142,13 @@ public class ProductFacade {
     private FeatureValueConstraint toConstraint(ProductCommands.FeatureConstraintConfig config) {
         return switch (config) {
             case ProductCommands.AllowedValuesConfig c ->
-                AllowedValuesConstraint.of(c.allowedValues().toArray(new String[0]));
+                    AllowedValuesConstraint.of(c.allowedValues().toArray(new String[0]));
             case ProductCommands.NumericRangeConfig c ->
-                NumericRangeConstraint.between(c.min(), c.max());
+                    NumericRangeConstraint.between(c.min(), c.max());
             case ProductCommands.DecimalRangeConfig c ->
-                DecimalRangeConstraint.of(c.min(), c.max());
-            case ProductCommands.RegexConfig c ->
-                RegexConstraint.of(c.pattern());
-            case ProductCommands.DateRangeConfig c ->
-                DateRangeConstraint.between(c.from(), c.to());
+                    DecimalRangeConstraint.of(c.min(), c.max());
+            case ProductCommands.RegexConfig c -> RegexConstraint.of(c.pattern());
+            case ProductCommands.DateRangeConfig c -> DateRangeConstraint.between(c.from(), c.to());
             case ProductCommands.UnconstrainedConfig c -> {
                 var type = FeatureValueType.valueOf(c.valueType().toUpperCase());
                 yield new Unconstrained(type);
@@ -169,31 +162,27 @@ public class ProductFacade {
 
     private ProductTypeView toProductTypeView(ProductType productType) {
         return new ProductTypeView(
-            productType.id().toString(),
-            productType.name().value(),
-            productType.description().value(),
-            productType.preferredUnit().symbol(),
-            productType.trackingStrategy().name(),
-            toFeatureTypeViews(productType.featureTypes().mandatoryFeatures()),
-            toFeatureTypeViews(productType.featureTypes().optionalFeatures())
-        );
+                productType.id().toString(),
+                productType.name().value(),
+                productType.description().value(),
+                productType.preferredUnit().symbol(),
+                productType.trackingStrategy().name(),
+                toFeatureTypeViews(productType.featureTypes().mandatoryFeatures()),
+                toFeatureTypeViews(productType.featureTypes().optionalFeatures()));
     }
 
     private Set<FeatureTypeView> toFeatureTypeViews(Set<ProductFeatureType> features) {
-        return features.stream()
-            .map(this::toFeatureTypeView)
-            .collect(Collectors.toSet());
+        return features.stream().map(this::toFeatureTypeView).collect(Collectors.toSet());
     }
 
     private FeatureTypeView toFeatureTypeView(ProductFeatureType featureType) {
         var constraint = featureType.constraint();
         return new FeatureTypeView(
-            featureType.name(),
-            constraint.valueType().name(),
-            constraint.type(),
-            constraintConfigToMap(constraint),
-            constraint.desc()
-        );
+                featureType.name(),
+                constraint.valueType().name(),
+                constraint.type(),
+                constraintConfigToMap(constraint),
+                constraint.desc());
     }
 
     private java.util.Map<String, Object> constraintConfigToMap(FeatureValueConstraint constraint) {
@@ -203,7 +192,8 @@ public class ProductFacade {
             case NumericRangeConstraint c -> Map.of("min", c.min(), "max", c.max());
             case DecimalRangeConstraint c -> Map.of("min", c.min(), "max", c.max());
             case RegexConstraint c -> Map.of("pattern", c.pattern());
-            case DateRangeConstraint c -> Map.of("from", c.from().toString(), "to", c.to().toString());
+            case DateRangeConstraint c ->
+                    Map.of("from", c.from().toString(), "to", c.to().toString());
             case Unconstrained c -> Map.of();
             default -> Map.of();
         };

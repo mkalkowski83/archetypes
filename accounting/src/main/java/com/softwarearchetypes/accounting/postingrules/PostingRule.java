@@ -1,8 +1,7 @@
 package com.softwarearchetypes.accounting.postingrules;
 
-import java.util.List;
-
 import com.softwarearchetypes.accounting.Transaction;
+import java.util.List;
 
 public interface PostingRule {
 

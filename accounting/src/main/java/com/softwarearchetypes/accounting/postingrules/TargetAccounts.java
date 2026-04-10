@@ -1,9 +1,8 @@
 package com.softwarearchetypes.accounting.postingrules;
 
+import com.softwarearchetypes.accounting.AccountView;
 import java.util.Map;
 import java.util.Optional;
-
-import com.softwarearchetypes.accounting.AccountView;
 
 public record TargetAccounts(Map<String, AccountView> accounts) {
 
@@ -12,7 +11,10 @@ public record TargetAccounts(Map<String, AccountView> accounts) {
     }
 
     public AccountView getRequired(String tag) {
-        return get(tag).orElseThrow(() -> new IllegalArgumentException("Required account with tag '" + tag + "' not found"));
+        return get(tag).orElseThrow(
+                        () ->
+                                new IllegalArgumentException(
+                                        "Required account with tag '" + tag + "' not found"));
     }
 
     public static TargetAccounts of(Map<String, AccountView> accounts) {

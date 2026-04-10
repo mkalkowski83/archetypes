@@ -1,19 +1,16 @@
 package com.softwarearchetypes.product;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Tests for FeatureValueConstraint implementations.
- */
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+/** Tests for FeatureValueConstraint implementations. */
 class FeatureValueConstraintTest {
 
     @Nested
@@ -48,9 +45,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectInvalidRange() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    NumericRangeConstraint.between(100, 1)
-            );
+            assertThrows(
+                    IllegalArgumentException.class, () -> NumericRangeConstraint.between(100, 1));
         }
 
         @Test
@@ -83,9 +79,7 @@ class FeatureValueConstraintTest {
         void shouldRejectInvalidValueFromString() {
             FeatureValueConstraint constraint = NumericRangeConstraint.between(1, 100);
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    constraint.fromString("150")
-            );
+            assertThrows(IllegalArgumentException.class, () -> constraint.fromString("150"));
         }
     }
 
@@ -122,9 +116,9 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectInvalidRange() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    DecimalRangeConstraint.of("100.0", "0.5")
-            );
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> DecimalRangeConstraint.of("100.0", "0.5"));
         }
 
         @Test
@@ -157,9 +151,7 @@ class FeatureValueConstraintTest {
         void shouldRejectInvalidValueFromString() {
             FeatureValueConstraint constraint = DecimalRangeConstraint.of("0.5", "100.0");
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    constraint.fromString("150.0")
-            );
+            assertThrows(IllegalArgumentException.class, () -> constraint.fromString("150.0"));
         }
     }
 
@@ -168,7 +160,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldAcceptDateWithinRange() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
             assertTrue(constraint.isValid(LocalDate.of(2024, 1, 1)));
             assertTrue(constraint.isValid(LocalDate.of(2024, 6, 15)));
@@ -177,7 +170,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectDateOutsideRange() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
             assertFalse(constraint.isValid(LocalDate.of(2023, 12, 31)));
             assertFalse(constraint.isValid(LocalDate.of(2025, 1, 1)));
@@ -185,7 +179,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectNonDateValues() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
             assertFalse(constraint.isValid("2024-06-15"));
             assertFalse(constraint.isValid(20240615));
@@ -194,14 +189,15 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectInvalidRange() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    DateRangeConstraint.between("2024-12-31", "2024-01-01")
-            );
+            assertThrows(
+                    IllegalArgumentException.class,
+                    () -> DateRangeConstraint.between("2024-12-31", "2024-01-01"));
         }
 
         @Test
         void shouldAllowSameFromAndTo() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-06-15", "2024-06-15");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-06-15", "2024-06-15");
 
             assertTrue(constraint.isValid(LocalDate.of(2024, 6, 15)));
             assertFalse(constraint.isValid(LocalDate.of(2024, 6, 14)));
@@ -210,7 +206,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldHaveCorrectValueType() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
             assertEquals(FeatureValueType.DATE, constraint.valueType());
             assertEquals("DATE_RANGE", constraint.type());
@@ -218,7 +215,8 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldConvertFromString() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
             Object result = constraint.fromString("2024-06-15");
 
@@ -227,11 +225,10 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectInvalidValueFromString() {
-            FeatureValueConstraint constraint = DateRangeConstraint.between("2024-01-01", "2024-12-31");
+            FeatureValueConstraint constraint =
+                    DateRangeConstraint.between("2024-01-01", "2024-12-31");
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    constraint.fromString("2025-06-15")
-            );
+            assertThrows(IllegalArgumentException.class, () -> constraint.fromString("2025-06-15"));
         }
     }
 
@@ -267,15 +264,9 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectBlankPattern() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    RegexConstraint.of("")
-            );
-            assertThrows(IllegalArgumentException.class, () ->
-                    RegexConstraint.of("   ")
-            );
-            assertThrows(IllegalArgumentException.class, () ->
-                    RegexConstraint.of(null)
-            );
+            assertThrows(IllegalArgumentException.class, () -> RegexConstraint.of(""));
+            assertThrows(IllegalArgumentException.class, () -> RegexConstraint.of("   "));
+            assertThrows(IllegalArgumentException.class, () -> RegexConstraint.of(null));
         }
 
         @Test
@@ -299,9 +290,7 @@ class FeatureValueConstraintTest {
         void shouldRejectInvalidValueFromString() {
             FeatureValueConstraint constraint = RegexConstraint.of("^[A-Z]{2}-\\d{4}$");
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    constraint.fromString("invalid")
-            );
+            assertThrows(IllegalArgumentException.class, () -> constraint.fromString("invalid"));
         }
     }
 
@@ -336,9 +325,7 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectEmptyAllowedValues() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    AllowedValuesConstraint.of()
-            );
+            assertThrows(IllegalArgumentException.class, () -> AllowedValuesConstraint.of());
         }
 
         @Test
@@ -370,9 +357,7 @@ class FeatureValueConstraintTest {
         void shouldRejectInvalidValueFromString() {
             FeatureValueConstraint constraint = AllowedValuesConstraint.of("red", "blue", "green");
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    constraint.fromString("yellow")
-            );
+            assertThrows(IllegalArgumentException.class, () -> constraint.fromString("yellow"));
         }
     }
 
@@ -435,9 +420,7 @@ class FeatureValueConstraintTest {
 
         @Test
         void shouldRejectNullValueType() {
-            assertThrows(IllegalArgumentException.class, () ->
-                    new Unconstrained(null)
-            );
+            assertThrows(IllegalArgumentException.class, () -> new Unconstrained(null));
         }
 
         @Test

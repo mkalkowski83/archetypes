@@ -6,34 +6,28 @@ import com.softwarearchetypes.quantity.money.Money;
 /**
  * Sealed interface representing different interpretations of pricing calculations.
  *
- * A pricing result carries both the monetary value AND its semantic meaning:
- * - TotalPrice: whole cost for entire quantity/period
- * - UnitPrice: average price per single unit
- * - MarginalPrice: price of the n-th specific unit
+ * <p>A pricing result carries both the monetary value AND its semantic meaning: - TotalPrice: whole
+ * cost for entire quantity/period - UnitPrice: average price per single unit - MarginalPrice: price
+ * of the n-th specific unit
  *
- * This design ensures type safety and makes the meaning of calculated prices explicit.
+ * <p>This design ensures type safety and makes the meaning of calculated prices explicit.
  */
 public sealed interface PricingResult permits TotalPrice, UnitPrice, MarginalPrice {
 
-    /**
-     * The monetary value of this pricing result.
-     */
+    /** The monetary value of this pricing result. */
     Money money();
 
-    /**
-     * Human-readable description of what this price represents.
-     */
+    /** Human-readable description of what this price represents. */
     String describe();
-
 }
 
 /**
  * Represents the total price for entire quantity or period.
  *
- * Example: "For 15 items, you pay PLN 150"
+ * <p>Example: "For 15 items, you pay PLN 150"
  *
- * This is the most common pricing result - used for invoices, shopping carts,
- * and any situation where you need to know the complete cost.
+ * <p>This is the most common pricing result - used for invoices, shopping carts, and any situation
+ * where you need to know the complete cost.
  */
 record TotalPrice(Money amount) implements PricingResult {
 
@@ -51,10 +45,10 @@ record TotalPrice(Money amount) implements PricingResult {
 /**
  * Represents the average price per single unit.
  *
- * Example: "At quantity 15, average price is PLN 10/kg"
+ * <p>Example: "At quantity 15, average price is PLN 10/kg"
  *
- * Used for comparing prices, displaying unit prices in stores (PLN/kg),
- * and analyzing unit costs. This is the AVERAGE price, not the price of each individual unit.
+ * <p>Used for comparing prices, displaying unit prices in stores (PLN/kg), and analyzing unit
+ * costs. This is the AVERAGE price, not the price of each individual unit.
  */
 record UnitPrice(Money amountPerUnit, Unit unit) implements PricingResult {
 
@@ -72,10 +66,10 @@ record UnitPrice(Money amountPerUnit, Unit unit) implements PricingResult {
 /**
  * Represents the price of the n-th specific unit.
  *
- * Example: "The 15th kilogram costs PLN 8"
+ * <p>Example: "The 15th kilogram costs PLN 8"
  *
- * Used for marginal analysis - "does it pay off to buy one more unit?"
- * Helps optimize orders and analyze marginal costs.
+ * <p>Used for marginal analysis - "does it pay off to buy one more unit?" Helps optimize orders and
+ * analyze marginal costs.
  */
 record MarginalPrice(Money amount, int unitIndex, Unit unit) implements PricingResult {
 

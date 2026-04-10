@@ -1,15 +1,13 @@
 package com.softwarearchetypes.accounting.postingrules;
 
+import com.softwarearchetypes.accounting.Transaction;
+import com.softwarearchetypes.accounting.TransactionId;
+import com.softwarearchetypes.common.Result;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-
 import org.jetbrains.annotations.NotNull;
-
-import com.softwarearchetypes.accounting.Transaction;
-import com.softwarearchetypes.accounting.TransactionId;
-import com.softwarearchetypes.common.Result;
 
 class PostingRuleExecutor {
 
@@ -19,15 +17,19 @@ class PostingRuleExecutor {
         this.postingRuleRepository = postingRuleRepository;
     }
 
-    public Result<String, Set<TransactionId>> executeEligibleRules(PostingContext context, Function<Transaction, Result<String, TransactionId>> transactionExecutor) {
-        List<PostingRule> rules = postingRuleRepository.findEligibleRules(context).stream()
-                                                       .sorted(Comparator.comparing(PostingRule::priority))
-                                                       .toList();
+    public Result<String, Set<TransactionId>> executeEligibleRules(
+            PostingContext context,
+            Function<Transaction, Result<String, TransactionId>> transactionExecutor) {
+        List<PostingRule> rules =
+                postingRuleRepository.findEligibleRules(context).stream()
+                        .sorted(Comparator.comparing(PostingRule::priority))
+                        .toList();
         return execute(rules, context, transactionExecutor);
     }
 
     @NotNull
-    private static Result<String, Set<TransactionId>> execute(List<PostingRule> rules,
+    private static Result<String, Set<TransactionId>> execute(
+            List<PostingRule> rules,
             PostingContext context,
             Function<Transaction, Result<String, TransactionId>> transactionExecutor) {
         Result.CompositeSetResult<String, TransactionId> compositeResult = Result.compositeSet();
@@ -46,10 +48,10 @@ class PostingRuleExecutor {
 
     public List<Transaction> executeRules(List<PostingRule> rules, PostingContext context) {
         return rules.stream()
-                    .filter(rule -> isEligible(rule, context))
-                    .sorted(Comparator.comparing(PostingRule::priority))
-                    .flatMap(rule -> rule.execute(context).stream())
-                    .toList();
+                .filter(rule -> isEligible(rule, context))
+                .sorted(Comparator.comparing(PostingRule::priority))
+                .flatMap(rule -> rule.execute(context).stream())
+                .toList();
     }
 
     public List<Transaction> executeRule(PostingRule rule, PostingContext context) {

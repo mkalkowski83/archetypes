@@ -1,13 +1,12 @@
 package com.softwarearchetypes.party;
 
-import java.util.regex.Pattern;
-
 import static java.util.Optional.ofNullable;
 
+import java.util.regex.Pattern;
+
 /**
- * Tax Identification Number (NIP in Poland, VAT Number in EU).
- * Represents a unique tax identifier for organizations and sole traders.
- * NIP consists of 10 digits with checksum validation.
+ * Tax Identification Number (NIP in Poland, VAT Number in EU). Represents a unique tax identifier
+ * for organizations and sole traders. NIP consists of 10 digits with checksum validation.
  */
 record TaxNumber(String value) implements RegisteredIdentifier {
 
@@ -34,11 +33,9 @@ record TaxNumber(String value) implements RegisteredIdentifier {
     }
 
     /**
-     * Validates NIP checksum using the standard algorithm.
-     * Algorithm: multiply first 9 digits by weights [6,5,7,2,3,4,5,6,7],
-     * sum the results, take modulo 11,
-     * compare with the 10th digit (checksum).
-     * If modulo 11 equals 10, the NIP is invalid.
+     * Validates NIP checksum using the standard algorithm. Algorithm: multiply first 9 digits by
+     * weights [6,5,7,2,3,4,5,6,7], sum the results, take modulo 11, compare with the 10th digit
+     * (checksum). If modulo 11 equals 10, the NIP is invalid.
      */
     private static boolean isValidChecksum(String value) {
         if (value == null || value.length() != 10) {
@@ -74,7 +71,8 @@ record TaxNumber(String value) implements RegisteredIdentifier {
 
     @Override
     public Validity validity() {
-        // Tax numbers (NIP) don't expire - they are assigned permanently to organizations/sole traders
+        // Tax numbers (NIP) don't expire - they are assigned permanently to organizations/sole
+        // traders
         return Validity.ALWAYS;
     }
 }

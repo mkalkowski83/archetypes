@@ -18,10 +18,7 @@ interface AddressDefiningPolicy {
     }
 
     static AddressDefiningPolicy all() {
-        return composite(
-                noDuplicateAddresses(),
-                noOverlappingValidityForSameType()
-        );
+        return composite(noDuplicateAddresses(), noOverlappingValidityForSameType());
     }
 
     static AddressDefiningPolicy alwaysAllow() {
@@ -43,9 +40,11 @@ final class NoDuplicateAddressesPolicy implements AddressDefiningPolicy {
 
     @Override
     public boolean isAddressDefinitionAllowedFor(Addresses addresses, Address newAddress) {
-        boolean duplicateExists = addresses.asSet().stream()
-                .filter(addr -> addr.getClass().equals(newAddress.getClass()))
-                .anyMatch(addr -> addr.addressDetails().equals(newAddress.addressDetails()));
+        boolean duplicateExists =
+                addresses.asSet().stream()
+                        .filter(addr -> addr.getClass().equals(newAddress.getClass()))
+                        .anyMatch(
+                                addr -> addr.addressDetails().equals(newAddress.addressDetails()));
 
         return !duplicateExists;
     }
@@ -55,11 +54,18 @@ final class NoOverlappingValidityForSameTypePolicy implements AddressDefiningPol
 
     @Override
     public boolean isAddressDefinitionAllowedFor(Addresses addresses, Address newAddress) {
-        boolean hasOverlap = addresses.asSet().stream()
-                .filter(addr -> addr.getClass().equals(newAddress.getClass()))
-                .filter(addr -> addr.useTypes().stream()
-                        .anyMatch(useType -> newAddress.useTypes().contains(useType)))
-                .anyMatch(addr -> addr.validity().overlaps(newAddress.validity()));
+        boolean hasOverlap =
+                addresses.asSet().stream()
+                        .filter(addr -> addr.getClass().equals(newAddress.getClass()))
+                        .filter(
+                                addr ->
+                                        addr.useTypes().stream()
+                                                .anyMatch(
+                                                        useType ->
+                                                                newAddress
+                                                                        .useTypes()
+                                                                        .contains(useType)))
+                        .anyMatch(addr -> addr.validity().overlaps(newAddress.validity()));
 
         return !hasOverlap;
     }

@@ -8,12 +8,8 @@ import java.util.Objects;
  *
  * @param <T> type of payload (LockRequest, OrderRequest, UUID, etc.)
  */
-record WaitListEntry<T>(
-        WaitListEntryId id,
-        T payload,
-        int priority,
-        Instant addedAt
-) implements Comparable<WaitListEntry<T>> {
+record WaitListEntry<T>(WaitListEntryId id, T payload, int priority, Instant addedAt)
+        implements Comparable<WaitListEntry<T>> {
 
     private static final int DEFAULT_PRIORITY = 1;
 
@@ -25,38 +21,19 @@ record WaitListEntry<T>(
 
     static <T> WaitListEntry<T> of(T payload) {
         return new WaitListEntry<>(
-                WaitListEntryId.random(),
-                payload,
-                DEFAULT_PRIORITY,
-                Instant.now()
-        );
+                WaitListEntryId.random(), payload, DEFAULT_PRIORITY, Instant.now());
     }
 
     static <T> WaitListEntry<T> of(T payload, int priority) {
-        return new WaitListEntry<>(
-                WaitListEntryId.random(),
-                payload,
-                priority,
-                Instant.now()
-        );
+        return new WaitListEntry<>(WaitListEntryId.random(), payload, priority, Instant.now());
     }
 
     static <T> WaitListEntry<T> of(T payload, Instant addedAt) {
-        return new WaitListEntry<>(
-                WaitListEntryId.random(),
-                payload,
-                DEFAULT_PRIORITY,
-                addedAt
-        );
+        return new WaitListEntry<>(WaitListEntryId.random(), payload, DEFAULT_PRIORITY, addedAt);
     }
 
     static <T> WaitListEntry<T> of(T payload, int priority, Instant addedAt) {
-        return new WaitListEntry<>(
-                WaitListEntryId.random(),
-                payload,
-                priority,
-                addedAt
-        );
+        return new WaitListEntry<>(WaitListEntryId.random(), payload, priority, addedAt);
     }
 
     @Override

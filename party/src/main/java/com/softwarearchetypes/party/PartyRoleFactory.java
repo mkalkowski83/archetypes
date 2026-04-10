@@ -4,7 +4,8 @@ import com.softwarearchetypes.common.Result;
 
 class PartyRoleFactory {
 
-    private static final PartyRoleDefiningPolicy DEFAULT_PARTY_ROLE_DEFINING_POLICY = new AlwaysAllowPartyRoleDefiningPolicy();
+    private static final PartyRoleDefiningPolicy DEFAULT_PARTY_ROLE_DEFINING_POLICY =
+            new AlwaysAllowPartyRoleDefiningPolicy();
 
     private final PartyRoleDefiningPolicy policy;
 

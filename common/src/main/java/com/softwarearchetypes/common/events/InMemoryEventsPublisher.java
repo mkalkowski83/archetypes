@@ -10,11 +10,12 @@ public class InMemoryEventsPublisher implements EventPublisher {
 
     @Override
     public void publish(PublishedEvent event) {
-        observers.forEach(it -> {
-            if (it.supports(event)) {
-                it.handle(event);
-            }
-        });
+        observers.forEach(
+                it -> {
+                    if (it.supports(event)) {
+                        it.handle(event);
+                    }
+                });
     }
 
     @Override
@@ -26,5 +27,4 @@ public class InMemoryEventsPublisher implements EventPublisher {
     public void register(EventHandler eventHandler) {
         observers.add(eventHandler);
     }
-
 }

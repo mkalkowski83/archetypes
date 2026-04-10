@@ -1,18 +1,16 @@
 package com.softwarearchetypes.product;
 
-import java.util.List;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
+import java.util.List;
 
 /**
  * PackageType represents a product composed of other products.
- * <p>
- * Examples:
- * - Laptop Bundle (laptop + bag + mouse + insurance)
- * - Banking Package (account + card + insurance)
- * - Office Setup (hardware package + software package + support)
- * <p>
- * PackageType can contain other PackageTypes (nested packages), forming a composite structure.
+ *
+ * <p>Examples: - Laptop Bundle (laptop + bag + mouse + insurance) - Banking Package (account + card
+ * + insurance) - Office Setup (hardware package + software package + support)
+ *
+ * <p>PackageType can contain other PackageTypes (nested packages), forming a composite structure.
  * This is the composite in the composite pattern.
  */
 class PackageType implements Product {
@@ -25,13 +23,14 @@ class PackageType implements Product {
     private final ApplicabilityConstraint applicabilityConstraint;
     private final PackageStructure structure;
 
-    PackageType(ProductIdentifier id,
-                ProductName name,
-                ProductDescription description,
-                ProductTrackingStrategy trackingStrategy,
-                ProductMetadata metadata,
-                ApplicabilityConstraint applicabilityConstraint,
-                PackageStructure structure) {
+    PackageType(
+            ProductIdentifier id,
+            ProductName name,
+            ProductDescription description,
+            ProductTrackingStrategy trackingStrategy,
+            ProductMetadata metadata,
+            ApplicabilityConstraint applicabilityConstraint,
+            PackageStructure structure) {
         checkArgument(id != null, "ProductIdentifier must be defined");
         checkArgument(name != null, "ProductName must be defined");
         checkArgument(description != null, "ProductDescription must be defined");
@@ -49,18 +48,20 @@ class PackageType implements Product {
         this.structure = structure;
     }
 
-    /**
-     * Creates a package with default settings (UNIQUE tracking, no applicability constraints).
-     */
-    static PackageType define(ProductIdentifier id,
-                             ProductName name,
-                             ProductDescription description,
-                             PackageStructure structure) {
-        return new PackageType(id, name, description,
-            ProductTrackingStrategy.INDIVIDUALLY_TRACKED,
-            ProductMetadata.empty(),
-            ApplicabilityConstraint.alwaysTrue(),
-            structure);
+    /** Creates a package with default settings (UNIQUE tracking, no applicability constraints). */
+    static PackageType define(
+            ProductIdentifier id,
+            ProductName name,
+            ProductDescription description,
+            PackageStructure structure) {
+        return new PackageType(
+                id,
+                name,
+                description,
+                ProductTrackingStrategy.INDIVIDUALLY_TRACKED,
+                ProductMetadata.empty(),
+                ApplicabilityConstraint.alwaysTrue(),
+                structure);
     }
 
     @Override
@@ -96,17 +97,14 @@ class PackageType implements Product {
         return structure;
     }
 
-    /**
-     * Validates if selected products match package structure rules.
-     */
+    /** Validates if selected products match package structure rules. */
     public PackageValidationResult validateSelection(List<SelectedProduct> selection) {
         return structure.validate(selection);
     }
 
     @Override
     public String toString() {
-        return "PackageType{id=%s, name=%s, tracking=%s, structure=%s}".formatted(
-            id, name, trackingStrategy, structure
-        );
+        return "PackageType{id=%s, name=%s, tracking=%s, structure=%s}"
+                .formatted(id, name, trackingStrategy, structure);
     }
 }

@@ -13,18 +13,36 @@ class InfluenceMapAssert {
         return new InfluenceMapAssert(actual);
     }
 
-    InfluenceMapAssert hasEdge(PhysicsProcess fromProcess, Laboratory fromLab,
-                                PhysicsProcess toProcess, Laboratory toLab) {
-        assertTrue(actual.asGraph().containsEdge(
-                new InfluenceUnit(fromProcess, fromLab),
-                new InfluenceUnit(toProcess, toLab)
-        ), "Expected edge from (" + fromProcess + ", " + fromLab + ") to (" + toProcess + ", " + toLab + ")");
+    InfluenceMapAssert hasEdge(
+            PhysicsProcess fromProcess,
+            Laboratory fromLab,
+            PhysicsProcess toProcess,
+            Laboratory toLab) {
+        assertTrue(
+                actual.asGraph()
+                        .containsEdge(
+                                new InfluenceUnit(fromProcess, fromLab),
+                                new InfluenceUnit(toProcess, toLab)),
+                "Expected edge from ("
+                        + fromProcess
+                        + ", "
+                        + fromLab
+                        + ") to ("
+                        + toProcess
+                        + ", "
+                        + toLab
+                        + ")");
         return this;
     }
 
     InfluenceMapAssert hasEdgeCount(int expectedCount) {
-        assertEquals(expectedCount, actual.asGraph().edgeSet().size(),
-                "Expected " + expectedCount + " edges but found " + actual.asGraph().edgeSet().size());
+        assertEquals(
+                expectedCount,
+                actual.asGraph().edgeSet().size(),
+                "Expected "
+                        + expectedCount
+                        + " edges but found "
+                        + actual.asGraph().edgeSet().size());
         return this;
     }
 }

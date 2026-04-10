@@ -2,7 +2,6 @@ package com.softwarearchetypes.rules.discounting.offer.modifiers.functors.applie
 
 import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.rules.discounting.offer.OfferItem;
-
 import java.util.function.Function;
 
 public class Amount implements Function<OfferItem, Money> {

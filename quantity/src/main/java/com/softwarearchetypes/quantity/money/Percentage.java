@@ -1,10 +1,10 @@
 package com.softwarearchetypes.quantity.money;
 
-import java.math.BigDecimal;
-
 import static java.math.BigDecimal.ZERO;
 import static java.math.BigDecimal.valueOf;
 import static java.math.RoundingMode.HALF_UP;
+
+import java.math.BigDecimal;
 
 public record Percentage(BigDecimal value) {
 
@@ -34,8 +34,6 @@ public record Percentage(BigDecimal value) {
         return of(0);
     }
 
-
-
     public Percentage add(Percentage other) {
         return of(this.value.add(other.value));
     }
@@ -52,6 +50,4 @@ public record Percentage(BigDecimal value) {
     public String toString() {
         return value.setScale(2, HALF_UP).stripTrailingZeros().toPlainString() + "%";
     }
-
-
 }

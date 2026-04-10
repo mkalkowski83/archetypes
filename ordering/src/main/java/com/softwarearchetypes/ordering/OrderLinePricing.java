@@ -1,10 +1,10 @@
 package com.softwarearchetypes.ordering;
 
 import com.softwarearchetypes.quantity.money.Money;
-
 import java.util.List;
 
-sealed interface OrderLinePricing permits CalculatedPricing, ArbitraryPricing, EstimatedPricing, NotPricedYet {
+sealed interface OrderLinePricing
+        permits CalculatedPricing, ArbitraryPricing, EstimatedPricing, NotPricedYet {
 
     Money unitPrice();
 
@@ -15,7 +15,8 @@ sealed interface OrderLinePricing permits CalculatedPricing, ArbitraryPricing, E
     boolean isDefinitive();
 }
 
-record CalculatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown) implements OrderLinePricing {
+record CalculatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown)
+        implements OrderLinePricing {
 
     CalculatedPricing {
         breakdown = List.copyOf(breakdown);
@@ -31,7 +32,8 @@ record CalculatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown>
     }
 }
 
-record EstimatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown) implements OrderLinePricing {
+record EstimatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown> breakdown)
+        implements OrderLinePricing {
 
     EstimatedPricing {
         breakdown = List.copyOf(breakdown);
@@ -47,7 +49,8 @@ record EstimatedPricing(Money unitPrice, Money totalPrice, List<PriceBreakdown> 
     }
 }
 
-record ArbitraryPricing(Money unitPrice, Money totalPrice, String reason) implements OrderLinePricing {
+record ArbitraryPricing(Money unitPrice, Money totalPrice, String reason)
+        implements OrderLinePricing {
 
     @Override
     public List<PriceBreakdown> breakdown() {

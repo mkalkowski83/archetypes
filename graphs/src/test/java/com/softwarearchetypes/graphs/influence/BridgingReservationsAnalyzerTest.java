@@ -1,11 +1,10 @@
 package com.softwarearchetypes.graphs.influence;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Set;
-
 import static com.softwarearchetypes.graphs.influence.Fixtures.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 class BridgingReservationsAnalyzerTest {
 
@@ -21,23 +20,24 @@ class BridgingReservationsAnalyzerTest {
         PhysicsProcess processB = new PhysicsProcess("B");
         PhysicsProcess processC = new PhysicsProcess("C");
 
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(processA, processB)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder().addInfluence(processA, processB).build();
 
-        InfluenceMap influenceMap = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(emptyInfrastructure())
-                .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
-                .build();
+        InfluenceMap influenceMap =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(emptyInfrastructure())
+                        .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
+                        .build();
 
         Reservation r1 = new Reservation(processA, LAB_A);
         Reservation r2 = new Reservation(processB, LAB_B);
         Reservation r3 = new Reservation(processC, LAB_C);
 
         // when
-        BridgingReservations bridging = new InfluanceAnalyzer(influenceMap)
-                .identifyCriticalReservations(Set.of(r1, r2, r3));
+        BridgingReservations bridging =
+                new InfluanceAnalyzer(influenceMap)
+                        .identifyCriticalReservations(Set.of(r1, r2, r3));
 
         // then
         assertTrue(bridging.isEmpty());
@@ -54,25 +54,27 @@ class BridgingReservationsAnalyzerTest {
         PhysicsProcess processE = new PhysicsProcess("E");
         PhysicsProcess processF = new PhysicsProcess("F");
 
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                // group 1: triangle A-B-C
-                .addInfluence(processA, processB)
-                .addInfluence(processB, processC)
-                .addInfluence(processC, processA)
-                // bridge: A connects to X
-                .addInfluence(processA, processX)
-                .addInfluence(processX, processD)
-                // group 2: triangle D-E-F
-                .addInfluence(processD, processE)
-                .addInfluence(processE, processF)
-                .addInfluence(processF, processD)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder()
+                        // group 1: triangle A-B-C
+                        .addInfluence(processA, processB)
+                        .addInfluence(processB, processC)
+                        .addInfluence(processC, processA)
+                        // bridge: A connects to X
+                        .addInfluence(processA, processX)
+                        .addInfluence(processX, processD)
+                        // group 2: triangle D-E-F
+                        .addInfluence(processD, processE)
+                        .addInfluence(processE, processF)
+                        .addInfluence(processF, processD)
+                        .build();
 
-        InfluenceMap influenceMap = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(emptyInfrastructure())
-                .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
-                .build();
+        InfluenceMap influenceMap =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(emptyInfrastructure())
+                        .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
+                        .build();
 
         Reservation r1 = new Reservation(processA, LAB_A);
         Reservation r2 = new Reservation(processB, LAB_A);
@@ -83,8 +85,9 @@ class BridgingReservationsAnalyzerTest {
         Reservation r7 = new Reservation(processF, LAB_C);
 
         // when
-        BridgingReservations bridging = new InfluanceAnalyzer(influenceMap)
-                .identifyCriticalReservations(Set.of(r1, r2, r3, r4, r5, r6, r7));
+        BridgingReservations bridging =
+                new InfluanceAnalyzer(influenceMap)
+                        .identifyCriticalReservations(Set.of(r1, r2, r3, r4, r5, r6, r7));
 
         // then
         assertEquals(3, bridging.count());
@@ -100,25 +103,28 @@ class BridgingReservationsAnalyzerTest {
         PhysicsProcess processB = new PhysicsProcess("B");
         PhysicsProcess processC = new PhysicsProcess("C");
 
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(processA, processB)
-                .addInfluence(processB, processC)
-                .addInfluence(processC, processA)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder()
+                        .addInfluence(processA, processB)
+                        .addInfluence(processB, processC)
+                        .addInfluence(processC, processA)
+                        .build();
 
-        InfluenceMap influenceMap = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(emptyInfrastructure())
-                .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
-                .build();
+        InfluenceMap influenceMap =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(emptyInfrastructure())
+                        .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
+                        .build();
 
         Reservation r1 = new Reservation(processA, LAB_A);
         Reservation r2 = new Reservation(processB, LAB_B);
         Reservation r3 = new Reservation(processC, LAB_C);
 
         // when
-        BridgingReservations bridging = new InfluanceAnalyzer(influenceMap)
-                .identifyCriticalReservations(Set.of(r1, r2, r3));
+        BridgingReservations bridging =
+                new InfluanceAnalyzer(influenceMap)
+                        .identifyCriticalReservations(Set.of(r1, r2, r3));
 
         // then
         assertTrue(bridging.isEmpty());
@@ -129,16 +135,18 @@ class BridgingReservationsAnalyzerTest {
     void longChainHasMultipleCriticalReservations() {
         // given
 
-        PhysicsInfluence physics = PhysicsInfluence.builder()
-                .addInfluence(PROCESS_A, PROCESS_B)
-                .addInfluence(PROCESS_B, PROCESS_C)
-                .addInfluence(PROCESS_C, PROCESS_D)
-                .build();
+        PhysicsInfluence physics =
+                PhysicsInfluence.builder()
+                        .addInfluence(PROCESS_A, PROCESS_B)
+                        .addInfluence(PROCESS_B, PROCESS_C)
+                        .addInfluence(PROCESS_C, PROCESS_D)
+                        .build();
 
-        InfluenceMap influenceMap = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
-                .build();
+        InfluenceMap influenceMap =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withLaboratories(Set.of(LAB_A, LAB_B, LAB_C))
+                        .build();
 
         Reservation r1 = new Reservation(PROCESS_A, LAB_A);
         Reservation r2 = new Reservation(PROCESS_B, LAB_B);
@@ -146,8 +154,9 @@ class BridgingReservationsAnalyzerTest {
         Reservation r4 = new Reservation(PROCESS_D, LAB_A);
 
         // when
-        BridgingReservations bridging = new InfluanceAnalyzer(influenceMap)
-                .identifyCriticalReservations(Set.of(r1, r2, r3, r4));
+        BridgingReservations bridging =
+                new InfluanceAnalyzer(influenceMap)
+                        .identifyCriticalReservations(Set.of(r1, r2, r3, r4));
 
         // then
         assertEquals(2, bridging.count());
@@ -160,19 +169,19 @@ class BridgingReservationsAnalyzerTest {
         // given
         PhysicsInfluence physics = PhysicsInfluence.builder().build();
 
-        InfluenceMap influenceMap = InfluenceMap.builder()
-                .withPhysics(physics)
-                .withInfrastructure(emptyInfrastructure())
-                .withLaboratories(Set.of(LAB_A))
-                .build();
+        InfluenceMap influenceMap =
+                InfluenceMap.builder()
+                        .withPhysics(physics)
+                        .withInfrastructure(emptyInfrastructure())
+                        .withLaboratories(Set.of(LAB_A))
+                        .build();
 
         // when
-        BridgingReservations bridging = new InfluanceAnalyzer(influenceMap)
-                .identifyCriticalReservations(Set.of());
+        BridgingReservations bridging =
+                new InfluanceAnalyzer(influenceMap).identifyCriticalReservations(Set.of());
 
         // then
         assertTrue(bridging.isEmpty());
         assertEquals(0, bridging.count());
     }
-
 }

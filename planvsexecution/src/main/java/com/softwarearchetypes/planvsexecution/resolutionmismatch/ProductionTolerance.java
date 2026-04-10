@@ -18,17 +18,15 @@ class ProductionTolerance {
     boolean isWithinTolerance(
             MonthlyProductionPlan plan,
             DailyProductionExecutionHistory execution,
-            Function<MonthlyProductionPlan, List<DailyProductionExecution>> planToDaily
-    ) {
+            Function<MonthlyProductionPlan, List<DailyProductionExecution>> planToDaily) {
         List<DailyProductionExecution> plannedDaily = planToDaily.apply(plan);
 
-        int totalPlanned = plannedDaily.stream()
-                .mapToInt(DailyProductionExecution::produced)
-                .sum();
+        int totalPlanned = plannedDaily.stream().mapToInt(DailyProductionExecution::produced).sum();
 
-        int totalActual = execution.days().stream()
-                .mapToInt(day -> day.produced() - day.defects() + day.rework())
-                .sum();
+        int totalActual =
+                execution.days().stream()
+                        .mapToInt(day -> day.produced() - day.defects() + day.rework())
+                        .sum();
 
         int delta = Math.abs(totalPlanned - totalActual);
 

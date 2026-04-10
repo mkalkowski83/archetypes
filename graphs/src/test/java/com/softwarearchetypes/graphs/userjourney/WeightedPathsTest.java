@@ -1,12 +1,11 @@
 package com.softwarearchetypes.graphs.userjourney;
 
-import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
-
 import static com.softwarearchetypes.graphs.userjourney.Condition.ConditionType.*;
 import static com.softwarearchetypes.graphs.userjourney.Product.ProductType.DISCOUNT;
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 class WeightedPathsTest {
 
@@ -20,15 +19,23 @@ class WeightedPathsTest {
         Condition cheapStep1 = Condition.withCost(LATE_PAYMENT, 30.0);
         Condition cheapStep2 = Condition.withCost(RESTRUCTURING, 20.0);
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-1"))
-            .from(newLoan).on(directExpensive).goto_(discount)
-            .from(newLoan).on(cheapStep1).goto_(intermediate)
-            .from(intermediate).on(cheapStep2).goto_(discount)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-1"))
+                        .from(newLoan)
+                        .on(directExpensive)
+                        .goto_(discount)
+                        .from(newLoan)
+                        .on(cheapStep1)
+                        .goto_(intermediate)
+                        .from(intermediate)
+                        .on(cheapStep2)
+                        .goto_(discount)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
-        Optional<CustomerPath> cheapestPath = journey.optimizedWayToAchieve(DISCOUNT, Condition::getCost);
+        Optional<CustomerPath> cheapestPath =
+                journey.optimizedWayToAchieve(DISCOUNT, Condition::getCost);
 
         // then
         assertTrue(cheapestPath.isPresent());
@@ -54,17 +61,29 @@ class WeightedPathsTest {
         Condition mediumStep1 = Condition.withTime(PROMOTION_APPROVED, 7);
         Condition mediumStep2 = Condition.withTime(PAYMENT_ON_TIME, 4);
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-2"))
-            .from(newLoan).on(fastPath).goto_(discount)
-            .from(newLoan).on(slowStep1).goto_(intermediate1)
-            .from(intermediate1).on(slowStep2).goto_(discount)
-            .from(newLoan).on(mediumStep1).goto_(intermediate2)
-            .from(intermediate2).on(mediumStep2).goto_(discount)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-2"))
+                        .from(newLoan)
+                        .on(fastPath)
+                        .goto_(discount)
+                        .from(newLoan)
+                        .on(slowStep1)
+                        .goto_(intermediate1)
+                        .from(intermediate1)
+                        .on(slowStep2)
+                        .goto_(discount)
+                        .from(newLoan)
+                        .on(mediumStep1)
+                        .goto_(intermediate2)
+                        .from(intermediate2)
+                        .on(mediumStep2)
+                        .goto_(discount)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
-        Optional<CustomerPath> fastestPath = journey.optimizedWayToAchieve(DISCOUNT, c -> (double) c.getTime());
+        Optional<CustomerPath> fastestPath =
+                journey.optimizedWayToAchieve(DISCOUNT, c -> (double) c.getTime());
 
         // then
         assertTrue(fastestPath.isPresent());
@@ -72,7 +91,6 @@ class WeightedPathsTest {
         assertEquals(1, path.length(), "Najszybsza ścieżka to bezpośrednia (5 dni)");
         assertTrue(path.conditions().contains(fastPath));
     }
-
 
     @Test
     void shouldDemonstrateTradeoffBetweenCostAndTime() {
@@ -89,27 +107,38 @@ class WeightedPathsTest {
         Condition toDiscount1 = Condition.withAttributes(PROMOTION_APPROVED, 10.0, 1, 0.0);
         Condition toDiscount2 = Condition.withAttributes(RESTRUCTURING, 10.0, 1, 0.0);
 
-        UserJourney journey = UserJourney.builder(UserJourneyId.of("user-4"))
-            .from(newLoan).on(expressStep1).goto_(expressRoute)
-            .from(expressRoute).on(toDiscount1).goto_(discount10)
-            .from(newLoan).on(economyStep1).goto_(economyRoute)
-            .from(economyRoute).on(toDiscount2).goto_(discount10)
-            .withCurrentState(newLoan)
-            .build();
+        UserJourney journey =
+                UserJourney.builder(UserJourneyId.of("user-4"))
+                        .from(newLoan)
+                        .on(expressStep1)
+                        .goto_(expressRoute)
+                        .from(expressRoute)
+                        .on(toDiscount1)
+                        .goto_(discount10)
+                        .from(newLoan)
+                        .on(economyStep1)
+                        .goto_(economyRoute)
+                        .from(economyRoute)
+                        .on(toDiscount2)
+                        .goto_(discount10)
+                        .withCurrentState(newLoan)
+                        .build();
 
         // when
-        Optional<CustomerPath> cheapest = journey.optimizedWayToAchieve(DISCOUNT, Condition::getCost);
-        Optional<CustomerPath> fastest = journey.optimizedWayToAchieve(DISCOUNT, c -> (double) c.getTime());
+        Optional<CustomerPath> cheapest =
+                journey.optimizedWayToAchieve(DISCOUNT, Condition::getCost);
+        Optional<CustomerPath> fastest =
+                journey.optimizedWayToAchieve(DISCOUNT, c -> (double) c.getTime());
 
         // then
         assertTrue(cheapest.isPresent());
         assertTrue(fastest.isPresent());
 
-        assertTrue(cheapest.get().conditions().contains(economyStep1),
-            "Najtańsza ścieżka powinna używać economy route");
-        assertTrue(fastest.get().conditions().contains(expressStep1),
-            "Najszybsza ścieżka powinna używać express route");
+        assertTrue(
+                cheapest.get().conditions().contains(economyStep1),
+                "Najtańsza ścieżka powinna używać economy route");
+        assertTrue(
+                fastest.get().conditions().contains(expressStep1),
+                "Najszybsza ścieżka powinna używać express route");
     }
-
-   
 }

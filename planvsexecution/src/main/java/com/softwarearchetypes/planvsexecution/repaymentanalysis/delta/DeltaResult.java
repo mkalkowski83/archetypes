@@ -1,12 +1,10 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.delta;
 
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
-import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.ScheduleModificationCondition;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.LatePaymentCondition;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.OnTimePaymentCondition;
-
+import com.softwarearchetypes.planvsexecution.repaymentanalysis.modification.ScheduleModificationCondition;
 import java.util.List;
-
 
 public record DeltaResult(
         List<PaymentMatch> matched,

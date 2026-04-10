@@ -1,12 +1,11 @@
 package com.softwarearchetypes.graphs.scheduling.concurrency;
 
 import com.softwarearchetypes.graphs.scheduling.ProcessStep;
+import java.util.*;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.color.GreedyColoring;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-
-import java.util.*;
 
 class Concurrency {
 
@@ -41,7 +40,8 @@ class Concurrency {
 
         ExecutionEnvironments build() {
             GreedyColoring<ProcessStep, DefaultEdge> coloring = new GreedyColoring<>(graph);
-            org.jgrapht.alg.interfaces.VertexColoringAlgorithm.Coloring<ProcessStep> result = coloring.getColoring();
+            org.jgrapht.alg.interfaces.VertexColoringAlgorithm.Coloring<ProcessStep> result =
+                    coloring.getColoring();
 
             Map<ProcessStep, Integer> stepToEnvironment = new HashMap<>();
             for (ProcessStep step : graph.vertexSet()) {

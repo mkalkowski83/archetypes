@@ -1,11 +1,10 @@
 package com.softwarearchetypes.accounting.postingrules;
 
-import java.util.Map;
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
 import com.softwarearchetypes.accounting.AccountId;
 import com.softwarearchetypes.accounting.EntryView;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
+import java.util.Map;
 
 public class PostingRuleBuilder {
 
@@ -66,6 +65,7 @@ public class PostingRuleBuilder {
         checkArgument(accountFinder != null, "AccountFinder must be defined");
         checkArgument(postingCalculator != null, "PostingCalculator must be defined");
 
-        return new ConfigurablePostingRule(id, name, eligibilityCondition, accountFinder, postingCalculator, priority);
+        return new ConfigurablePostingRule(
+                id, name, eligibilityCondition, accountFinder, postingCalculator, priority);
     }
 }

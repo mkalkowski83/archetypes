@@ -13,5 +13,4 @@ record OwnerId(String value) {
     boolean isEmpty() {
         return value == null || value.isEmpty();
     }
-
 }

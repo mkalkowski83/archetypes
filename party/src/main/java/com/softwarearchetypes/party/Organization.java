@@ -1,18 +1,21 @@
 package com.softwarearchetypes.party;
 
-import java.util.Set;
-
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.party.events.OrganizationNameUpdateSkipped;
 import com.softwarearchetypes.party.events.OrganizationNameUpdated;
+import java.util.Set;
 
-sealed abstract class Organization extends Party permits Company, OrganizationUnit {
+abstract sealed class Organization extends Party permits Company, OrganizationUnit {
 
     private OrganizationName organizationName;
 
-    Organization(PartyId partyId, OrganizationName organizationName, Set<Role> roles,
-            Set<RegisteredIdentifier> registeredIdentifiers, Version version) {
+    Organization(
+            PartyId partyId,
+            OrganizationName organizationName,
+            Set<Role> roles,
+            Set<RegisteredIdentifier> registeredIdentifiers,
+            Version version) {
         super(partyId, roles, registeredIdentifiers, version);
         this.organizationName = organizationName;
     }
@@ -22,7 +25,9 @@ sealed abstract class Organization extends Party permits Company, OrganizationUn
             this.organizationName = organizationName;
             register(new OrganizationNameUpdated(id().asString(), organizationName.value()));
         } else {
-            register(OrganizationNameUpdateSkipped.dueToNoChangeIdentifiedFor(id().asString(), organizationName.value()));
+            register(
+                    OrganizationNameUpdateSkipped.dueToNoChangeIdentifiedFor(
+                            id().asString(), organizationName.value()));
         }
         return Result.success(this);
     }

@@ -1,20 +1,19 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class ValidityTest {
 
     @Test
     void shouldCreateAlwaysValidPeriod() {
-        //when
+        // when
         Validity validity = Validity.always();
 
-        //then
+        // then
         assertTrue(validity.isValidAt(Instant.EPOCH));
         assertTrue(validity.isValidAt(Instant.now()));
         assertTrue(validity.isValidAt(Instant.MAX.minus(1, ChronoUnit.DAYS)));
@@ -23,13 +22,13 @@ class ValidityTest {
 
     @Test
     void shouldCreateValidityFromSpecificInstant() {
-        //given
+        // given
         Instant from = Instant.parse("2025-01-01T00:00:00Z");
 
-        //when
+        // when
         Validity validity = Validity.from(from);
 
-        //then
+        // then
         assertFalse(validity.isValidAt(Instant.parse("2024-12-31T23:59:59Z")));
         assertTrue(validity.isValidAt(Instant.parse("2025-01-01T00:00:00Z")));
         assertTrue(validity.isValidAt(Instant.parse("2030-01-01T00:00:00Z")));
@@ -37,53 +36,57 @@ class ValidityTest {
 
     @Test
     void shouldCreateValidityUntilSpecificInstant() {
-        //given
+        // given
         Instant until = Instant.parse("2030-12-31T23:59:59Z");
 
-        //when
+        // when
         Validity validity = Validity.until(until);
 
-        //then
+        // then
         assertTrue(validity.isValidAt(Instant.EPOCH));
         assertTrue(validity.isValidAt(Instant.parse("2025-06-15T12:00:00Z")));
-        assertFalse(validity.isValidAt(Instant.parse("2030-12-31T23:59:59Z"))); // validTo is exclusive
+        assertFalse(
+                validity.isValidAt(Instant.parse("2030-12-31T23:59:59Z"))); // validTo is exclusive
     }
 
     @Test
     void shouldCreateValidityBetweenTwoInstants() {
-        //given
+        // given
         Instant from = Instant.parse("2020-01-01T00:00:00Z");
         Instant to = Instant.parse("2030-01-01T00:00:00Z");
 
-        //when
+        // when
         Validity validity = Validity.between(from, to);
 
-        //then
+        // then
         assertFalse(validity.isValidAt(Instant.parse("2019-12-31T23:59:59Z")));
-        assertTrue(validity.isValidAt(Instant.parse("2020-01-01T00:00:00Z"))); // validFrom is inclusive
+        assertTrue(
+                validity.isValidAt(
+                        Instant.parse("2020-01-01T00:00:00Z"))); // validFrom is inclusive
         assertTrue(validity.isValidAt(Instant.parse("2025-06-15T12:00:00Z")));
-        assertFalse(validity.isValidAt(Instant.parse("2030-01-01T00:00:00Z"))); // validTo is exclusive
+        assertFalse(
+                validity.isValidAt(Instant.parse("2030-01-01T00:00:00Z"))); // validTo is exclusive
     }
 
     @Test
     void shouldCheckIfValidityHasExpired() {
-        //given
+        // given
         Validity expired = Validity.until(Instant.now().minus(1, ChronoUnit.DAYS));
         Validity notExpired = Validity.until(Instant.now().plus(1, ChronoUnit.DAYS));
 
-        //expect
+        // expect
         assertTrue(expired.hasExpired(Instant.now()));
         assertFalse(notExpired.hasExpired(Instant.now()));
     }
 
     @Test
     void shouldHandleNullInstantsInBetweenMethod() {
-        //when
+        // when
         Validity always = Validity.between(null, null);
         Validity from = Validity.between(Instant.parse("2020-01-01T00:00:00Z"), null);
         Validity until = Validity.between(null, Instant.parse("2030-01-01T00:00:00Z"));
 
-        //then
+        // then
         assertEquals(Validity.ALWAYS, always);
         assertTrue(from.isValidAt(Instant.parse("2025-06-15T12:00:00Z")));
         assertTrue(until.isValidAt(Instant.parse("2025-06-15T12:00:00Z")));
@@ -91,14 +94,14 @@ class ValidityTest {
 
     @Test
     void shouldCheckCurrentValidity() {
-        //given
-        Validity currentlyValid = Validity.between(
-                Instant.now().minus(1, ChronoUnit.DAYS),
-                Instant.now().plus(1, ChronoUnit.DAYS)
-        );
+        // given
+        Validity currentlyValid =
+                Validity.between(
+                        Instant.now().minus(1, ChronoUnit.DAYS),
+                        Instant.now().plus(1, ChronoUnit.DAYS));
         Validity expired = Validity.until(Instant.now().minus(1, ChronoUnit.DAYS));
 
-        //expect
+        // expect
         assertTrue(currentlyValid.isCurrentlyValid());
         assertFalse(expired.isCurrentlyValid());
     }

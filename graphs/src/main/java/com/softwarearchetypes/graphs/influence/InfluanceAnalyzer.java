@@ -1,13 +1,12 @@
 package com.softwarearchetypes.graphs.influence;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.BiconnectivityInspector;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 class InfluanceAnalyzer {
 
@@ -29,7 +28,8 @@ class InfluanceAnalyzer {
 
     Set<InfluenceZone> analyzeInfluenceZones(Set<Reservation> reservations) {
         Graph<Reservation, DefaultEdge> graph = buildInfluenceGraph(reservations);
-        ConnectivityInspector<Reservation, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
+        ConnectivityInspector<Reservation, DefaultEdge> inspector =
+                new ConnectivityInspector<>(graph);
 
         return inspector.connectedSets().stream()
                 .map(InfluenceZone::new)
@@ -38,14 +38,16 @@ class InfluanceAnalyzer {
 
     InfluenceZone findInfluenceZone(Reservation reservation, Set<Reservation> allReservations) {
         Graph<Reservation, DefaultEdge> graph = buildInfluenceGraph(allReservations);
-        ConnectivityInspector<Reservation, DefaultEdge> inspector = new ConnectivityInspector<>(graph);
+        ConnectivityInspector<Reservation, DefaultEdge> inspector =
+                new ConnectivityInspector<>(graph);
         Set<Reservation> connectedComponent = inspector.connectedSetOf(reservation);
         return new InfluenceZone(connectedComponent);
     }
 
     BridgingReservations identifyCriticalReservations(Set<Reservation> reservations) {
         Graph<Reservation, DefaultEdge> graph = buildInfluenceGraph(reservations);
-        BiconnectivityInspector<Reservation, DefaultEdge> inspector = new BiconnectivityInspector<>(graph);
+        BiconnectivityInspector<Reservation, DefaultEdge> inspector =
+                new BiconnectivityInspector<>(graph);
         Set<Reservation> criticalReservations = inspector.getCutpoints();
         return new BridgingReservations(criticalReservations);
     }

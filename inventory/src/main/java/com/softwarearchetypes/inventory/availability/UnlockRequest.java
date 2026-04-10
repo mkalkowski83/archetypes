@@ -2,10 +2,7 @@ package com.softwarearchetypes.inventory.availability;
 
 import java.util.Objects;
 
-public record UnlockRequest(
-        OwnerId requester,
-        BlockadeId blockadeId
-) {
+public record UnlockRequest(OwnerId requester, BlockadeId blockadeId) {
 
     public UnlockRequest {
         Objects.requireNonNull(requester, "Requester cannot be null");

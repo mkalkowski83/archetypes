@@ -1,52 +1,52 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
 import static com.softwarearchetypes.party.RelationshipNameFixture.someRelationshipNameValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
+
 class RelationshipNameTest {
 
     @Test
     void twoRelationshipsShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         RelationshipName firstRelationshipName = RelationshipName.of(someRelationshipNameValue());
         RelationshipName secondRelationshipName = RelationshipName.of(someRelationshipNameValue());
 
-        //expect
+        // expect
         assertNotEquals(firstRelationshipName, secondRelationshipName);
     }
 
     @Test
     void twoRelationshipsShouldBeEqualWhenCreatedForTheSameValue() {
-        //given
+        // given
         String value = someRelationshipNameValue();
 
-        //expect
+        // expect
         assertEquals(RelationshipName.of(value), RelationshipName.of(value));
     }
 
     @Test
     void relationshipNameIsConvertibleToTextualValueItWasCreatedFrom() {
-        //given
+        // given
         String value = someRelationshipNameValue();
         RelationshipName relationshipName = RelationshipName.of(value);
 
-        //expect
+        // expect
         assertEquals(value, relationshipName.asString());
     }
 
     @Test
     void shouldNotAllowToCreateRelationshipNameForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> RelationshipName.of(null));
     }
 
     @Test
     void shouldNotAllowToCreateRelationshipNameForEmptyValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> RelationshipName.of(""));
     }
 }

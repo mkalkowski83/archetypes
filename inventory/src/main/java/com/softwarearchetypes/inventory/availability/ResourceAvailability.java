@@ -2,15 +2,13 @@ package com.softwarearchetypes.inventory.availability;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.quantity.Quantity;
-
 import java.util.List;
 
 /**
- * ResourceAvailability is the core interface for managing resource availability.
- * Different implementations handle different types of resources:
- * - IndividualResourceAvailability: single resources (one winner takes all)
- * - PoolResourceAvailability: quantity-based resources (shared pool)
- * - TemporalResourceAvailability: time-slot based resources
+ * ResourceAvailability is the core interface for managing resource availability. Different
+ * implementations handle different types of resources: - IndividualResourceAvailability: single
+ * resources (one winner takes all) - PoolResourceAvailability: quantity-based resources (shared
+ * pool) - TemporalResourceAvailability: time-slot based resources
  */
 interface ResourceAvailability {
 
@@ -28,14 +26,9 @@ interface ResourceAvailability {
 
     boolean hasBlockade(BlockadeId blockadeId);
 
-    /**
-     * Checks if this resource has any expired blockades.
-     */
+    /** Checks if this resource has any expired blockades. */
     boolean hasExpiredBlockades();
 
-    /**
-     * Releases all expired blockades from this resource.
-     * Returns list of released blockade IDs.
-     */
+    /** Releases all expired blockades from this resource. Returns list of released blockade IDs. */
     List<BlockadeId> releaseExpired();
 }

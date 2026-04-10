@@ -4,7 +4,6 @@ import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.PaymentSchedule;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance.MatchResult;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance.ToleranceStrategy;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +35,7 @@ public class DeltaCalculator {
                 matched,
                 unmatchedPlanned,
                 unmatchedActual,
-                DeltaStatistics.calculate(matched, unmatchedPlanned, unmatchedActual)
-        );
+                DeltaStatistics.calculate(matched, unmatchedPlanned, unmatchedActual));
     }
 
     private PaymentMatch findBestMatch(Payment planned, List<Payment> candidates) {

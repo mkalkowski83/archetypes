@@ -1,14 +1,13 @@
 package com.softwarearchetypes.product;
 
-import java.math.BigDecimal;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
+import java.math.BigDecimal;
+
 /**
- * Restricts decimal values to a numeric range [min, max].
- * Example: weight between 0.5 and 100.0 kg
+ * Restricts decimal values to a numeric range [min, max]. Example: weight between 0.5 and 100.0 kg
  *
- * Persistence config example: {"min": "0.5", "max": "100.0"}
+ * <p>Persistence config example: {"min": "0.5", "max": "100.0"}
  */
 class DecimalRangeConstraint implements FeatureValueConstraint {
 

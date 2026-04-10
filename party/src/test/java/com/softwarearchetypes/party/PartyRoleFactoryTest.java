@@ -1,50 +1,50 @@
 package com.softwarearchetypes.party;
 
-import java.util.Optional;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.common.Result;
-
 import static com.softwarearchetypes.party.PartyFixture.somePerson;
 import static com.softwarearchetypes.party.RoleFixture.someRole;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.softwarearchetypes.common.Result;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 class PartyRoleFactoryTest {
 
     @Test
     void shouldCreatePartyRoleWhenAcceptAllPolicyIsApplied() {
-        //given
+        // given
         PartyRoleFactory factory = new PartyRoleFactory();
 
-        //and
+        // and
         Party party = somePerson().withRandomPartyId().build();
         Role role = someRole();
 
-        //and
+        // and
         PartyRole expectedPartyRole = PartyRole.of(party.id(), role);
 
-        //when
+        // when
         Result<String, PartyRole> result = factory.defineFor(party, role);
 
-        //then
+        // then
         assertEquals(expectedPartyRole, result.getSuccess());
     }
 
     @Test
     void shouldFailToCreatePartyRoleWhenPolicyAcceptingOnlyCompaniesIsApplied() {
-        //given
-        PartyRoleDefiningPolicy acceptOnlyCompaniesPolicy = (party, role) -> Optional.ofNullable(party).filter(Company.class::isInstance).isPresent();
+        // given
+        PartyRoleDefiningPolicy acceptOnlyCompaniesPolicy =
+                (party, role) ->
+                        Optional.ofNullable(party).filter(Company.class::isInstance).isPresent();
         PartyRoleFactory factory = new PartyRoleFactory(acceptOnlyCompaniesPolicy);
 
-        //and
+        // and
         Party party = somePerson().withRandomPartyId().build();
         Role role = someRole();
 
-        //when
+        // when
         Result<String, PartyRole> result = factory.defineFor(party, role);
 
-        //then
+        // then
         assertEquals("Policies for assigning party role not met", result.getFailure());
     }
 }

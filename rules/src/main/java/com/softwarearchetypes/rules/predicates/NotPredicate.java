@@ -7,9 +7,12 @@ public final class NotPredicate<T> implements LogicalPredicate<T> {
         this.child = child;
     }
 
-    public LogicalPredicate<T> child() { return child; }
+    public LogicalPredicate<T> child() {
+        return child;
+    }
 
-    @Override public boolean test(T t) {
+    @Override
+    public boolean test(T t) {
         return !child.test(t);
     }
 }

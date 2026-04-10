@@ -4,22 +4,22 @@ import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.product.ProductCommands.*;
 import com.softwarearchetypes.product.ProductQueries.*;
 import com.softwarearchetypes.product.ProductViews.*;
-
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * ProductCatalog - main API for managing commercial product offering.
- * Accepts commands and queries with simple types, returns views.
+ * ProductCatalog - main API for managing commercial product offering. Accepts commands and queries
+ * with simple types, returns views.
  */
 public class ProductCatalog {
 
     private final CatalogEntryRepository catalogRepository;
     private final ProductTypeRepository productTypeRepository;
 
-    public ProductCatalog(CatalogEntryRepository catalogRepository, ProductTypeRepository productTypeRepository) {
+    public ProductCatalog(
+            CatalogEntryRepository catalogRepository, ProductTypeRepository productTypeRepository) {
         this.catalogRepository = catalogRepository;
         this.productTypeRepository = productTypeRepository;
     }
@@ -32,14 +32,18 @@ public class ProductCatalog {
     // Commands
     // ============================================
 
-    /**
-     * Adds a ProductType to the commercial offer.
-     */
+    /** Adds a ProductType to the commercial offer. */
     public Result<String, CatalogEntryId> handle(AddToOffer command) {
         try {
             // Verify ProductType exists
-            var productType = productTypeRepository.findByIdValue(command.productTypeId())
-                .orElseThrow(() -> new IllegalArgumentException("ProductType not found: " + command.productTypeId()));
+            var productType =
+                    productTypeRepository
+                            .findByIdValue(command.productTypeId())
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "ProductType not found: "
+                                                            + command.productTypeId()));
 
             // Build validity from dates
             var validity = buildValidity(command.availableFrom(), command.availableUntil());
@@ -48,15 +52,16 @@ public class ProductCatalog {
             var catalogEntryId = CatalogEntryId.generate();
 
             // Build CatalogEntry
-            var catalogEntry = CatalogEntry.builder()
-                .id(catalogEntryId)
-                .displayName(command.displayName())
-                .description(command.description())
-                .product(productType)
-                .categories(command.categories())
-                .validity(validity)
-                .metadata(command.metadata())
-                .build();
+            var catalogEntry =
+                    CatalogEntry.builder()
+                            .id(catalogEntryId)
+                            .displayName(command.displayName())
+                            .description(command.description())
+                            .product(productType)
+                            .categories(command.categories())
+                            .validity(validity)
+                            .metadata(command.metadata())
+                            .build();
 
             catalogRepository.save(catalogEntry);
 
@@ -67,19 +72,25 @@ public class ProductCatalog {
         }
     }
 
-    /**
-     * Discontinues a product from the offer by setting the validity end date.
-     */
+    /** Discontinues a product from the offer by setting the validity end date. */
     public Result<String, CatalogEntryId> handle(DiscontinueProduct command) {
         try {
             var catalogEntryId = CatalogEntryId.of(command.catalogEntryId());
-            var catalogEntry = catalogRepository.findById(catalogEntryId)
-                .orElseThrow(() -> new IllegalArgumentException("Catalog entry not found: " + command.catalogEntryId()));
+            var catalogEntry =
+                    catalogRepository
+                            .findById(catalogEntryId)
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "Catalog entry not found: "
+                                                            + command.catalogEntryId()));
 
             // Update validity to end at discontinuation date
-            var newValidity = catalogEntry.validity().from() != null
-                ? Validity.between(catalogEntry.validity().from(), command.discontinuationDate())
-                : Validity.until(command.discontinuationDate());
+            var newValidity =
+                    catalogEntry.validity().from() != null
+                            ? Validity.between(
+                                    catalogEntry.validity().from(), command.discontinuationDate())
+                            : Validity.until(command.discontinuationDate());
 
             var updated = catalogEntry.withValidity(newValidity);
             catalogRepository.save(updated);
@@ -91,14 +102,18 @@ public class ProductCatalog {
         }
     }
 
-    /**
-     * Updates catalog entry metadata.
-     */
+    /** Updates catalog entry metadata. */
     public Result<String, CatalogEntryId> handle(UpdateMetadata command) {
         try {
             var catalogEntryId = CatalogEntryId.of(command.catalogEntryId());
-            var catalogEntry = catalogRepository.findById(catalogEntryId)
-                .orElseThrow(() -> new IllegalArgumentException("Catalog entry not found: " + command.catalogEntryId()));
+            var catalogEntry =
+                    catalogRepository
+                            .findById(catalogEntryId)
+                            .orElseThrow(
+                                    () ->
+                                            new IllegalArgumentException(
+                                                    "Catalog entry not found: "
+                                                            + command.catalogEntryId()));
 
             var updated = catalogEntry.withMetadata(command.metadata());
             catalogRepository.save(updated);
@@ -114,59 +129,48 @@ public class ProductCatalog {
     // Queries
     // ============================================
 
-    /**
-     * Searches catalog entries with multiple filters.
-     */
+    /** Searches catalog entries with multiple filters. */
     public Set<CatalogEntryView> findBy(SearchCatalogCriteria criteria) {
         var entries = catalogRepository.findAll();
 
         // Apply filters
         return entries.stream()
-            .filter(entry -> matchesSearchText(entry, criteria.searchText()))
-            .filter(entry -> matchesCategories(entry, criteria.categories()))
-            .filter(entry -> matchesAvailability(entry, criteria.availableAt()))
-            .filter(entry -> matchesProductType(entry, criteria.productTypeId()))
-            .filter(entry -> matchesFeatures(entry, criteria.productTypeFeatures()))
-            .map(this::toCatalogEntryView)
-            .collect(Collectors.toSet());
+                .filter(entry -> matchesSearchText(entry, criteria.searchText()))
+                .filter(entry -> matchesCategories(entry, criteria.categories()))
+                .filter(entry -> matchesAvailability(entry, criteria.availableAt()))
+                .filter(entry -> matchesProductType(entry, criteria.productTypeId()))
+                .filter(entry -> matchesFeatures(entry, criteria.productTypeFeatures()))
+                .map(this::toCatalogEntryView)
+                .collect(Collectors.toSet());
     }
 
-    /**
-     * Finds a catalog entry by its identifier.
-     */
+    /** Finds a catalog entry by its identifier. */
     public Optional<CatalogEntryView> findBy(FindCatalogEntryCriteria criteria) {
         var catalogEntryId = CatalogEntryId.of(criteria.catalogEntryId());
-        return catalogRepository.findById(catalogEntryId)
-            .map(this::toCatalogEntryView);
+        return catalogRepository.findById(catalogEntryId).map(this::toCatalogEntryView);
     }
 
-    /**
-     * Finds catalog entries by category.
-     */
+    /** Finds catalog entries by category. */
     public Set<CatalogEntryView> findBy(FindByCategoryCriteria criteria) {
         return catalogRepository.findByCategory(criteria.category()).stream()
-            .map(this::toCatalogEntryView)
-            .collect(Collectors.toSet());
+                .map(this::toCatalogEntryView)
+                .collect(Collectors.toSet());
     }
 
-    /**
-     * Finds catalog entries available at specific date.
-     */
+    /** Finds catalog entries available at specific date. */
     public Set<CatalogEntryView> findBy(FindAvailableAtCriteria criteria) {
         return catalogRepository.findAll().stream()
-            .filter(entry -> entry.isAvailableAt(criteria.date()))
-            .map(this::toCatalogEntryView)
-            .collect(Collectors.toSet());
+                .filter(entry -> entry.isAvailableAt(criteria.date()))
+                .map(this::toCatalogEntryView)
+                .collect(Collectors.toSet());
     }
 
-    /**
-     * Finds catalog entries by metadata key-value.
-     */
+    /** Finds catalog entries by metadata key-value. */
     public Set<CatalogEntryView> findBy(FindByMetadataCriteria criteria) {
         return catalogRepository.findAll().stream()
-            .filter(entry -> matchesMetadata(entry, criteria.key(), criteria.value()))
-            .map(this::toCatalogEntryView)
-            .collect(Collectors.toSet());
+                .filter(entry -> matchesMetadata(entry, criteria.key(), criteria.value()))
+                .map(this::toCatalogEntryView)
+                .collect(Collectors.toSet());
     }
 
     // ============================================
@@ -178,8 +182,8 @@ public class ProductCatalog {
             return true;
         }
         var lowerSearch = searchText.toLowerCase();
-        return entry.displayName().toLowerCase().contains(lowerSearch) ||
-               entry.description().toLowerCase().contains(lowerSearch);
+        return entry.displayName().toLowerCase().contains(lowerSearch)
+                || entry.description().toLowerCase().contains(lowerSearch);
     }
 
     private boolean matchesCategories(CatalogEntry entry, Set<String> categories) {
@@ -203,7 +207,8 @@ public class ProductCatalog {
         return entry.product().id().toString().equals(productTypeId);
     }
 
-    private boolean matchesFeatures(CatalogEntry entry, java.util.Map<String, Set<String>> features) {
+    private boolean matchesFeatures(
+            CatalogEntry entry, java.util.Map<String, Set<String>> features) {
         if (features == null || features.isEmpty()) {
             return true;
         }
@@ -222,9 +227,8 @@ public class ProductCatalog {
             var featureName = featureEntry.getKey();
             var requestedValues = featureEntry.getValue();
 
-            var feature = allFeatures.stream()
-                .filter(f -> f.name().equals(featureName))
-                .findFirst();
+            var feature =
+                    allFeatures.stream().filter(f -> f.name().equals(featureName)).findFirst();
 
             if (feature.isEmpty()) {
                 return false; // Feature not found in ProductType
@@ -232,8 +236,8 @@ public class ProductCatalog {
 
             // Check if any of the requested values is valid for this feature
             var featureType = feature.get();
-            boolean anyValueMatches = requestedValues.stream()
-                .anyMatch(value -> featureType.isValidValue(value));
+            boolean anyValueMatches =
+                    requestedValues.stream().anyMatch(value -> featureType.isValidValue(value));
 
             if (!anyValueMatches) {
                 return false;
@@ -268,14 +272,13 @@ public class ProductCatalog {
 
     private CatalogEntryView toCatalogEntryView(CatalogEntry entry) {
         return new CatalogEntryView(
-            entry.id().value(),
-            entry.displayName(),
-            entry.description(),
-            entry.product().id().toString(),
-            entry.categories(),
-            entry.validity().from(),
-            entry.validity().to(),
-            entry.metadata()
-        );
+                entry.id().value(),
+                entry.displayName(),
+                entry.description(),
+                entry.product().id().toString(),
+                entry.categories(),
+                entry.validity().from(),
+                entry.validity().to(),
+                entry.metadata());
     }
 }

@@ -1,19 +1,19 @@
 package com.softwarearchetypes.rules.discounting.client;
 
 public enum ClientStatus {
-    STANDARD{
+    STANDARD {
         @Override
         public <R> R accept(ClientStatusVisitor<R> visitor) {
             return visitor.visitStandard();
         }
     },
-    VIP{
+    VIP {
         @Override
         public <R> R accept(ClientStatusVisitor<R> visitor) {
             return visitor.visitVIP();
         }
     },
-    GOLD{
+    GOLD {
         @Override
         public <R> R accept(ClientStatusVisitor<R> visitor) {
             return visitor.visitGold();

@@ -1,13 +1,11 @@
 package com.softwarearchetypes.pricing;
 
-import com.softwarearchetypes.quantity.money.Money;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-/**
- * Fluent assertion helper for ComponentBreakdown.
- */
+import com.softwarearchetypes.quantity.money.Money;
+
+/** Fluent assertion helper for ComponentBreakdown. */
 public class ComponentBreakdownAssert {
 
     private final ComponentBreakdown actual;
@@ -42,17 +40,23 @@ public class ComponentBreakdownAssert {
 
     public ComponentBreakdownAssert child(int index) {
         if (index >= actual.children().size()) {
-            throw new AssertionError("Child at index %d does not exist. Total children: %d"
-                    .formatted(index, actual.children().size()));
+            throw new AssertionError(
+                    "Child at index %d does not exist. Total children: %d"
+                            .formatted(index, actual.children().size()));
         }
         return new ComponentBreakdownAssert(actual.children().get(index));
     }
 
     public ComponentBreakdownAssert child(String childName) {
-        ComponentBreakdown child = actual.children().stream()
-                .filter(c -> c.name().equals(childName))
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("Child with name '%s' not found".formatted(childName)));
+        ComponentBreakdown child =
+                actual.children().stream()
+                        .filter(c -> c.name().equals(childName))
+                        .findFirst()
+                        .orElseThrow(
+                                () ->
+                                        new AssertionError(
+                                                "Child with name '%s' not found"
+                                                        .formatted(childName)));
         return new ComponentBreakdownAssert(child);
     }
 

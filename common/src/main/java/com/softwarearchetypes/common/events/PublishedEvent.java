@@ -10,5 +10,4 @@ public interface PublishedEvent {
     String type();
 
     Instant occurredAt();
-
 }

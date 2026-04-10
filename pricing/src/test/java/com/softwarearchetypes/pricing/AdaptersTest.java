@@ -1,22 +1,18 @@
 package com.softwarearchetypes.pricing;
 
-import com.softwarearchetypes.quantity.money.Money;
-import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 class AdaptersTest {
 
     @Test
     void unitToTotalAdapter_shouldMultiplyByQuantity() {
         // Given: unit price calculator (10 PLN/piece)
-        Calculator unitCalc = new SimpleFixedCalculator(
-                "unit-price",
-                Money.pln(10),
-                Interpretation.UNIT
-        );
+        Calculator unitCalc =
+                new SimpleFixedCalculator("unit-price", Money.pln(10), Interpretation.UNIT);
 
         // When: wrap with UnitToTotal adapter
         Calculator totalCalc = UnitToTotalAdapter.wrap("adapter", unitCalc);
@@ -30,28 +26,22 @@ class AdaptersTest {
     @Test
     void unitToTotalAdapter_shouldRejectNonUnitPriceCalculator() {
         // Given: TOTAL calculator
-        Calculator totalCalc = new SimpleFixedCalculator(
-                "total",
-                Money.pln(100),
-                Interpretation.TOTAL
-        );
+        Calculator totalCalc =
+                new SimpleFixedCalculator("total", Money.pln(100), Interpretation.TOTAL);
 
         // When/Then: wrapping should fail
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> UnitToTotalAdapter.wrap("adapter", totalCalc)
-        );
+        IllegalArgumentException ex =
+                assertThrows(
+                        IllegalArgumentException.class,
+                        () -> UnitToTotalAdapter.wrap("adapter", totalCalc));
         assertTrue(ex.getMessage().contains("UNIT"));
     }
 
     @Test
     void unitToMarginalAdapter_shouldReturnSamePrice() {
         // Given: constant unit price (10 PLN/piece)
-        Calculator unitCalc = new SimpleFixedCalculator(
-                "unit-price",
-                Money.pln(10),
-                Interpretation.UNIT
-        );
+        Calculator unitCalc =
+                new SimpleFixedCalculator("unit-price", Money.pln(10), Interpretation.UNIT);
 
         // When: wrap with UnitToMarginal adapter
         Calculator marginalCalc = UnitToMarginalAdapter.wrap("adapter", unitCalc);
@@ -68,13 +58,13 @@ class AdaptersTest {
     @Test
     void totalToUnitAdapter_shouldDivideByQuantity() {
         // Given: step function as TOTAL (base 100, step every 10, increment 5)
-        Calculator totalCalc = new StepFunctionCalculator(
-                "bulk-pricing",
-                Money.pln(100),
-                new BigDecimal("10"),
-                new BigDecimal("5"),
-                Interpretation.TOTAL
-        );
+        Calculator totalCalc =
+                new StepFunctionCalculator(
+                        "bulk-pricing",
+                        Money.pln(100),
+                        new BigDecimal("10"),
+                        new BigDecimal("5"),
+                        Interpretation.TOTAL);
 
         // When: wrap with TotalToUnit adapter
         Calculator unitCalc = TotalToUnitAdapter.wrap("adapter", totalCalc);
@@ -91,13 +81,13 @@ class AdaptersTest {
     void totalToMarginalAdapter_shouldCalculateDerivative() {
         // Given: step function as TOTAL
         // Intervals: [1,10) → 100, [10,20) → 105, [20,30) → 110
-        Calculator totalCalc = new StepFunctionCalculator(
-                "step-pricing",
-                Money.pln(100),
-                new BigDecimal("10"),
-                new BigDecimal("5"),
-                Interpretation.TOTAL
-        );
+        Calculator totalCalc =
+                new StepFunctionCalculator(
+                        "step-pricing",
+                        Money.pln(100),
+                        new BigDecimal("10"),
+                        new BigDecimal("5"),
+                        Interpretation.TOTAL);
 
         // When: wrap with TotalToMarginal adapter
         Calculator marginalCalc = TotalToMarginalAdapter.wrap("adapter", totalCalc);
@@ -121,11 +111,8 @@ class AdaptersTest {
     @Test
     void marginalToTotalAdapter_shouldSumMarginalPrices() {
         // Given: constant marginal price (10 PLN per unit)
-        Calculator marginalCalc = new SimpleFixedCalculator(
-                "marginal-price",
-                Money.pln(10),
-                Interpretation.MARGINAL
-        );
+        Calculator marginalCalc =
+                new SimpleFixedCalculator("marginal-price", Money.pln(10), Interpretation.MARGINAL);
 
         // When: wrap with MarginalToTotal adapter
         Calculator totalCalc = MarginalToTotalAdapter.wrap("adapter", marginalCalc);
@@ -140,11 +127,8 @@ class AdaptersTest {
     @Test
     void marginalToUnitAdapter_shouldCalculateAverage() {
         // Given: constant marginal price (10 PLN per unit)
-        Calculator marginalCalc = new SimpleFixedCalculator(
-                "marginal-price",
-                Money.pln(10),
-                Interpretation.MARGINAL
-        );
+        Calculator marginalCalc =
+                new SimpleFixedCalculator("marginal-price", Money.pln(10), Interpretation.MARGINAL);
 
         // When: wrap with MarginalToUnit adapter
         Calculator unitCalc = MarginalToUnitAdapter.wrap("adapter", marginalCalc);
@@ -160,13 +144,13 @@ class AdaptersTest {
     void unitToMarginalAdapter_shouldWorkForVariableUnitPrice() {
         // Given: variable unit price (step function returns UNIT)
         // Unit price decreases with quantity (bulk discount on average)
-        Calculator unitCalc = new StepFunctionCalculator(
-                "bulk-unit-price",
-                Money.pln(100),  // base "total" used to derive unit prices
-                new BigDecimal("10"),
-                new BigDecimal("5"),
-                Interpretation.UNIT
-        );
+        Calculator unitCalc =
+                new StepFunctionCalculator(
+                        "bulk-unit-price",
+                        Money.pln(100), // base "total" used to derive unit prices
+                        new BigDecimal("10"),
+                        new BigDecimal("5"),
+                        Interpretation.UNIT);
 
         // When: wrap with UnitToMarginal adapter
         Calculator marginalCalc = UnitToMarginalAdapter.wrap("adapter", unitCalc);
@@ -188,19 +172,26 @@ class AdaptersTest {
     void adapters_shouldHaveCorrectTypes() {
         Calculator unitCalc = new SimpleFixedCalculator("u", Money.pln(10), Interpretation.UNIT);
         Calculator totalCalc = new SimpleFixedCalculator("t", Money.pln(100), Interpretation.TOTAL);
-        Calculator marginalCalc = new SimpleFixedCalculator("m", Money.pln(10), Interpretation.MARGINAL);
+        Calculator marginalCalc =
+                new SimpleFixedCalculator("m", Money.pln(10), Interpretation.MARGINAL);
 
-        assertEquals(CalculatorType.UNIT_TO_TOTAL_ADAPTER,
+        assertEquals(
+                CalculatorType.UNIT_TO_TOTAL_ADAPTER,
                 UnitToTotalAdapter.wrap("a", unitCalc).getType());
-        assertEquals(CalculatorType.UNIT_TO_MARGINAL_ADAPTER,
+        assertEquals(
+                CalculatorType.UNIT_TO_MARGINAL_ADAPTER,
                 UnitToMarginalAdapter.wrap("a", unitCalc).getType());
-        assertEquals(CalculatorType.TOTAL_TO_UNIT_ADAPTER,
+        assertEquals(
+                CalculatorType.TOTAL_TO_UNIT_ADAPTER,
                 TotalToUnitAdapter.wrap("a", totalCalc).getType());
-        assertEquals(CalculatorType.TOTAL_TO_MARGINAL_ADAPTER,
+        assertEquals(
+                CalculatorType.TOTAL_TO_MARGINAL_ADAPTER,
                 TotalToMarginalAdapter.wrap("a", totalCalc).getType());
-        assertEquals(CalculatorType.MARGINAL_TO_TOTAL_ADAPTER,
+        assertEquals(
+                CalculatorType.MARGINAL_TO_TOTAL_ADAPTER,
                 MarginalToTotalAdapter.wrap("a", marginalCalc).getType());
-        assertEquals(CalculatorType.MARGINAL_TO_UNIT_ADAPTER,
+        assertEquals(
+                CalculatorType.MARGINAL_TO_UNIT_ADAPTER,
                 MarginalToUnitAdapter.wrap("a", marginalCalc).getType());
     }
 
@@ -211,7 +202,8 @@ class AdaptersTest {
         Calculator totalAdapter = UnitToTotalAdapter.wrap("adapter", unitCalc);
 
         String formula = totalAdapter.formula();
-        assertTrue(formula.contains("quantity ×"), "Formula should mention quantity multiplication");
+        assertTrue(
+                formula.contains("quantity ×"), "Formula should mention quantity multiplication");
         assertTrue(formula.contains("f(x) = PLN 10"), "Formula should include source formula");
     }
 }

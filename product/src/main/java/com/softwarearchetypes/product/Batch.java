@@ -1,22 +1,20 @@
 package com.softwarearchetypes.product;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
+import com.softwarearchetypes.quantity.Quantity;
 import java.time.Instant;
 import java.util.Optional;
 
-import com.softwarearchetypes.quantity.Quantity;
-
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * Batch describes a set of ProductInstances of a specific ProductType
- * that are tracked together, usually for quality control purposes.
+ * Batch describes a set of ProductInstances of a specific ProductType that are tracked together,
+ * usually for quality control purposes.
  *
- * Used when:
- * - Individual instance identity is unimportant, but batch origin matters
- * - Need to track manufacturing/quality control information
- * - Common with foodstuffs, chemicals, and manufactured goods
+ * <p>Used when: - Individual instance identity is unimportant, but batch origin matters - Need to
+ * track manufacturing/quality control information - Common with foodstuffs, chemicals, and
+ * manufactured goods
  *
- * Examples: food batches with expiry dates, manufactured parts from same production run
+ * <p>Examples: food batches with expiry dates, manufactured parts from same production run
  */
 class Batch {
 
@@ -32,25 +30,27 @@ class Batch {
     private final SerialNumber endSerialNumber;
     private final String comments;
 
-    private Batch(BatchId id,
-                  BatchName name,
-                  ProductType productType,
-                  Quantity quantityInBatch,
-                  Instant dateProduced,
-                  Instant sellBy,
-                  Instant useBy,
-                  Instant bestBefore,
-                  SerialNumber startSerialNumber,
-                  SerialNumber endSerialNumber,
-                  String comments) {
+    private Batch(
+            BatchId id,
+            BatchName name,
+            ProductType productType,
+            Quantity quantityInBatch,
+            Instant dateProduced,
+            Instant sellBy,
+            Instant useBy,
+            Instant bestBefore,
+            SerialNumber startSerialNumber,
+            SerialNumber endSerialNumber,
+            String comments) {
         checkArgument(id != null, "BatchId must be defined");
         checkArgument(name != null, "BatchName must be defined");
         checkArgument(productType != null, "ProductType must be defined");
         checkArgument(quantityInBatch != null, "Quantity in batch must be defined");
 
         // Validate unit matches ProductType's preferred unit
-        checkArgument(quantityInBatch.unit().equals(productType.preferredUnit()),
-            "Batch quantity unit must match ProductType's preferred unit");
+        checkArgument(
+                quantityInBatch.unit().equals(productType.preferredUnit()),
+                "Batch quantity unit must match ProductType's preferred unit");
 
         this.id = id;
         this.name = name;
@@ -115,7 +115,8 @@ class Batch {
 
     @Override
     public String toString() {
-        return "Batch{id=%s, name=%s, of=%s, quantity=%s}".formatted(id, name, batchOf, quantityInBatch);
+        return "Batch{id=%s, name=%s, of=%s, quantity=%s}"
+                .formatted(id, name, batchOf, quantityInBatch);
     }
 
     static class Builder {
@@ -187,8 +188,18 @@ class Batch {
         }
 
         Batch build() {
-            return new Batch(id, name, productType, quantityInBatch, dateProduced, sellBy, useBy, bestBefore,
-                startSerialNumber, endSerialNumber, comments);
+            return new Batch(
+                    id,
+                    name,
+                    productType,
+                    quantityInBatch,
+                    dateProduced,
+                    sellBy,
+                    useBy,
+                    bestBefore,
+                    startSerialNumber,
+                    endSerialNumber,
+                    comments);
         }
     }
 }

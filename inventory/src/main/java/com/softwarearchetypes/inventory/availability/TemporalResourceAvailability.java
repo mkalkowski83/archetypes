@@ -4,7 +4,6 @@ import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -16,8 +15,8 @@ import java.util.Optional;
  * Examples: hotel room for a specific night, conference room for a specific hour, appointment slot.
  * Competition model: winner takes all within the time slot.
  *
- * Following the timed-availability pattern: one slot = one blockade.
- * For multi-slot reservations, use TemporalResourceGroupedAvailability.
+ * <p>Following the timed-availability pattern: one slot = one blockade. For multi-slot
+ * reservations, use TemporalResourceGroupedAvailability.
  */
 class TemporalResourceAvailability implements ResourceAvailability {
 
@@ -28,8 +27,13 @@ class TemporalResourceAvailability implements ResourceAvailability {
     private TemporalBlockade blockade;
     private final Version version;
 
-    TemporalResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId, TimeSlot slot, Clock clock,
-                                  TemporalBlockade blockade, Version version) {
+    TemporalResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            TimeSlot slot,
+            Clock clock,
+            TemporalBlockade blockade,
+            Version version) {
         this.id = Objects.requireNonNull(id, "ResourceAvailabilityId cannot be null");
         this.resourceId = Objects.requireNonNull(resourceId, "ResourceId cannot be null");
         this.slot = Objects.requireNonNull(slot, "TimeSlot cannot be null");
@@ -38,13 +42,18 @@ class TemporalResourceAvailability implements ResourceAvailability {
         this.version = version;
     }
 
-    TemporalResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId, TimeSlot slot,
-                                  TemporalBlockade blockade, Version version) {
+    TemporalResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            TimeSlot slot,
+            TemporalBlockade blockade,
+            Version version) {
         this(id, resourceId, slot, Clock.systemUTC(), blockade, version);
     }
 
     static TemporalResourceAvailability create(ResourceId resourceId, TimeSlot slot, Clock clock) {
-        return new TemporalResourceAvailability(ResourceAvailabilityId.random(), resourceId, slot, clock, null, Version.initial());
+        return new TemporalResourceAvailability(
+                ResourceAvailabilityId.random(), resourceId, slot, clock, null, Version.initial());
     }
 
     static TemporalResourceAvailability create(ResourceId resourceId, TimeSlot slot) {
@@ -68,11 +77,17 @@ class TemporalResourceAvailability implements ResourceAvailability {
     @Override
     public Result<String, BlockadeId> lock(LockRequest request) {
         if (!(request instanceof TemporalLockRequest temporalRequest)) {
-            return Result.failure("Invalid request type. Expected TemporalLockRequest but got: " + request.getClass().getSimpleName());
+            return Result.failure(
+                    "Invalid request type. Expected TemporalLockRequest but got: "
+                            + request.getClass().getSimpleName());
         }
 
         if (!temporalRequest.resourceId().equals(resourceId)) {
-            return Result.failure("Resource ID mismatch. Expected: " + resourceId + ", got: " + temporalRequest.resourceId());
+            return Result.failure(
+                    "Resource ID mismatch. Expected: "
+                            + resourceId
+                            + ", got: "
+                            + temporalRequest.resourceId());
         }
 
         TimeSlot requestedSlot = temporalRequest.slot();
@@ -82,15 +97,13 @@ class TemporalResourceAvailability implements ResourceAvailability {
 
         Instant now = Instant.now(clock);
         if (!isAvailableFor(temporalRequest.owner(), now)) {
-            return Result.failure("Slot is not available - already blocked by: " +
-                    (blockade != null ? blockade.owner() : "unknown"));
+            return Result.failure(
+                    "Slot is not available - already blocked by: "
+                            + (blockade != null ? blockade.owner() : "unknown"));
         }
 
-        TemporalBlockade newBlockade = TemporalBlockade.create(
-                temporalRequest.owner(),
-                temporalRequest.duration(),
-                clock
-        );
+        TemporalBlockade newBlockade =
+                TemporalBlockade.create(temporalRequest.owner(), temporalRequest.duration(), clock);
         this.blockade = newBlockade;
 
         return Result.success(newBlockade.id());

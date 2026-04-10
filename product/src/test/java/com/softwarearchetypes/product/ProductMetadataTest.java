@@ -1,10 +1,9 @@
 package com.softwarearchetypes.product;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class ProductMetadataTest {
 
@@ -18,11 +17,12 @@ class ProductMetadataTest {
 
     @Test
     void shouldCreateMetadataFromMap() {
-        ProductMetadata metadata = ProductMetadata.of(Map.of(
-                "category", "coffee",
-                "seasonal", "false",
-                "brand", "Starbucks"
-        ));
+        ProductMetadata metadata =
+                ProductMetadata.of(
+                        Map.of(
+                                "category", "coffee",
+                                "seasonal", "false",
+                                "brand", "Starbucks"));
 
         assertTrue(metadata.has("category"));
         assertEquals("coffee", metadata.get("category").orElseThrow());
@@ -58,17 +58,17 @@ class ProductMetadataTest {
 
     @Test
     void shouldUseMetadataInProductType() {
-        ProductType productType = ProductType.builder(
-                        UuidProductIdentifier.random(),
-                        ProductName.of("Pumpkin Spice Latte"),
-                        ProductDescription.of("Seasonal coffee"),
-                        com.softwarearchetypes.quantity.Unit.pieces(),
-                        ProductTrackingStrategy.IDENTICAL
-                )
-                .withMetadata("category", "coffee")
-                .withMetadata("seasonal", "true")
-                .withMetadata("season", "autumn")
-                .build();
+        ProductType productType =
+                ProductType.builder(
+                                UuidProductIdentifier.random(),
+                                ProductName.of("Pumpkin Spice Latte"),
+                                ProductDescription.of("Seasonal coffee"),
+                                com.softwarearchetypes.quantity.Unit.pieces(),
+                                ProductTrackingStrategy.IDENTICAL)
+                        .withMetadata("category", "coffee")
+                        .withMetadata("seasonal", "true")
+                        .withMetadata("season", "autumn")
+                        .build();
 
         assertEquals("coffee", productType.metadata().get("category").orElseThrow());
         assertEquals("true", productType.metadata().get("seasonal").orElseThrow());

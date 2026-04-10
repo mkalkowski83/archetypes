@@ -1,16 +1,13 @@
 package com.softwarearchetypes.quantity.money;
 
+import static java.math.RoundingMode.HALF_UP;
+
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-
-import org.jetbrains.annotations.NotNull;
-
 import javax.money.CurrencyUnit;
-
-import static java.math.RoundingMode.HALF_UP;
+import org.jetbrains.annotations.NotNull;
 
 public class Money implements Comparable<Money> {
 
@@ -128,9 +125,7 @@ public class Money implements Comparable<Money> {
     }
 
     public static Optional<Money> min(Set<Money> values) {
-        return values
-                .stream()
-                .reduce(Money::min);
+        return values.stream().reduce(Money::min);
     }
 
     public static Money max(Money one, Money two) {
@@ -177,12 +172,13 @@ public class Money implements Comparable<Money> {
 
     public Money[] divideAndRemainder(BigDecimal divider) {
         org.javamoney.moneta.Money[] result = this.money.divideAndRemainder(divider);
-        return new Money[] { new Money(result[0]), new Money(result[1]) };
+        return new Money[] {new Money(result[0]), new Money(result[1])};
     }
 
     public Money multiply(Percentage percentage) {
         BigDecimal multiplier = percentage.value().divide(new BigDecimal(100), 30, HALF_UP);
-        return this.multiply(multiplier);  // Delegate to multiply(BigDecimal) which preserves currency
+        return this.multiply(
+                multiplier); // Delegate to multiply(BigDecimal) which preserves currency
     }
 
     // Comparison operations
@@ -241,7 +237,9 @@ public class Money implements Comparable<Money> {
 
     @Override
     public String toString() {
-        return money.getCurrency().getCurrencyCode() + " " + money.getNumberStripped().toPlainString();
+        return money.getCurrency().getCurrencyCode()
+                + " "
+                + money.getNumberStripped().toPlainString();
     }
 
     public CurrencyUnit currencyUnit() {

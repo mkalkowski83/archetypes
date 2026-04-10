@@ -1,15 +1,12 @@
 package com.softwarearchetypes.product;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Tests for SelectionRule implementations.
- */
+/** Tests for SelectionRule implementations. */
 class SelectionRuleTest {
 
     private ProductIdentifier laptop;
@@ -41,10 +38,8 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(selection1));
 
         // Valid: 2 items
-        List<SelectedProduct> selection2 = List.of(
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(keyboard, 1)
-        );
+        List<SelectedProduct> selection2 =
+                List.of(new SelectedProduct(mouse, 1), new SelectedProduct(keyboard, 1));
         assertTrue(rule.isSatisfiedBy(selection2));
     }
 
@@ -58,11 +53,11 @@ class SelectionRuleTest {
         assertFalse(rule.isSatisfiedBy(selection0));
 
         // Invalid: 3 items (too many)
-        List<SelectedProduct> selection3 = List.of(
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(keyboard, 1),
-                new SelectedProduct(monitor, 1)
-        );
+        List<SelectedProduct> selection3 =
+                List.of(
+                        new SelectedProduct(mouse, 1),
+                        new SelectedProduct(keyboard, 1),
+                        new SelectedProduct(monitor, 1));
         assertFalse(rule.isSatisfiedBy(selection3));
     }
 
@@ -82,10 +77,8 @@ class SelectionRuleTest {
         SelectionRule rule = SelectionRule.isSubsetOf(accessories, 2, 3);
 
         // Valid: 2 distinct products with quantity 1 each = 2 total
-        List<SelectedProduct> selection = List.of(
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(keyboard, 1)
-        );
+        List<SelectedProduct> selection =
+                List.of(new SelectedProduct(mouse, 1), new SelectedProduct(keyboard, 1));
         assertTrue(rule.isSatisfiedBy(selection));
 
         // Valid: 1 product with quantity 2 = 2 total
@@ -166,16 +159,13 @@ class SelectionRuleTest {
         ProductSet laptopSet = ProductSet.of("laptop", laptop);
         ProductSet mouseSet = ProductSet.of("mouse", mouse);
 
-        SelectionRule rule = SelectionRule.and(
-                SelectionRule.required(laptopSet),
-                SelectionRule.required(mouseSet)
-        );
+        SelectionRule rule =
+                SelectionRule.and(
+                        SelectionRule.required(laptopSet), SelectionRule.required(mouseSet));
 
         // Valid: both laptop and mouse
-        List<SelectedProduct> bothSelected = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(mouse, 1)
-        );
+        List<SelectedProduct> bothSelected =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(mouse, 1));
         assertTrue(rule.isSatisfiedBy(bothSelected));
 
         // Invalid: only laptop
@@ -193,25 +183,23 @@ class SelectionRuleTest {
 
     @Test
     void and_shouldWorkWithThreeRules() {
-        SelectionRule rule = SelectionRule.and(
-                SelectionRule.required(ProductSet.of("laptop", laptop)),
-                SelectionRule.required(ProductSet.of("mouse", mouse)),
-                SelectionRule.required(ProductSet.of("keyboard", keyboard))
-        );
+        SelectionRule rule =
+                SelectionRule.and(
+                        SelectionRule.required(ProductSet.of("laptop", laptop)),
+                        SelectionRule.required(ProductSet.of("mouse", mouse)),
+                        SelectionRule.required(ProductSet.of("keyboard", keyboard)));
 
         // Valid: all three
-        List<SelectedProduct> allThree = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(keyboard, 1)
-        );
+        List<SelectedProduct> allThree =
+                List.of(
+                        new SelectedProduct(laptop, 1),
+                        new SelectedProduct(mouse, 1),
+                        new SelectedProduct(keyboard, 1));
         assertTrue(rule.isSatisfiedBy(allThree));
 
         // Invalid: missing keyboard
-        List<SelectedProduct> missingKeyboard = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(mouse, 1)
-        );
+        List<SelectedProduct> missingKeyboard =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(mouse, 1));
         assertFalse(rule.isSatisfiedBy(missingKeyboard));
     }
 
@@ -222,10 +210,9 @@ class SelectionRuleTest {
         ProductSet mouseSet = ProductSet.of("mouse", mouse);
         ProductSet keyboardSet = ProductSet.of("keyboard", keyboard);
 
-        SelectionRule rule = SelectionRule.or(
-                SelectionRule.required(mouseSet),
-                SelectionRule.required(keyboardSet)
-        );
+        SelectionRule rule =
+                SelectionRule.or(
+                        SelectionRule.required(mouseSet), SelectionRule.required(keyboardSet));
 
         // Valid: mouse only
         List<SelectedProduct> onlyMouse = List.of(new SelectedProduct(mouse, 1));
@@ -236,10 +223,8 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(onlyKeyboard));
 
         // Valid: both
-        List<SelectedProduct> both = List.of(
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(keyboard, 1)
-        );
+        List<SelectedProduct> both =
+                List.of(new SelectedProduct(mouse, 1), new SelectedProduct(keyboard, 1));
         assertTrue(rule.isSatisfiedBy(both));
 
         // Invalid: neither
@@ -249,11 +234,11 @@ class SelectionRuleTest {
 
     @Test
     void or_shouldWorkWithThreeRules() {
-        SelectionRule rule = SelectionRule.or(
-                SelectionRule.required(ProductSet.of("mouse", mouse)),
-                SelectionRule.required(ProductSet.of("keyboard", keyboard)),
-                SelectionRule.required(ProductSet.of("monitor", monitor))
-        );
+        SelectionRule rule =
+                SelectionRule.or(
+                        SelectionRule.required(ProductSet.of("mouse", mouse)),
+                        SelectionRule.required(ProductSet.of("keyboard", keyboard)),
+                        SelectionRule.required(ProductSet.of("monitor", monitor)));
 
         // Valid: any one
         List<SelectedProduct> onlyMouse = List.of(new SelectedProduct(mouse, 1));
@@ -266,10 +251,8 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(onlyMonitor));
 
         // Valid: combination
-        List<SelectedProduct> combo = List.of(
-                new SelectedProduct(mouse, 1),
-                new SelectedProduct(monitor, 1)
-        );
+        List<SelectedProduct> combo =
+                List.of(new SelectedProduct(mouse, 1), new SelectedProduct(monitor, 1));
         assertTrue(rule.isSatisfiedBy(combo));
 
         // Invalid: none
@@ -282,9 +265,7 @@ class SelectionRuleTest {
     @Test
     void not_shouldInvertRuleResult() {
         ProductSet insuranceSet = ProductSet.of("insurance", insurance);
-        SelectionRule rule = SelectionRule.not(
-                SelectionRule.required(insuranceSet)
-        );
+        SelectionRule rule = SelectionRule.not(SelectionRule.required(insuranceSet));
 
         // Valid: no insurance (NOT required = satisfied when absent)
         List<SelectedProduct> withoutInsurance = List.of();
@@ -298,12 +279,11 @@ class SelectionRuleTest {
     @Test
     void not_shouldWorkWithComplexRules() {
         // NOT (laptop AND mouse) = allow anything except "laptop AND mouse together"
-        SelectionRule rule = SelectionRule.not(
-                SelectionRule.and(
-                        SelectionRule.required(ProductSet.of("laptop", laptop)),
-                        SelectionRule.required(ProductSet.of("mouse", mouse))
-                )
-        );
+        SelectionRule rule =
+                SelectionRule.not(
+                        SelectionRule.and(
+                                SelectionRule.required(ProductSet.of("laptop", laptop)),
+                                SelectionRule.required(ProductSet.of("mouse", mouse))));
 
         // Valid: neither
         List<SelectedProduct> neither = List.of();
@@ -318,10 +298,8 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(onlyMouse));
 
         // Invalid: both laptop and mouse
-        List<SelectedProduct> both = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(mouse, 1)
-        );
+        List<SelectedProduct> both =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(mouse, 1));
         assertFalse(rule.isSatisfiedBy(both));
     }
 
@@ -330,20 +308,18 @@ class SelectionRuleTest {
     @Test
     void ifThen_shouldEnforceThenRulesWhenConditionIsMet() {
         // IF laptop THEN warranty required
-        SelectionRule rule = SelectionRule.ifThen(
-                SelectionRule.required(ProductSet.of("laptop", laptop)),
-                SelectionRule.required(ProductSet.of("warranty", warranty))
-        );
+        SelectionRule rule =
+                SelectionRule.ifThen(
+                        SelectionRule.required(ProductSet.of("laptop", laptop)),
+                        SelectionRule.required(ProductSet.of("warranty", warranty)));
 
         // Valid: no laptop (condition not met)
         List<SelectedProduct> noLaptop = List.of();
         assertTrue(rule.isSatisfiedBy(noLaptop));
 
         // Valid: laptop + warranty (condition met, then rule satisfied)
-        List<SelectedProduct> laptopWithWarranty = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(warranty, 1)
-        );
+        List<SelectedProduct> laptopWithWarranty =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(warranty, 1));
         assertTrue(rule.isSatisfiedBy(laptopWithWarranty));
 
         // Invalid: laptop without warranty (condition met, then rule not satisfied)
@@ -354,36 +330,32 @@ class SelectionRuleTest {
     @Test
     void ifThen_shouldWorkWithMultipleThenRules() {
         // IF laptop THEN (warranty AND insurance) required
-        SelectionRule rule = SelectionRule.ifThen(
-                SelectionRule.required(ProductSet.of("laptop", laptop)),
-                SelectionRule.required(ProductSet.of("warranty", warranty)),
-                SelectionRule.required(ProductSet.of("insurance", insurance))
-        );
+        SelectionRule rule =
+                SelectionRule.ifThen(
+                        SelectionRule.required(ProductSet.of("laptop", laptop)),
+                        SelectionRule.required(ProductSet.of("warranty", warranty)),
+                        SelectionRule.required(ProductSet.of("insurance", insurance)));
 
         // Valid: no laptop
         List<SelectedProduct> noLaptop = List.of();
         assertTrue(rule.isSatisfiedBy(noLaptop));
 
         // Valid: laptop + warranty + insurance
-        List<SelectedProduct> complete = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(warranty, 1),
-                new SelectedProduct(insurance, 1)
-        );
+        List<SelectedProduct> complete =
+                List.of(
+                        new SelectedProduct(laptop, 1),
+                        new SelectedProduct(warranty, 1),
+                        new SelectedProduct(insurance, 1));
         assertTrue(rule.isSatisfiedBy(complete));
 
         // Invalid: laptop + warranty (missing insurance)
-        List<SelectedProduct> missingInsurance = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(warranty, 1)
-        );
+        List<SelectedProduct> missingInsurance =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(warranty, 1));
         assertFalse(rule.isSatisfiedBy(missingInsurance));
 
         // Invalid: laptop + insurance (missing warranty)
-        List<SelectedProduct> missingWarranty = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(insurance, 1)
-        );
+        List<SelectedProduct> missingWarranty =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(insurance, 1));
         assertFalse(rule.isSatisfiedBy(missingWarranty));
     }
 
@@ -392,15 +364,13 @@ class SelectionRuleTest {
     @Test
     void shouldCombineAndOrNotInComplexScenario() {
         // (laptop OR monitor) AND NOT insurance
-        SelectionRule rule = SelectionRule.and(
-                SelectionRule.or(
-                        SelectionRule.required(ProductSet.of("laptop", laptop)),
-                        SelectionRule.required(ProductSet.of("monitor", monitor))
-                ),
-                SelectionRule.not(
-                        SelectionRule.required(ProductSet.of("insurance", insurance))
-                )
-        );
+        SelectionRule rule =
+                SelectionRule.and(
+                        SelectionRule.or(
+                                SelectionRule.required(ProductSet.of("laptop", laptop)),
+                                SelectionRule.required(ProductSet.of("monitor", monitor))),
+                        SelectionRule.not(
+                                SelectionRule.required(ProductSet.of("insurance", insurance))));
 
         // Valid: laptop, no insurance
         List<SelectedProduct> laptopNoInsurance = List.of(new SelectedProduct(laptop, 1));
@@ -411,17 +381,13 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(monitorNoInsurance));
 
         // Valid: both laptop and monitor, no insurance
-        List<SelectedProduct> bothNoInsurance = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(monitor, 1)
-        );
+        List<SelectedProduct> bothNoInsurance =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(monitor, 1));
         assertTrue(rule.isSatisfiedBy(bothNoInsurance));
 
         // Invalid: laptop WITH insurance
-        List<SelectedProduct> laptopWithInsurance = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(insurance, 1)
-        );
+        List<SelectedProduct> laptopWithInsurance =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(insurance, 1));
         assertFalse(rule.isSatisfiedBy(laptopWithInsurance));
 
         // Invalid: neither laptop nor monitor
@@ -432,38 +398,33 @@ class SelectionRuleTest {
     @Test
     void shouldCombineIfThenWithAndOr() {
         // IF laptop THEN (warranty OR insurance)
-        SelectionRule rule = SelectionRule.ifThen(
-                SelectionRule.required(ProductSet.of("laptop", laptop)),
-                SelectionRule.or(
-                        SelectionRule.required(ProductSet.of("warranty", warranty)),
-                        SelectionRule.required(ProductSet.of("insurance", insurance))
-                )
-        );
+        SelectionRule rule =
+                SelectionRule.ifThen(
+                        SelectionRule.required(ProductSet.of("laptop", laptop)),
+                        SelectionRule.or(
+                                SelectionRule.required(ProductSet.of("warranty", warranty)),
+                                SelectionRule.required(ProductSet.of("insurance", insurance))));
 
         // Valid: no laptop
         List<SelectedProduct> noLaptop = List.of();
         assertTrue(rule.isSatisfiedBy(noLaptop));
 
         // Valid: laptop + warranty
-        List<SelectedProduct> laptopWithWarranty = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(warranty, 1)
-        );
+        List<SelectedProduct> laptopWithWarranty =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(warranty, 1));
         assertTrue(rule.isSatisfiedBy(laptopWithWarranty));
 
         // Valid: laptop + insurance
-        List<SelectedProduct> laptopWithInsurance = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(insurance, 1)
-        );
+        List<SelectedProduct> laptopWithInsurance =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(insurance, 1));
         assertTrue(rule.isSatisfiedBy(laptopWithInsurance));
 
         // Valid: laptop + both
-        List<SelectedProduct> laptopWithBoth = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(warranty, 1),
-                new SelectedProduct(insurance, 1)
-        );
+        List<SelectedProduct> laptopWithBoth =
+                List.of(
+                        new SelectedProduct(laptop, 1),
+                        new SelectedProduct(warranty, 1),
+                        new SelectedProduct(insurance, 1));
         assertTrue(rule.isSatisfiedBy(laptopWithBoth));
 
         // Invalid: laptop without any protection
@@ -474,15 +435,14 @@ class SelectionRuleTest {
     @Test
     void shouldHandleNestedConditionals() {
         // IF laptop THEN (IF monitor THEN warranty)
-        SelectionRule innerIfThen = SelectionRule.ifThen(
-                SelectionRule.required(ProductSet.of("monitor", monitor)),
-                SelectionRule.required(ProductSet.of("warranty", warranty))
-        );
+        SelectionRule innerIfThen =
+                SelectionRule.ifThen(
+                        SelectionRule.required(ProductSet.of("monitor", monitor)),
+                        SelectionRule.required(ProductSet.of("warranty", warranty)));
 
-        SelectionRule rule = SelectionRule.ifThen(
-                SelectionRule.required(ProductSet.of("laptop", laptop)),
-                innerIfThen
-        );
+        SelectionRule rule =
+                SelectionRule.ifThen(
+                        SelectionRule.required(ProductSet.of("laptop", laptop)), innerIfThen);
 
         // Valid: no laptop
         List<SelectedProduct> noLaptop = List.of();
@@ -493,18 +453,16 @@ class SelectionRuleTest {
         assertTrue(rule.isSatisfiedBy(laptopOnly));
 
         // Valid: laptop + monitor + warranty
-        List<SelectedProduct> complete = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(monitor, 1),
-                new SelectedProduct(warranty, 1)
-        );
+        List<SelectedProduct> complete =
+                List.of(
+                        new SelectedProduct(laptop, 1),
+                        new SelectedProduct(monitor, 1),
+                        new SelectedProduct(warranty, 1));
         assertTrue(rule.isSatisfiedBy(complete));
 
         // Invalid: laptop + monitor without warranty
-        List<SelectedProduct> missingWarranty = List.of(
-                new SelectedProduct(laptop, 1),
-                new SelectedProduct(monitor, 1)
-        );
+        List<SelectedProduct> missingWarranty =
+                List.of(new SelectedProduct(laptop, 1), new SelectedProduct(monitor, 1));
         assertFalse(rule.isSatisfiedBy(missingWarranty));
     }
 
@@ -519,52 +477,52 @@ class SelectionRuleTest {
         // Rule: (basicCard OR premiumCard) required
         //       AND IF premiumCard THEN (extendedInsurance AND investmentAccount)
         //       AND NOT basicInsurance when premiumCard selected
-        SelectionRule rule = SelectionRule.and(
-                SelectionRule.or(
-                        SelectionRule.required(ProductSet.of("basic", basicCard)),
-                        SelectionRule.required(ProductSet.of("premium", premiumCard))
-                ),
-                SelectionRule.ifThen(
-                        SelectionRule.required(ProductSet.of("premium", premiumCard)),
-                        SelectionRule.required(ProductSet.of("extendedInsurance", extendedInsurance)),
-                        SelectionRule.required(ProductSet.of("investmentAccount", investmentAccount)),
-                        SelectionRule.not(SelectionRule.required(ProductSet.of("basicInsurance", basicInsurance)))
-                )
-        );
+        SelectionRule rule =
+                SelectionRule.and(
+                        SelectionRule.or(
+                                SelectionRule.required(ProductSet.of("basic", basicCard)),
+                                SelectionRule.required(ProductSet.of("premium", premiumCard))),
+                        SelectionRule.ifThen(
+                                SelectionRule.required(ProductSet.of("premium", premiumCard)),
+                                SelectionRule.required(
+                                        ProductSet.of("extendedInsurance", extendedInsurance)),
+                                SelectionRule.required(
+                                        ProductSet.of("investmentAccount", investmentAccount)),
+                                SelectionRule.not(
+                                        SelectionRule.required(
+                                                ProductSet.of("basicInsurance", basicInsurance)))));
 
         // Valid: basic card only
         List<SelectedProduct> basicOnly = List.of(new SelectedProduct(basicCard, 1));
         assertTrue(rule.isSatisfiedBy(basicOnly));
 
         // Valid: basic card with basic insurance
-        List<SelectedProduct> basicWithInsurance = List.of(
-                new SelectedProduct(basicCard, 1),
-                new SelectedProduct(basicInsurance, 1)
-        );
+        List<SelectedProduct> basicWithInsurance =
+                List.of(new SelectedProduct(basicCard, 1), new SelectedProduct(basicInsurance, 1));
         assertTrue(rule.isSatisfiedBy(basicWithInsurance));
 
         // Valid: premium card with extended insurance and investment
-        List<SelectedProduct> premiumComplete = List.of(
-                new SelectedProduct(premiumCard, 1),
-                new SelectedProduct(extendedInsurance, 1),
-                new SelectedProduct(investmentAccount, 1)
-        );
+        List<SelectedProduct> premiumComplete =
+                List.of(
+                        new SelectedProduct(premiumCard, 1),
+                        new SelectedProduct(extendedInsurance, 1),
+                        new SelectedProduct(investmentAccount, 1));
         assertTrue(rule.isSatisfiedBy(premiumComplete));
 
         // Invalid: premium card without extended insurance
-        List<SelectedProduct> premiumIncomplete = List.of(
-                new SelectedProduct(premiumCard, 1),
-                new SelectedProduct(investmentAccount, 1)
-        );
+        List<SelectedProduct> premiumIncomplete =
+                List.of(
+                        new SelectedProduct(premiumCard, 1),
+                        new SelectedProduct(investmentAccount, 1));
         assertFalse(rule.isSatisfiedBy(premiumIncomplete));
 
         // Invalid: premium card with basic insurance (NOT allowed)
-        List<SelectedProduct> premiumWithBasicInsurance = List.of(
-                new SelectedProduct(premiumCard, 1),
-                new SelectedProduct(extendedInsurance, 1),
-                new SelectedProduct(investmentAccount, 1),
-                new SelectedProduct(basicInsurance, 1)
-        );
+        List<SelectedProduct> premiumWithBasicInsurance =
+                List.of(
+                        new SelectedProduct(premiumCard, 1),
+                        new SelectedProduct(extendedInsurance, 1),
+                        new SelectedProduct(investmentAccount, 1),
+                        new SelectedProduct(basicInsurance, 1));
         assertFalse(rule.isSatisfiedBy(premiumWithBasicInsurance));
     }
 }

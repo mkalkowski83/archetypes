@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Local representation of product identifier in Inventory module.
- * This is a read model projection - synchronized from Product module via events.
+ * Local representation of product identifier in Inventory module. This is a read model projection -
+ * synchronized from Product module via events.
  */
 public record ProductIdentifier(String value) {
 

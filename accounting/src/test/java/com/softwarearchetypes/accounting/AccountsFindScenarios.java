@@ -1,39 +1,41 @@
 package com.softwarearchetypes.accounting;
 
+import static com.softwarearchetypes.accounting.RandomFixture.randomStringWithPrefixOf;
+import static com.softwarearchetypes.quantity.money.Money.pln;
+import static java.time.Clock.fixed;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
 import org.junit.jupiter.api.Test;
-
-import static com.softwarearchetypes.accounting.RandomFixture.randomStringWithPrefixOf;
-import static com.softwarearchetypes.quantity.money.Money.pln;
-import static java.time.Clock.fixed;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class AccountsFindScenarios {
 
-    static final Instant NOW = LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+    static final Instant NOW =
+            LocalDateTime.of(2022, 2, 2, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
 
-    AccountingFacade facade = AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
+    AccountingFacade facade =
+            AccountingConfiguration.inMemory(fixed(NOW, ZoneId.systemDefault())).facade();
 
-    //TODO: zweryfikować poprawność i kompletnosć testów
+    // TODO: zweryfikować poprawność i kompletnosć testów
 
     @Test
     void should_find_existing_account() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
 
-        //and
-        facade.createAccount(CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc")));
+        // and
+        facade.createAccount(
+                CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc")));
 
-        //when
+        // when
         Optional<AccountView> result = facade.findAccount(accountId);
 
-        //then
+        // then
         assertThat(result).isPresent();
         assertThat(result.get().id()).isEqualTo(accountId);
         assertThat(result.get().type()).isEqualTo(AccountType.ASSET.toString());
@@ -42,35 +44,38 @@ class AccountsFindScenarios {
 
     @Test
     void should_return_empty_for_non_existing_account() {
-        //given
+        // given
         AccountId nonExistingAccountId = AccountId.generate();
 
-        //when
+        // when
         Optional<AccountView> result = facade.findAccount(nonExistingAccountId);
 
-        //then
+        // then
         assertThat(result).isEmpty();
     }
 
     @Test
     void should_find_account_with_transactions() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
 
-        //and
+        // and
         AccountId paymentAccountId = AccountId.generate();
-        facade.createAccount(CreateAccount.generateAssetAccount(paymentAccountId, randomStringWithPrefixOf("acc")));
+        facade.createAccount(
+                CreateAccount.generateAssetAccount(
+                        paymentAccountId, randomStringWithPrefixOf("acc")));
 
-        //and
-        facade.createAccount(CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc")));
+        // and
+        facade.createAccount(
+                CreateAccount.generateAssetAccount(accountId, randomStringWithPrefixOf("acc")));
 
-        //and - transfer some money from payment account
+        // and - transfer some money from payment account
         facade.transfer(paymentAccountId, accountId, pln(100), NOW, NOW);
 
-        //when
+        // when
         Optional<AccountView> result = facade.findAccount(accountId);
 
-        //then
+        // then
         assertThat(result).isPresent();
         assertThat(result.get().id()).isEqualTo(accountId);
         assertThat(result.get().type()).isEqualTo(AccountType.ASSET.toString());
@@ -80,17 +85,17 @@ class AccountsFindScenarios {
 
     @Test
     void should_find_account_with_name() {
-        //given
+        // given
         AccountId accountId = AccountId.generate();
         String name = randomStringWithPrefixOf("Test Account Name");
 
-        //and
+        // and
         facade.createAccount(new CreateAccount(accountId, name, "ASSET"));
 
-        //when
+        // when
         Optional<AccountView> result = facade.findAccount(accountId);
 
-        //then
+        // then
         assertThat(result).isPresent();
         assertThat(result.get().id()).isEqualTo(accountId);
         assertThat(result.get().name()).isEqualTo(name);
@@ -99,60 +104,87 @@ class AccountsFindScenarios {
 
     @Test
     void should_find_all_accounts() {
-        //given
-        CreateAccount requestAcc1 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
-        CreateAccount requestAcc2 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
+        // given
+        CreateAccount requestAcc1 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
+        CreateAccount requestAcc2 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
 
-        //and
+        // and
         facade.createAccount(requestAcc1);
         facade.createAccount(requestAcc2);
 
-        //when
-        List<AccountView> result = facade.findAccounts(Set.of(requestAcc1.accountId(), requestAcc2.accountId()));
+        // when
+        List<AccountView> result =
+                facade.findAccounts(Set.of(requestAcc1.accountId(), requestAcc2.accountId()));
 
-        //then
+        // then
         assertThat(result).hasSize(2);
-        assertThat(result.stream().map(AccountView::id).toList()).containsExactlyInAnyOrder(requestAcc1.accountId(), requestAcc2.accountId());
-        assertThat(result.stream().map(AccountView::type).toList()).containsExactlyInAnyOrder(requestAcc1.type(), requestAcc2.type());
-        assertThat(result.stream().map(AccountView::name).toList()).containsExactlyInAnyOrder(requestAcc1.name(), requestAcc2.name());
-        assertThat(facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate()))).hasSize(0);
+        assertThat(result.stream().map(AccountView::id).toList())
+                .containsExactlyInAnyOrder(requestAcc1.accountId(), requestAcc2.accountId());
+        assertThat(result.stream().map(AccountView::type).toList())
+                .containsExactlyInAnyOrder(requestAcc1.type(), requestAcc2.type());
+        assertThat(result.stream().map(AccountView::name).toList())
+                .containsExactlyInAnyOrder(requestAcc1.name(), requestAcc2.name());
+        assertThat(facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate())))
+                .hasSize(0);
     }
 
     @Test
     void should_find_some_accounts() {
-        //given
-        CreateAccount requestAcc1 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
-        CreateAccount requestAcc2 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
+        // given
+        CreateAccount requestAcc1 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
+        CreateAccount requestAcc2 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
 
-        //and
+        // and
         facade.createAccount(requestAcc1);
         facade.createAccount(requestAcc2);
 
-        //when
-        List<AccountView> result = facade.findAccounts(Set.of(requestAcc1.accountId(), requestAcc2.accountId(), AccountId.generate()));
+        // when
+        List<AccountView> result =
+                facade.findAccounts(
+                        Set.of(
+                                requestAcc1.accountId(),
+                                requestAcc2.accountId(),
+                                AccountId.generate()));
 
-        //then
+        // then
         assertThat(result).hasSize(2);
-        assertThat(result.stream().map(AccountView::id).toList()).containsExactlyInAnyOrder(requestAcc1.accountId(), requestAcc2.accountId());
-        assertThat(result.stream().map(AccountView::type).toList()).containsExactlyInAnyOrder(requestAcc1.type(), requestAcc2.type());
-        assertThat(result.stream().map(AccountView::name).toList()).containsExactlyInAnyOrder(requestAcc1.name(), requestAcc2.name());
-        assertThat(facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate()))).hasSize(0);
+        assertThat(result.stream().map(AccountView::id).toList())
+                .containsExactlyInAnyOrder(requestAcc1.accountId(), requestAcc2.accountId());
+        assertThat(result.stream().map(AccountView::type).toList())
+                .containsExactlyInAnyOrder(requestAcc1.type(), requestAcc2.type());
+        assertThat(result.stream().map(AccountView::name).toList())
+                .containsExactlyInAnyOrder(requestAcc1.name(), requestAcc2.name());
+        assertThat(facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate())))
+                .hasSize(0);
     }
 
     @Test
     void should_return_empty_list_when_accounts_not_present() {
-        //given
-        CreateAccount requestAcc1 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
-        CreateAccount requestAcc2 = CreateAccount.generateAssetAccount(AccountId.generate(), randomStringWithPrefixOf("acc"));
+        // given
+        CreateAccount requestAcc1 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
+        CreateAccount requestAcc2 =
+                CreateAccount.generateAssetAccount(
+                        AccountId.generate(), randomStringWithPrefixOf("acc"));
 
-        //and
+        // and
         facade.createAccount(requestAcc1);
         facade.createAccount(requestAcc2);
 
-        //when
-        List<AccountView> result = facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate()));
+        // when
+        List<AccountView> result =
+                facade.findAccounts(Set.of(AccountId.generate(), AccountId.generate()));
 
-        //then
+        // then
         assertThat(result).isEmpty();
     }
 }

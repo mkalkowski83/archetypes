@@ -3,7 +3,6 @@ package com.softwarearchetypes.planvsexecution.repaymentanalysis.modification;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.PaymentSchedule;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.delta.DeltaResult;
-
 import java.util.ArrayList;
 import java.util.List;
 

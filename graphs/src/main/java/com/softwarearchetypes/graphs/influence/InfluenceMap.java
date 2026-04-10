@@ -1,11 +1,9 @@
 package com.softwarearchetypes.graphs.influence;
 
+import java.util.Set;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-
-import java.util.Set;
-
 
 class InfluenceMap {
     private final Graph<InfluenceUnit, DefaultEdge> graph;
@@ -14,23 +12,28 @@ class InfluenceMap {
         this.graph = graph;
     }
 
-    static InfluenceMap of(PhysicsInfluence physicsInfluence,
-                           InfrastructureInfluence infrastructureInfluence,
-                           Set<Laboratory> laboratories) {
+    static InfluenceMap of(
+            PhysicsInfluence physicsInfluence,
+            InfrastructureInfluence infrastructureInfluence,
+            Set<Laboratory> laboratories) {
         Graph<InfluenceUnit, DefaultEdge> result = cartesianOf(physicsInfluence, laboratories);
         addInfrastructure(infrastructureInfluence, result);
         return new InfluenceMap(result);
     }
 
-    static InfluenceMap of(PhysicsInfluence physicsInfluence,
-                           InfrastructureInfluence infrastructureInfluence,
-                           LaboratoryAdjacency laboratoryAdjacency) {
-        Graph<InfluenceUnit, DefaultEdge> result = adjacencyOf(physicsInfluence, laboratoryAdjacency);
+    static InfluenceMap of(
+            PhysicsInfluence physicsInfluence,
+            InfrastructureInfluence infrastructureInfluence,
+            LaboratoryAdjacency laboratoryAdjacency) {
+        Graph<InfluenceUnit, DefaultEdge> result =
+                adjacencyOf(physicsInfluence, laboratoryAdjacency);
         addInfrastructure(infrastructureInfluence, result);
         return new InfluenceMap(result);
     }
 
-    private static void addInfrastructure(InfrastructureInfluence infrastructureInfluence, Graph<InfluenceUnit, DefaultEdge> result) {
+    private static void addInfrastructure(
+            InfrastructureInfluence infrastructureInfluence,
+            Graph<InfluenceUnit, DefaultEdge> result) {
         Graph<InfluenceUnit, DefaultEdge> infra = infrastructureInfluence.asGraph();
         for (DefaultEdge edge : infra.edgeSet()) {
             InfluenceUnit source = infra.getEdgeSource(edge);
@@ -41,7 +44,8 @@ class InfluenceMap {
         }
     }
 
-    private static Graph<InfluenceUnit, DefaultEdge> cartesianOf(PhysicsInfluence physicsInfluence, Set<Laboratory> laboratories) {
+    private static Graph<InfluenceUnit, DefaultEdge> cartesianOf(
+            PhysicsInfluence physicsInfluence, Set<Laboratory> laboratories) {
         Graph<InfluenceUnit, DefaultEdge> result = new DefaultDirectedGraph<>(DefaultEdge.class);
         Graph<PhysicsProcess, DefaultEdge> physics = physicsInfluence.asGraph();
         for (DefaultEdge edge : physics.edgeSet()) {
@@ -60,7 +64,8 @@ class InfluenceMap {
         return result;
     }
 
-    private static Graph<InfluenceUnit, DefaultEdge> adjacencyOf(PhysicsInfluence physicsInfluence, LaboratoryAdjacency laboratoryAdjacency) {
+    private static Graph<InfluenceUnit, DefaultEdge> adjacencyOf(
+            PhysicsInfluence physicsInfluence, LaboratoryAdjacency laboratoryAdjacency) {
         Graph<InfluenceUnit, DefaultEdge> result = new DefaultDirectedGraph<>(DefaultEdge.class);
         Graph<PhysicsProcess, DefaultEdge> physics = physicsInfluence.asGraph();
         Graph<Laboratory, DefaultEdge> adjacency = laboratoryAdjacency.asGraph();
@@ -87,12 +92,13 @@ class InfluenceMap {
         return graph;
     }
 
-    boolean influences(PhysicsProcess fromProcess, Laboratory fromLab,
-                       PhysicsProcess toProcess, Laboratory toLab) {
+    boolean influences(
+            PhysicsProcess fromProcess,
+            Laboratory fromLab,
+            PhysicsProcess toProcess,
+            Laboratory toLab) {
         return graph.containsEdge(
-                new InfluenceUnit(fromProcess, fromLab),
-                new InfluenceUnit(toProcess, toLab)
-        );
+                new InfluenceUnit(fromProcess, fromLab), new InfluenceUnit(toProcess, toLab));
     }
 
     boolean influences(Reservation from, Reservation to) {
@@ -105,7 +111,8 @@ class InfluenceMap {
 
     static class Builder {
         private PhysicsInfluence physicsInfluence;
-        private InfrastructureInfluence infrastructureInfluence = InfrastructureInfluence.builder().build();
+        private InfrastructureInfluence infrastructureInfluence =
+                InfrastructureInfluence.builder().build();
         private Set<Laboratory> laboratories;
         private LaboratoryAdjacency laboratoryAdjacency;
 

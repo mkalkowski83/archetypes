@@ -1,17 +1,20 @@
 package com.softwarearchetypes.ordering;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class OrderPartiesTest {
 
-    private final PartySnapshot customer = PartySnapshot.of(PartyId.of("customer-1"), "Customer", "c@test.com");
-    private final PartySnapshot executor = PartySnapshot.of(PartyId.of("executor-1"), "Executor", "e@test.com");
-    private final PartySnapshot branch = PartySnapshot.of(PartyId.of("branch-1"), "Branch", "b@test.com");
-    private final PartySnapshot courier = PartySnapshot.of(PartyId.of("courier-1"), "Courier", "k@test.com");
+    private final PartySnapshot customer =
+            PartySnapshot.of(PartyId.of("customer-1"), "Customer", "c@test.com");
+    private final PartySnapshot executor =
+            PartySnapshot.of(PartyId.of("executor-1"), "Executor", "e@test.com");
+    private final PartySnapshot branch =
+            PartySnapshot.of(PartyId.of("branch-1"), "Branch", "b@test.com");
+    private final PartySnapshot courier =
+            PartySnapshot.of(PartyId.of("courier-1"), "Courier", "k@test.com");
 
     @Test
     void singlePartyShouldAssignAllCustomerRolesAndExecutor() {
@@ -53,22 +56,23 @@ class OrderPartiesTest {
     @Test
     void partyWithRoleShouldThrowWhenNoneFound() {
         // given
-        OrderParties parties = OrderParties.forOrder(List.of(
-                PartyInOrder.of(customer, RoleInOrder.ORDERER, RoleInOrder.PAYER),
-                PartyInOrder.of(executor, RoleInOrder.EXECUTOR)
-        ));
+        OrderParties parties =
+                OrderParties.forOrder(
+                        List.of(
+                                PartyInOrder.of(customer, RoleInOrder.ORDERER, RoleInOrder.PAYER),
+                                PartyInOrder.of(executor, RoleInOrder.EXECUTOR)));
 
         // when/then
-        assertThrows(IllegalStateException.class, () -> parties.partyWithRole(RoleInOrder.RECEIVER));
+        assertThrows(
+                IllegalStateException.class, () -> parties.partyWithRole(RoleInOrder.RECEIVER));
     }
 
     @Test
     void mergeShouldOverrideOrderLevelRolesWithLineLevelRoles() {
         // given
         OrderParties orderLevel = OrderParties.singleParty(customer, executor);
-        OrderParties lineLevel = OrderParties.forOrderLine(List.of(
-                PartyInOrder.of(branch, RoleInOrder.RECEIVER)
-        ));
+        OrderParties lineLevel =
+                OrderParties.forOrderLine(List.of(PartyInOrder.of(branch, RoleInOrder.RECEIVER)));
 
         // when
         OrderParties merged = OrderParties.merge(orderLevel, lineLevel);
@@ -84,9 +88,9 @@ class OrderPartiesTest {
     void mergeShouldPreserveOrderLevelRolesNotOverridden() {
         // given
         OrderParties orderLevel = OrderParties.singleParty(customer, executor);
-        OrderParties lineLevel = OrderParties.forOrderLine(List.of(
-                PartyInOrder.of(courier, RoleInOrder.DELIVERY_CONTACT)
-        ));
+        OrderParties lineLevel =
+                OrderParties.forOrderLine(
+                        List.of(PartyInOrder.of(courier, RoleInOrder.DELIVERY_CONTACT)));
 
         // when
         OrderParties merged = OrderParties.merge(orderLevel, lineLevel);
@@ -94,7 +98,8 @@ class OrderPartiesTest {
         // then
         assertEquals(customer.partyId(), merged.partyWithRole(RoleInOrder.ORDERER).partyId());
         assertEquals(customer.partyId(), merged.partyWithRole(RoleInOrder.RECEIVER).partyId());
-        assertEquals(courier.partyId(), merged.partyWithRole(RoleInOrder.DELIVERY_CONTACT).partyId());
+        assertEquals(
+                courier.partyId(), merged.partyWithRole(RoleInOrder.DELIVERY_CONTACT).partyId());
     }
 
     @Test

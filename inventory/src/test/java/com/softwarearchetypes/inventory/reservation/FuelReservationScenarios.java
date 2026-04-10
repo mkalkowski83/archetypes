@@ -1,5 +1,7 @@
 package com.softwarearchetypes.inventory.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.inventory.CreateInventoryEntry;
 import com.softwarearchetypes.inventory.InstanceId;
@@ -15,23 +17,17 @@ import com.softwarearchetypes.inventory.availability.OwnerId;
 import com.softwarearchetypes.inventory.availability.ResourceId;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-/**
- * Reservation scenarios for pool resources.
- * Domain: Fleet fuel reservations at a fuel station.
- */
+/** Reservation scenarios for pool resources. Domain: Fleet fuel reservations at a fuel station. */
 @DisplayName("Fuel Reservation Scenarios (Pool)")
 class FuelReservationScenarios {
 
@@ -50,9 +46,10 @@ class FuelReservationScenarios {
     void setup() {
         clock = Clock.fixed(Instant.parse("2024-06-01T10:00:00Z"), ZoneId.of("UTC"));
         AvailabilityConfiguration availabilityConfig = AvailabilityConfiguration.inMemory(clock);
-        InventoryConfiguration inventoryConfig = InventoryConfiguration.inMemory(availabilityConfig);
-        ReservationConfiguration reservationConfig = ReservationConfiguration.inMemory(
-                inventoryConfig, availabilityConfig, clock);
+        InventoryConfiguration inventoryConfig =
+                InventoryConfiguration.inMemory(availabilityConfig);
+        ReservationConfiguration reservationConfig =
+                ReservationConfiguration.inMemory(inventoryConfig, availabilityConfig, clock);
 
         inventoryFacade = inventoryConfig.facade();
         reservationFacade = reservationConfig.facade();
@@ -71,14 +68,15 @@ class FuelReservationScenarios {
             setupFuelTank(diesel, "Diesel ON", Quantity.of(10000, LITERS));
 
             // when - Fleet A reserves 500 liters
-            Result<String, ReservationId> result = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(500, LITERS))
-                            .owner(FLEET_COMPANY_A)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> result =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(500, LITERS))
+                                    .owner(FLEET_COMPANY_A)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
             // then
             assertThat(result.success()).isTrue();
@@ -95,32 +93,35 @@ class FuelReservationScenarios {
             setupFuelTank(diesel, "Diesel ON", Quantity.of(10000, LITERS));
 
             // when - Three companies reserve fuel
-            Result<String, ReservationId> fleetA = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(2000, LITERS))
-                            .owner(FLEET_COMPANY_A)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> fleetA =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(2000, LITERS))
+                                    .owner(FLEET_COMPANY_A)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
-            Result<String, ReservationId> fleetB = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(3000, LITERS))
-                            .owner(FLEET_COMPANY_B)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> fleetB =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(3000, LITERS))
+                                    .owner(FLEET_COMPANY_B)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
-            Result<String, ReservationId> taxi = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(1500, LITERS))
-                            .owner(TAXI_CORPORATION)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> taxi =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(1500, LITERS))
+                                    .owner(TAXI_CORPORATION)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
             // then - all succeed (2000 + 3000 + 1500 = 6500 < 10000)
             assertThat(fleetA.success()).isTrue();
@@ -136,14 +137,15 @@ class FuelReservationScenarios {
             setupFuelTank(petrol, "Petrol 95", Quantity.of(1000, LITERS));
 
             // when - Fleet tries to reserve 1500 liters
-            Result<String, ReservationId> result = reservationFacade.handle(
-                    ReserveRequest.forProduct(petrol)
-                            .quantity(Quantity.of(1500, LITERS))
-                            .owner(FLEET_COMPANY_A)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> result =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(petrol)
+                                    .quantity(Quantity.of(1500, LITERS))
+                                    .owner(FLEET_COMPANY_A)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
             // then
             assertThat(result.failure()).isTrue();
@@ -166,19 +168,20 @@ class FuelReservationScenarios {
                             .quantity(Quantity.of(4500, LITERS))
                             .owner(FLEET_COMPANY_A)
                             .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+                            .resourceSpecification(
+                                    ResourceSpecification.QuantitySpecification.instance())
+                            .build());
 
             // when - Fleet B tries to reserve 1000 (only 500 available)
-            Result<String, ReservationId> result = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(1000, LITERS))
-                            .owner(FLEET_COMPANY_B)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> result =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(1000, LITERS))
+                                    .owner(FLEET_COMPANY_B)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
             // then
             assertThat(result.failure()).isTrue();
@@ -196,19 +199,20 @@ class FuelReservationScenarios {
                             .quantity(Quantity.of(4500, LITERS))
                             .owner(FLEET_COMPANY_A)
                             .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+                            .resourceSpecification(
+                                    ResourceSpecification.QuantitySpecification.instance())
+                            .build());
 
             // when - Taxi reserves exactly 500 (the remaining)
-            Result<String, ReservationId> result = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(500, LITERS))
-                            .owner(TAXI_CORPORATION)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> result =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(500, LITERS))
+                                    .owner(TAXI_CORPORATION)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
 
             // then
             assertThat(result.success()).isTrue();
@@ -226,37 +230,48 @@ class FuelReservationScenarios {
             ProductIdentifier diesel = ProductIdentifier.random();
             setupFuelTank(diesel, "Diesel ON", Quantity.of(5000, LITERS));
 
-            ReservationId fleetAReservation = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(4500, LITERS))
-                            .owner(FLEET_COMPANY_A)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            ).getSuccess();
+            ReservationId fleetAReservation =
+                    reservationFacade
+                            .handle(
+                                    ReserveRequest.forProduct(diesel)
+                                            .quantity(Quantity.of(4500, LITERS))
+                                            .owner(FLEET_COMPANY_A)
+                                            .purpose(ReservationPurpose.BOOKING)
+                                            .resourceSpecification(
+                                                    ResourceSpecification.QuantitySpecification
+                                                            .instance())
+                                            .build())
+                            .getSuccess();
 
             // Fleet B can't get 1000 yet
-            assertThat(reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(1000, LITERS))
-                            .owner(FLEET_COMPANY_B)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            ).failure()).isTrue();
+            assertThat(
+                            reservationFacade
+                                    .handle(
+                                            ReserveRequest.forProduct(diesel)
+                                                    .quantity(Quantity.of(1000, LITERS))
+                                                    .owner(FLEET_COMPANY_B)
+                                                    .purpose(ReservationPurpose.BOOKING)
+                                                    .resourceSpecification(
+                                                            ResourceSpecification
+                                                                    .QuantitySpecification
+                                                                    .instance())
+                                                    .build())
+                                    .failure())
+                    .isTrue();
 
             // when - Fleet A cancels
             reservationFacade.cancel(fleetAReservation, FLEET_COMPANY_A);
 
             // then - Fleet B can now reserve
-            Result<String, ReservationId> result = reservationFacade.handle(
-                    ReserveRequest.forProduct(diesel)
-                            .quantity(Quantity.of(1000, LITERS))
-                            .owner(FLEET_COMPANY_B)
-                            .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+            Result<String, ReservationId> result =
+                    reservationFacade.handle(
+                            ReserveRequest.forProduct(diesel)
+                                    .quantity(Quantity.of(1000, LITERS))
+                                    .owner(FLEET_COMPANY_B)
+                                    .purpose(ReservationPurpose.BOOKING)
+                                    .resourceSpecification(
+                                            ResourceSpecification.QuantitySpecification.instance())
+                                    .build());
             assertThat(result.success()).isTrue();
         }
     }
@@ -279,20 +294,21 @@ class FuelReservationScenarios {
                             .quantity(Quantity.of(1000, LITERS))
                             .owner(FLEET_COMPANY_A)
                             .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+                            .resourceSpecification(
+                                    ResourceSpecification.QuantitySpecification.instance())
+                            .build());
             reservationFacade.handle(
                     ReserveRequest.forProduct(petrol)
                             .quantity(Quantity.of(500, LITERS))
                             .owner(FLEET_COMPANY_A)
                             .purpose(ReservationPurpose.BOOKING)
-                            .resourceSpecification(ResourceSpecification.QuantitySpecification.instance())
-                            .build()
-            );
+                            .resourceSpecification(
+                                    ResourceSpecification.QuantitySpecification.instance())
+                            .build());
 
             // when
-            List<ReservationView> fleetAReservations = reservationFacade.findByOwner(FLEET_COMPANY_A);
+            List<ReservationView> fleetAReservations =
+                    reservationFacade.findByOwner(FLEET_COMPANY_A);
 
             // then
             assertThat(fleetAReservations).hasSize(2);
@@ -302,7 +318,8 @@ class FuelReservationScenarios {
 
     private void setupFuelTank(ProductIdentifier productId, String name, Quantity capacity) {
         InventoryProduct product = InventoryProduct.identical(productId, name);
-        InventoryEntryId entryId = inventoryFacade.handle(CreateInventoryEntry.forProduct(product)).getSuccess();
+        InventoryEntryId entryId =
+                inventoryFacade.handle(CreateInventoryEntry.forProduct(product)).getSuccess();
 
         ResourceId resourceId = ResourceId.random();
         availabilityFixture.registerPool(resourceId, capacity);

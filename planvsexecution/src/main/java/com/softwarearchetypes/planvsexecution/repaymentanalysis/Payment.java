@@ -1,8 +1,6 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis;
 
-
 import com.softwarearchetypes.quantity.money.Money;
-
 import java.time.Instant;
 
 public record Payment(Instant when, Money amount) implements Comparable<Payment> {

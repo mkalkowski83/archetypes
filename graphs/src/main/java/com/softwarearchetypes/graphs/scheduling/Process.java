@@ -1,14 +1,15 @@
 package com.softwarearchetypes.graphs.scheduling;
 
+import java.util.*;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.util.*;
-
-record Process(Set<ProcessStep> steps, Graph<ProcessStep, DefaultEdge> dependencyGraph,
-               Map<EdgeKey, DependencyType> edgeDependencyTypes) {
+record Process(
+        Set<ProcessStep> steps,
+        Graph<ProcessStep, DefaultEdge> dependencyGraph,
+        Map<EdgeKey, DependencyType> edgeDependencyTypes) {
 
     static Builder builder() {
         return new Builder();
@@ -16,7 +17,8 @@ record Process(Set<ProcessStep> steps, Graph<ProcessStep, DefaultEdge> dependenc
 
     static class Builder {
         private final Set<ProcessStep> steps = new HashSet<>();
-        private final DirectedAcyclicGraph<ProcessStep, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+        private final DirectedAcyclicGraph<ProcessStep, DefaultEdge> graph =
+                new DirectedAcyclicGraph<>(DefaultEdge.class);
         private final Map<EdgeKey, DependencyType> edgeDependencyTypes = new HashMap<>();
 
         Builder addStep(ProcessStep step) {
@@ -62,6 +64,5 @@ record Process(Set<ProcessStep> steps, Graph<ProcessStep, DefaultEdge> dependenc
         }
     }
 
-    private record EdgeKey(ProcessStep from, ProcessStep to) {
-    }
+    private record EdgeKey(ProcessStep from, ProcessStep to) {}
 }

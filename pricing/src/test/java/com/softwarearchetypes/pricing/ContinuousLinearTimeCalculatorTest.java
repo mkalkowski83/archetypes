@@ -1,17 +1,15 @@
 package com.softwarearchetypes.pricing;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Map;
-
-import org.junit.jupiter.api.Test;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 class ContinuousLinearTimeCalculatorTest {
 
@@ -21,13 +19,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         Parameters params = new Parameters(Map.of("time", startTime));
 
@@ -44,13 +38,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         Parameters params = new Parameters(Map.of("time", endTime));
 
@@ -67,13 +57,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // Query time before start
         LocalDateTime queryTime = LocalDateTime.of(2024, 5, 31, 12, 0);
@@ -89,13 +75,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // Query time after end
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 16, 12, 0);
@@ -113,13 +95,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // Exactly 7 days later (50% of 14 days)
         LocalDateTime midTime = LocalDateTime.of(2024, 6, 8, 0, 0);
@@ -141,13 +119,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // 12 hours after start
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 1, 12, 0);
@@ -158,8 +132,9 @@ class ContinuousLinearTimeCalculatorTest {
 
         // then - should be approximately 2049
         BigDecimal expected = new BigDecimal("2049");
-        assertTrue(result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
-            "Expected approximately 2049, got " + result.value());
+        assertTrue(
+                result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
+                "Expected approximately 2049, got " + result.value());
     }
 
     @Test
@@ -170,13 +145,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // 3.5 days after start (84 hours)
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 4, 12, 0);
@@ -187,8 +158,9 @@ class ContinuousLinearTimeCalculatorTest {
 
         // then - should be approximately 2349
         BigDecimal expected = new BigDecimal("2349");
-        assertTrue(result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
-            "Expected approximately 2349, got " + result.value());
+        assertTrue(
+                result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
+                "Expected approximately 2349, got " + result.value());
     }
 
     @Test
@@ -199,13 +171,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // 10.5 days after start
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 11, 12, 0);
@@ -216,8 +184,9 @@ class ContinuousLinearTimeCalculatorTest {
 
         // then - should be approximately 3049
         BigDecimal expected = new BigDecimal("3049");
-        assertTrue(result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
-            "Expected approximately 3049, got " + result.value());
+        assertTrue(
+                result.value().subtract(expected).abs().compareTo(new BigDecimal("1")) < 0,
+                "Expected approximately 3049, got " + result.value());
     }
 
     @Test
@@ -227,13 +196,13 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 10, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 1, 11, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "minute-precision-test",
-            startTime,
-            Money.pln(100),
-            endTime,
-            Money.pln(200)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "minute-precision-test",
+                        startTime,
+                        Money.pln(100),
+                        endTime,
+                        Money.pln(200));
 
         // 30 minutes after start (50% progress)
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 1, 10, 30);
@@ -252,13 +221,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing-eur",
-            startTime,
-            Money.eur(199),
-            endTime,
-            Money.eur(339)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing-eur", startTime, Money.eur(199), endTime, Money.eur(339));
 
         // At midpoint (7 days)
         LocalDateTime midTime = LocalDateTime.of(2024, 6, 8, 0, 0);
@@ -278,13 +243,14 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "clearance-auction",
-            startTime,
-            Money.pln(5000),  // starts high
-            endTime,
-            Money.pln(1000)   // ends low
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "clearance-auction",
+                        startTime,
+                        Money.pln(5000), // starts high
+                        endTime,
+                        Money.pln(1000) // ends low
+                        );
 
         // At midpoint (7 days)
         LocalDateTime midTime = LocalDateTime.of(2024, 6, 8, 0, 0);
@@ -303,13 +269,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         Parameters params = Parameters.empty();
 
@@ -323,13 +285,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // when & then
         assertEquals(CalculatorType.CONTINUOUS_LINEAR_TIME, calculator.getType());
@@ -341,13 +299,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln(1999),
-            endTime,
-            Money.pln(3399)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing", startTime, Money.pln(1999), endTime, Money.pln(3399));
 
         // when
         String description = calculator.describe();
@@ -366,13 +320,9 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 10, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 1, 10, 1, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "fast-auction",
-            startTime,
-            Money.pln(100),
-            endTime,
-            Money.pln(200)
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "fast-auction", startTime, Money.pln(100), endTime, Money.pln(200));
 
         // 30 seconds after start (50% progress)
         LocalDateTime queryTime = LocalDateTime.of(2024, 6, 1, 10, 0, 30);
@@ -391,21 +341,22 @@ class ContinuousLinearTimeCalculatorTest {
         LocalDateTime startTime = LocalDateTime.of(2024, 6, 1, 0, 0);
         LocalDateTime endTime = LocalDateTime.of(2024, 6, 15, 0, 0);
 
-        ContinuousLinearTimeCalculator calculator = new ContinuousLinearTimeCalculator(
-            "auction-pricing",
-            startTime,
-            Money.pln("1999"),
-            endTime,
-            Money.pln("3399")
-        );
+        ContinuousLinearTimeCalculator calculator =
+                new ContinuousLinearTimeCalculator(
+                        "auction-pricing",
+                        startTime,
+                        Money.pln("1999"),
+                        endTime,
+                        Money.pln("3399"));
 
         // when
         String formula = calculator.formula();
 
         // then
-        String expected = "f(t) = startPrice + progress × (endPrice - startPrice)\n" +
-                         "where progress = (t - startTime) / (endTime - startTime)\n" +
-                         "domain: t ∈ [2024-06-01T00:00, 2024-06-15T00:00]";
+        String expected =
+                "f(t) = startPrice + progress × (endPrice - startPrice)\n"
+                        + "where progress = (t - startTime) / (endTime - startTime)\n"
+                        + "domain: t ∈ [2024-06-01T00:00, 2024-06-15T00:00]";
         assertEquals(expected, formula);
     }
 }

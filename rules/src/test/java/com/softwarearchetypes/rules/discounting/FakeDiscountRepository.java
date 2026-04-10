@@ -3,7 +3,6 @@ package com.softwarearchetypes.rules.discounting;
 import com.softwarearchetypes.rules.discounting.config.DiscountRepository;
 import com.softwarearchetypes.rules.discounting.config.reflection.Discount;
 import com.softwarearchetypes.rules.discounting.config.reflection.DiscountParam;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,9 +19,7 @@ public class FakeDiscountRepository implements DiscountRepository {
 
     @Override
     public List<DiscountParam> findParamsByDiscountId(UUID id) {
-        return params.stream()
-                .filter(p -> Objects.equals(p.discountId(), id))
-                .toList();
+        return params.stream().filter(p -> Objects.equals(p.discountId(), id)).toList();
     }
 
     @Override

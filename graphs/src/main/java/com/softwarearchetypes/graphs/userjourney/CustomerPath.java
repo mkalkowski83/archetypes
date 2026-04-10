@@ -18,8 +18,6 @@ record CustomerPath(List<Condition> conditions) {
     }
 
     double weight(Function<Condition, Double> weightFunction) {
-        return conditions.stream()
-                .mapToDouble(weightFunction::apply)
-                .sum();
+        return conditions.stream().mapToDouble(weightFunction::apply).sum();
     }
 }

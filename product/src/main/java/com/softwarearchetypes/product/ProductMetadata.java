@@ -5,15 +5,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ProductMetadata represents static, unchanging properties of a ProductType.
- * These are simple key-value pairs that describe fixed characteristics of the product type.
+ * ProductMetadata represents static, unchanging properties of a ProductType. These are simple
+ * key-value pairs that describe fixed characteristics of the product type.
  *
- * Examples:
- * - category: "coffee", "electronics", "clothing"
- * - seasonal: "true", "false"
- * - season: "winter", "summer"
- * - brand: "Apple", "Samsung"
- * - material: "cotton", "polyester"
+ * <p>Examples: - category: "coffee", "electronics", "clothing" - seasonal: "true", "false" -
+ * season: "winter", "summer" - brand: "Apple", "Samsung" - material: "cotton", "polyester"
  */
 public class ProductMetadata {
 

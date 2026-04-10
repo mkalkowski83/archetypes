@@ -1,5 +1,4 @@
 package com.softwarearchetypes.party.events;
 
-public sealed interface PartyRegistered extends PartyRelatedEvent, PublishedEvent permits CompanyRegistered, OrganizationUnitRegistered, PersonRegistered {
-
-}
+public sealed interface PartyRegistered extends PartyRelatedEvent, PublishedEvent
+        permits CompanyRegistered, OrganizationUnitRegistered, PersonRegistered {}

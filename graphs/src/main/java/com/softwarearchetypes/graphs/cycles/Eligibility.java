@@ -4,9 +4,8 @@ import com.softwarearchetypes.graphs.cycles.math.Edge;
 import com.softwarearchetypes.graphs.cycles.math.Graph;
 import com.softwarearchetypes.graphs.cycles.math.Node;
 
-
-//limitReached - call this class
-//departments changed - call this class
+// limitReached - call this class
+// departments changed - call this class
 class Eligibility {
 
     private final Graph<OwnerId, Void> graph = new Graph<>();

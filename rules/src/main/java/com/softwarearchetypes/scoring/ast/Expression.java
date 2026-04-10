@@ -49,7 +49,8 @@ public interface Expression {
         }
     }
 
-    record IfThenElse(Expression cond, Expression thenBranch, Expression elseBranch) implements Expression {
+    record IfThenElse(Expression cond, Expression thenBranch, Expression elseBranch)
+            implements Expression {
         @Override
         public <R> R accept(ExpressionVisitor<R> vistor) {
             return vistor.visit(this);
@@ -58,8 +59,8 @@ public interface Expression {
 
     record Labeled(String label, Expression inner) implements Expression {
         @Override
-            public <R> R accept(ExpressionVisitor<R> visitor) {
-                return visitor.visit(this);
-            }
+        public <R> R accept(ExpressionVisitor<R> visitor) {
+            return visitor.visit(this);
         }
+    }
 }

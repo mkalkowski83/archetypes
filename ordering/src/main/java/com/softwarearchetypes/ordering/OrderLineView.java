@@ -12,17 +12,16 @@ public record OrderLineView(
         String pricingType,
         String unitPrice,
         String totalPrice,
-        List<PriceBreakdownView> breakdown
-) {
+        List<PriceBreakdownView> breakdown) {
 
-    public record PriceBreakdownView(String componentName, String amount, List<PriceBreakdownView> children) {
+    public record PriceBreakdownView(
+            String componentName, String amount, List<PriceBreakdownView> children) {
 
         static PriceBreakdownView from(PriceBreakdown breakdown) {
             return new PriceBreakdownView(
                     breakdown.componentName(),
                     breakdown.amount().toString(),
-                    breakdown.children().stream().map(PriceBreakdownView::from).toList()
-            );
+                    breakdown.children().stream().map(PriceBreakdownView::from).toList());
         }
     }
 
@@ -31,9 +30,8 @@ public record OrderLineView(
         String pricingType = pricing.getClass().getSimpleName();
         String unitPrice = line.isPriced() ? pricing.unitPrice().toString() : null;
         String totalPrice = line.isPriced() ? pricing.totalPrice().toString() : null;
-        List<PriceBreakdownView> breakdown = pricing.breakdown().stream()
-                .map(PriceBreakdownView::from)
-                .toList();
+        List<PriceBreakdownView> breakdown =
+                pricing.breakdown().stream().map(PriceBreakdownView::from).toList();
 
         return new OrderLineView(
                 line.id(),
@@ -46,7 +44,6 @@ public record OrderLineView(
                 pricingType,
                 unitPrice,
                 totalPrice,
-                breakdown
-        );
+                breakdown);
     }
 }

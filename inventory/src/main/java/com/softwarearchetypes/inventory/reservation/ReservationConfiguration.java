@@ -4,7 +4,6 @@ import com.softwarearchetypes.inventory.InventoryConfiguration;
 import com.softwarearchetypes.inventory.InventoryFacade;
 import com.softwarearchetypes.inventory.availability.AvailabilityConfiguration;
 import com.softwarearchetypes.inventory.availability.AvailabilityFacade;
-
 import java.time.Clock;
 
 public class ReservationConfiguration {
@@ -15,8 +14,12 @@ public class ReservationConfiguration {
     private final ReservationRepository reservationRepository;
     private final ReservationFacade facade;
 
-    ReservationConfiguration(Clock clock, InventoryFacade inventoryFacade, AvailabilityFacade availabilityFacade,
-                             ReservationRepository reservationRepository, ReservationFacade facade) {
+    ReservationConfiguration(
+            Clock clock,
+            InventoryFacade inventoryFacade,
+            AvailabilityFacade availabilityFacade,
+            ReservationRepository reservationRepository,
+            ReservationFacade facade) {
         this.clock = clock;
         this.inventoryFacade = inventoryFacade;
         this.availabilityFacade = availabilityFacade;
@@ -30,27 +33,28 @@ public class ReservationConfiguration {
 
     public static ReservationConfiguration inMemory(Clock clock) {
         AvailabilityConfiguration availabilityConfig = AvailabilityConfiguration.inMemory(clock);
-        InventoryConfiguration inventoryConfig = InventoryConfiguration.inMemory(availabilityConfig);
+        InventoryConfiguration inventoryConfig =
+                InventoryConfiguration.inMemory(availabilityConfig);
         return inMemory(inventoryConfig, availabilityConfig, clock);
     }
 
-    public static ReservationConfiguration inMemory(InventoryConfiguration inventoryConfig,
-                                                     AvailabilityConfiguration availabilityConfig,
-                                                     Clock clock) {
+    public static ReservationConfiguration inMemory(
+            InventoryConfiguration inventoryConfig,
+            AvailabilityConfiguration availabilityConfig,
+            Clock clock) {
         ReservationRepository reservationRepository = new InMemoryReservationRepository();
-        ReservationFacade facade = new ReservationFacade(
-                inventoryConfig.facade(),
-                availabilityConfig.facade(),
-                reservationRepository,
-                clock
-        );
+        ReservationFacade facade =
+                new ReservationFacade(
+                        inventoryConfig.facade(),
+                        availabilityConfig.facade(),
+                        reservationRepository,
+                        clock);
         return new ReservationConfiguration(
                 clock,
                 inventoryConfig.facade(),
                 availabilityConfig.facade(),
                 reservationRepository,
-                facade
-        );
+                facade);
     }
 
     public ReservationFacade facade() {

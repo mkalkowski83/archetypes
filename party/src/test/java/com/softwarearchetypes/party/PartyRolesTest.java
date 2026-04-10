@@ -1,17 +1,16 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
+import static com.softwarearchetypes.party.PartyFixture.somePartyOfType;
+import static com.softwarearchetypes.party.RoleFixture.someRole;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.party.events.RoleAdded;
 import com.softwarearchetypes.party.events.RoleAdditionSkipped;
 import com.softwarearchetypes.party.events.RoleRemovalSkipped;
 import com.softwarearchetypes.party.events.RoleRemoved;
-
-import static com.softwarearchetypes.party.PartyFixture.somePartyOfType;
-import static com.softwarearchetypes.party.RoleFixture.someRole;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 abstract class PartyRolesTest<T extends Party> {
 
@@ -23,121 +22,122 @@ abstract class PartyRolesTest<T extends Party> {
 
     @Test
     void shouldAddRoleToTheParty() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         Role role = someRole();
 
-        //when
+        // when
         Result<String, Party> result = party.add(role);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldReturnAddedRole() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         Role role = someRole();
 
-        //when
+        // when
         party.add(role);
 
-        //then
+        // then
         assertTrue(party.roles().contains(role));
     }
 
     @Test
     void shouldGenerateRoleAddedEventWhenSuccessfullyAddingRole() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         Role role = someRole();
         RoleAdded expectedEvent = new RoleAdded(party.id().asString(), role.name());
 
-        //when
+        // when
         party.add(role);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
     void shouldGenerateRoleAdditionSkippedEventWhenAddingAlreadyExistingRole() {
-        //given
+        // given
         Role role = someRole();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(role).build();
-        RoleAdditionSkipped expectedEvent = RoleAdditionSkipped.dueToDuplicationFor(party.id().asString(), role.name());
+        RoleAdditionSkipped expectedEvent =
+                RoleAdditionSkipped.dueToDuplicationFor(party.id().asString(), role.name());
 
-        //when
+        // when
         party.add(role);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
     void shouldRemoveRoleFromParty() {
-        //given
+        // given
         Role role = someRole();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(role).build();
 
-        //when
+        // when
         Result<String, Party> result = party.remove(role);
 
-        //then
+        // then
         assertTrue(result.success());
     }
 
     @Test
     void shouldNotReturnRemovedRole() {
-        //given
+        // given
         Role role = someRole();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(role).build();
 
-        //when
+        // when
         party.remove(role);
 
-        //then
+        // then
         assertFalse(party.roles().contains(role));
     }
 
     @Test
     void shouldGenerateRoleRemovedEventWhenSuccessfullyAddingRole() {
-        //given
+        // given
         Role role = someRole();
         T party = somePartyOfType(supportedClass).withRandomPartyId().with(role).build();
         RoleRemoved expectedEvent = new RoleRemoved(party.id().asString(), role.name());
 
-        //when
+        // when
         party.remove(role);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
 
     @Test
     void shouldGenerateRoleRemovalSkippedEventWhenRemovingNonExistingRole() {
-        //given
+        // given
         T party = somePartyOfType(supportedClass).withRandomPartyId().build();
 
-        //and
+        // and
         Role roleToBeDeleted = someRole();
-        RoleRemovalSkipped expectedEvent = RoleRemovalSkipped.dueToMissingRoleFor(party.id().asString(), roleToBeDeleted.name());
+        RoleRemovalSkipped expectedEvent =
+                RoleRemovalSkipped.dueToMissingRoleFor(
+                        party.id().asString(), roleToBeDeleted.name());
 
-        //when
+        // when
         party.remove(roleToBeDeleted);
 
-        //then
+        // then
         assertTrue(party.events().contains(expectedEvent));
     }
-
-
 
     /*
     public Result<String, Party> add(Role role) {
@@ -188,6 +188,5 @@ abstract class PartyRolesTest<T extends Party> {
         events.add(event);
     }
      */
-
 
 }

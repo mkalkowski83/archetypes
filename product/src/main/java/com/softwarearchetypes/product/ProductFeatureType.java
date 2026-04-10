@@ -1,25 +1,22 @@
 package com.softwarearchetypes.product;
 
-import java.util.Objects;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
+import java.util.Objects;
+
 /**
- * ProductFeatureType represents a type of feature (such as color) of a good or service
- * and defines the constraint on possible values.
- * <p>
- * Examples:
- * - "color" with allowed values: {red, blue, black, white}
- * - "size" with allowed values: {S, M, L, XL}
- * - "yearOfProduction" with numeric range: 2020-2024
- * - "expiryDate" with date range: 2024-01-01 to 2024-12-31
- * <p>
- * Each ProductFeatureType defines:
- * - A unique identifier (name)
- * - A constraint that defines the value type and validation rules
- * <p>
- * This archetype allows for flexible specification of product features without
- * having to create new attributes or subclasses for each feature type.
+ * ProductFeatureType represents a type of feature (such as color) of a good or service and defines
+ * the constraint on possible values.
+ *
+ * <p>Examples: - "color" with allowed values: {red, blue, black, white} - "size" with allowed
+ * values: {S, M, L, XL} - "yearOfProduction" with numeric range: 2020-2024 - "expiryDate" with date
+ * range: 2024-01-01 to 2024-12-31
+ *
+ * <p>Each ProductFeatureType defines: - A unique identifier (name) - A constraint that defines the
+ * value type and validation rules
+ *
+ * <p>This archetype allows for flexible specification of product features without having to create
+ * new attributes or subclasses for each feature type.
  */
 class ProductFeatureType {
 
@@ -35,40 +32,40 @@ class ProductFeatureType {
     }
 
     /**
-     * Creates a ProductFeatureType with allowed text values.
-     * Example: color with values {red, blue, green}
+     * Creates a ProductFeatureType with allowed text values. Example: color with values {red, blue,
+     * green}
      */
     static ProductFeatureType withAllowedValues(String name, String... allowedValues) {
         return new ProductFeatureType(name, AllowedValuesConstraint.of(allowedValues));
     }
 
     /**
-     * Creates a ProductFeatureType with a numeric range constraint.
-     * Example: year of production between 2020 and 2024
+     * Creates a ProductFeatureType with a numeric range constraint. Example: year of production
+     * between 2020 and 2024
      */
     static ProductFeatureType withNumericRange(String name, int min, int max) {
         return new ProductFeatureType(name, new NumericRangeConstraint(min, max));
     }
 
     /**
-     * Creates a ProductFeatureType with a decimal range constraint.
-     * Example: weight between 0.5 and 100.0
+     * Creates a ProductFeatureType with a decimal range constraint. Example: weight between 0.5 and
+     * 100.0
      */
     static ProductFeatureType withDecimalRange(String name, String min, String max) {
         return new ProductFeatureType(name, DecimalRangeConstraint.of(min, max));
     }
 
     /**
-     * Creates a ProductFeatureType with a regex pattern constraint.
-     * Example: product code matching "^[A-Z]{2}-\d{4}$"
+     * Creates a ProductFeatureType with a regex pattern constraint. Example: product code matching
+     * "^[A-Z]{2}-\d{4}$"
      */
     static ProductFeatureType withRegex(String name, String pattern) {
         return new ProductFeatureType(name, new RegexConstraint(pattern));
     }
 
     /**
-     * Creates a ProductFeatureType with a date range constraint.
-     * Example: expiry date between 2024-01-01 and 2024-12-31
+     * Creates a ProductFeatureType with a date range constraint. Example: expiry date between
+     * 2024-01-01 and 2024-12-31
      */
     static ProductFeatureType withDateRange(String name, String from, String to) {
         return new ProductFeatureType(name, DateRangeConstraint.between(from, to));
@@ -82,9 +79,7 @@ class ProductFeatureType {
         return new ProductFeatureType(name, new Unconstrained(valueType));
     }
 
-    /**
-     * Creates a ProductFeatureType with a custom constraint.
-     */
+    /** Creates a ProductFeatureType with a custom constraint. */
     static ProductFeatureType of(String name, FeatureValueConstraint constraint) {
         return new ProductFeatureType(name, constraint);
     }
@@ -100,9 +95,7 @@ class ProductFeatureType {
     /**
      * Validates whether the given value is valid for this feature type.
      *
-     * @param value
-     *         the value to validate
-     *
+     * @param value the value to validate
      * @return true if the value is valid
      */
     boolean isValidValue(Object value) {
@@ -110,24 +103,25 @@ class ProductFeatureType {
     }
 
     /**
-     * Validates that the given value is valid for this feature type.
-     * Throws an exception if the value is invalid.
+     * Validates that the given value is valid for this feature type. Throws an exception if the
+     * value is invalid.
      *
-     * @param value
-     *         the value to validate
-     *
-     * @throws IllegalArgumentException
-     *         if the value is not valid
+     * @param value the value to validate
+     * @throws IllegalArgumentException if the value is not valid
      */
     void validateValue(Object value) {
         checkArgument(value != null, "Feature value must not be null");
-        checkArgument(constraint.valueType().isInstance(value),
-                String.format("Feature '%s' expects type %s but got %s",
+        checkArgument(
+                constraint.valueType().isInstance(value),
+                String.format(
+                        "Feature '%s' expects type %s but got %s",
                         name,
                         constraint.valueType().type().getSimpleName(),
                         value.getClass().getSimpleName()));
-        checkArgument(isValidValue(value),
-                String.format("Invalid value '%s' for feature '%s'. Expected: %s",
+        checkArgument(
+                isValidValue(value),
+                String.format(
+                        "Invalid value '%s' for feature '%s'. Expected: %s",
                         value, name, constraint.desc()));
     }
 

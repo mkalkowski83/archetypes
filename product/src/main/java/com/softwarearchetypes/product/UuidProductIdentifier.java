@@ -3,8 +3,8 @@ package com.softwarearchetypes.product;
 import java.util.UUID;
 
 /**
- * Simple UUID-based ProductIdentifier implementation.
- * Use when you don't need to interoperate with external standard systems (ISBN, GTIN, etc.)
+ * Simple UUID-based ProductIdentifier implementation. Use when you don't need to interoperate with
+ * external standard systems (ISBN, GTIN, etc.)
  */
 record UuidProductIdentifier(UUID value) implements ProductIdentifier {
 

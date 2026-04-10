@@ -1,7 +1,6 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis;
 
 import com.softwarearchetypes.quantity.money.Money;
-
 import java.time.Instant;
 import java.util.UUID;
 

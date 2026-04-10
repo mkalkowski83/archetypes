@@ -10,7 +10,12 @@ public class TransactionBuilderFactory {
     private final EntryRepository entryRepository;
     private final Clock clock;
 
-    TransactionBuilderFactory(AccountRepository accountRepository, TransactionRepository transactionRepository, EntryAllocations entryAllocations, EntryRepository entryRepository, Clock clock) {
+    TransactionBuilderFactory(
+            AccountRepository accountRepository,
+            TransactionRepository transactionRepository,
+            EntryAllocations entryAllocations,
+            EntryRepository entryRepository,
+            Clock clock) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.entryAllocations = entryAllocations;
@@ -19,6 +24,11 @@ public class TransactionBuilderFactory {
     }
 
     public TransactionBuilder transaction() {
-        return new TransactionBuilder(accountRepository, transactionRepository, this.entryAllocations, this.entryRepository, this.clock);
+        return new TransactionBuilder(
+                accountRepository,
+                transactionRepository,
+                this.entryAllocations,
+                this.entryRepository,
+                this.clock);
     }
 }

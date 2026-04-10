@@ -1,19 +1,16 @@
 package com.softwarearchetypes.product;
 
-import java.time.LocalDate;
-
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Tests for Validity - time period during which something is valid.
- */
+import java.time.LocalDate;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+/** Tests for Validity - time period during which something is valid. */
 class ValidityTest {
 
     @Nested
@@ -73,9 +70,7 @@ class ValidityTest {
             LocalDate from = LocalDate.of(2024, 12, 31);
             LocalDate to = LocalDate.of(2024, 1, 1);
 
-            assertThrows(IllegalArgumentException.class, () ->
-                    Validity.between(from, to)
-            );
+            assertThrows(IllegalArgumentException.class, () -> Validity.between(from, to));
         }
     }
 
@@ -84,10 +79,8 @@ class ValidityTest {
 
         @Test
         void shouldBeValidWithinRange() {
-            Validity validity = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
+            Validity validity =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
 
             assertTrue(validity.isValidAt(LocalDate.of(2024, 1, 1)));
             assertTrue(validity.isValidAt(LocalDate.of(2024, 6, 15)));
@@ -96,10 +89,8 @@ class ValidityTest {
 
         @Test
         void shouldNotBeValidOutsideRange() {
-            Validity validity = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
+            Validity validity =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
 
             assertFalse(validity.isValidAt(LocalDate.of(2023, 12, 31)));
             assertFalse(validity.isValidAt(LocalDate.of(2025, 1, 1)));
@@ -159,14 +150,10 @@ class ValidityTest {
 
         @Test
         void shouldBeEqualWithSameBoundaries() {
-            Validity validity1 = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
-            Validity validity2 = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
+            Validity validity1 =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
+            Validity validity2 =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
 
             assertEquals(validity1, validity2);
             assertEquals(validity1.hashCode(), validity2.hashCode());
@@ -183,14 +170,10 @@ class ValidityTest {
 
         @Test
         void shouldNotBeEqualWithDifferentBoundaries() {
-            Validity validity1 = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
-            Validity validity2 = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2025, 12, 31)
-            );
+            Validity validity1 =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
+            Validity validity2 =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2025, 12, 31));
 
             assertFalse(validity1.equals(validity2));
         }
@@ -222,10 +205,8 @@ class ValidityTest {
 
         @Test
         void shouldFormatBothDates() {
-            Validity validity = Validity.between(
-                    LocalDate.of(2024, 1, 1),
-                    LocalDate.of(2024, 12, 31)
-            );
+            Validity validity =
+                    Validity.between(LocalDate.of(2024, 1, 1), LocalDate.of(2024, 12, 31));
 
             assertEquals("2024-01-01 to 2024-12-31", validity.toString());
         }

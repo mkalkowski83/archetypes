@@ -2,6 +2,6 @@ package com.softwarearchetypes.party;
 
 class PartyAuthenticationService {
 
-    //authenticate
-    //-> show auth policies here
+    // authenticate
+    // -> show auth policies here
 }

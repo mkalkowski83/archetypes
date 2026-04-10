@@ -1,16 +1,16 @@
 package com.softwarearchetypes.product;
 
+import static com.softwarearchetypes.common.Preconditions.checkArgument;
+
 import java.util.Arrays;
 import java.util.List;
 
-import static com.softwarearchetypes.common.Preconditions.checkArgument;
-
 /**
- * SelectionRule defines constraints about how products can be selected in a package.
- * While ProductSet defines WHAT products are available, SelectionRule defines
- * HOW MANY can be selected (constraints).
- * <p>
- * Supports composition through AND, OR, and conditional (IF-THEN) logic.
+ * SelectionRule defines constraints about how products can be selected in a package. While
+ * ProductSet defines WHAT products are available, SelectionRule defines HOW MANY can be selected
+ * (constraints).
+ *
+ * <p>Supports composition through AND, OR, and conditional (IF-THEN) logic.
  */
 interface SelectionRule {
 
@@ -47,8 +47,7 @@ interface SelectionRule {
     }
 
     // Conditional: if condition is true, then all thenRules must be satisfied
-    static SelectionRule ifThen(SelectionRule condition,
-            SelectionRule... thenRules) {
+    static SelectionRule ifThen(SelectionRule condition, SelectionRule... thenRules) {
         return new ConditionalRule(condition, Arrays.asList(thenRules));
     }
 
@@ -58,9 +57,11 @@ interface SelectionRule {
     }
 
     /**
-     * Basic selection rule: customer selection must contain between min and max products from sourceSet.
-     * <p>
-     * Example: "Select 1 to 3 accessories" means min=1, max=3, sourceSet contains all available accessories.
+     * Basic selection rule: customer selection must contain between min and max products from
+     * sourceSet.
+     *
+     * <p>Example: "Select 1 to 3 accessories" means min=1, max=3, sourceSet contains all available
+     * accessories.
      */
     record IsSubsetOf(ProductSet sourceSet, int min, int max) implements SelectionRule {
 
@@ -72,10 +73,11 @@ interface SelectionRule {
 
         @Override
         public boolean isSatisfiedBy(List<SelectedProduct> selection) {
-            long count = selection.stream()
-                                  .filter(s -> sourceSet.contains(s.productId()))
-                                  .mapToInt(SelectedProduct::quantity)
-                                  .sum();
+            long count =
+                    selection.stream()
+                            .filter(s -> sourceSet.contains(s.productId()))
+                            .mapToInt(SelectedProduct::quantity)
+                            .sum();
 
             return count >= min && count <= max;
         }
@@ -88,8 +90,8 @@ interface SelectionRule {
 
     /**
      * AND composition: all rules must be satisfied.
-     * <p>
-     * Example: Customer must select memory AND storage AND operating system.
+     *
+     * <p>Example: Customer must select memory AND storage AND operating system.
      */
     record AndRule(List<SelectionRule> rules) implements SelectionRule {
 
@@ -99,8 +101,7 @@ interface SelectionRule {
 
         @Override
         public boolean isSatisfiedBy(List<SelectedProduct> selection) {
-            return rules.stream()
-                        .allMatch(r -> r.isSatisfiedBy(selection));
+            return rules.stream().allMatch(r -> r.isSatisfiedBy(selection));
         }
 
         @Override
@@ -111,8 +112,8 @@ interface SelectionRule {
 
     /**
      * OR composition: at least one rule must be satisfied.
-     * <p>
-     * Example: Customer must select either Windows OR macOS OR Linux.
+     *
+     * <p>Example: Customer must select either Windows OR macOS OR Linux.
      */
     record OrRule(List<SelectionRule> rules) implements SelectionRule {
 
@@ -122,8 +123,7 @@ interface SelectionRule {
 
         @Override
         public boolean isSatisfiedBy(List<SelectedProduct> selection) {
-            return rules.stream()
-                        .anyMatch(r -> r.isSatisfiedBy(selection));
+            return rules.stream().anyMatch(r -> r.isSatisfiedBy(selection));
         }
 
         @Override
@@ -134,10 +134,10 @@ interface SelectionRule {
 
     /**
      * NOT composition: rule must NOT be satisfied.
-     * <p>
-     * Example: Customer must NOT select ExtraData add-on when they have unlimited plan.
-     * <p>
-     * Useful in conditional rules: IF unlimited plan THEN NOT extra data.
+     *
+     * <p>Example: Customer must NOT select ExtraData add-on when they have unlimited plan.
+     *
+     * <p>Useful in conditional rules: IF unlimited plan THEN NOT extra data.
      */
     record NotRule(SelectionRule rule) implements SelectionRule {
 
@@ -157,32 +157,28 @@ interface SelectionRule {
     }
 
     /**
-     * Conditional rule: if condition is satisfied, then all thenRules must be satisfied.
-     * If condition is not satisfied, the rule passes automatically.
-     * <p>
-     * This allows modeling dependencies between product selections.
-     * Example: "If customer selects gaming laptop, then they must also select dedicated graphics card."
-     * <p>
-     * Without conditionals, you would need separate packages for each combination.
-     * With conditionals, you can have one flexible package where choices determine requirements.
+     * Conditional rule: if condition is satisfied, then all thenRules must be satisfied. If
+     * condition is not satisfied, the rule passes automatically.
+     *
+     * <p>This allows modeling dependencies between product selections. Example: "If customer
+     * selects gaming laptop, then they must also select dedicated graphics card."
+     *
+     * <p>Without conditionals, you would need separate packages for each combination. With
+     * conditionals, you can have one flexible package where choices determine requirements.
      */
-    record ConditionalRule(
-            SelectionRule condition,
-            List<SelectionRule> thenRules
-    ) implements SelectionRule {
+    record ConditionalRule(SelectionRule condition, List<SelectionRule> thenRules)
+            implements SelectionRule {
 
         public ConditionalRule {
             checkArgument(condition != null, "Condition must be defined");
-            checkArgument(thenRules != null && !thenRules.isEmpty(),
-                    "Then rules cannot be empty");
+            checkArgument(thenRules != null && !thenRules.isEmpty(), "Then rules cannot be empty");
         }
 
         @Override
         public boolean isSatisfiedBy(List<SelectedProduct> selection) {
             if (condition.isSatisfiedBy(selection)) {
                 // If condition is true, all then-rules must be satisfied
-                return thenRules.stream()
-                                .allMatch(r -> r.isSatisfiedBy(selection));
+                return thenRules.stream().allMatch(r -> r.isSatisfiedBy(selection));
             }
             // If condition is false, rule passes automatically
             return true;

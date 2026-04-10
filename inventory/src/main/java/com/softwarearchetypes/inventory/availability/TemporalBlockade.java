@@ -4,12 +4,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.Objects;
 
-record TemporalBlockade(
-        BlockadeId id,
-        OwnerId owner,
-        Instant blockedAt,
-        LockDuration duration
-) implements Blockade {
+record TemporalBlockade(BlockadeId id, OwnerId owner, Instant blockedAt, LockDuration duration)
+        implements Blockade {
 
     public TemporalBlockade {
         Objects.requireNonNull(id, "BlockadeId cannot be null");
@@ -19,12 +15,7 @@ record TemporalBlockade(
     }
 
     public static TemporalBlockade create(OwnerId owner, LockDuration duration, Clock clock) {
-        return new TemporalBlockade(
-                BlockadeId.random(),
-                owner,
-                Instant.now(clock),
-                duration
-        );
+        return new TemporalBlockade(BlockadeId.random(), owner, Instant.now(clock), duration);
     }
 
     public static TemporalBlockade create(OwnerId owner, LockDuration duration) {

@@ -8,7 +8,6 @@ interface PartyRoleDefiningPolicy {
     static PartyRoleDefiningPolicy alwaysAllow() {
         return new AlwaysAllowPartyRoleDefiningPolicy();
     }
-
 }
 
 final class AlwaysAllowPartyRoleDefiningPolicy implements PartyRoleDefiningPolicy {

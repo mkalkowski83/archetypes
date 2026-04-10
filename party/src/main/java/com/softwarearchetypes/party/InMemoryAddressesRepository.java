@@ -1,12 +1,12 @@
 package com.softwarearchetypes.party;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
-
-import static java.util.stream.Collectors.toList;
 
 class InMemoryAddressesRepository implements AddressesRepository {
 
@@ -19,10 +19,9 @@ class InMemoryAddressesRepository implements AddressesRepository {
 
     @Override
     public List<Address> findMatching(PartyId partyId, Predicate<Address> predicate) {
-        return findFor(partyId).map(Addresses::asSet).orElse(new HashSet<>())
-                               .stream()
-                               .filter(predicate)
-                               .collect(toList());
+        return findFor(partyId).map(Addresses::asSet).orElse(new HashSet<>()).stream()
+                .filter(predicate)
+                .collect(toList());
     }
 
     @Override

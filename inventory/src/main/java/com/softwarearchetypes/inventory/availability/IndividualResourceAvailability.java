@@ -4,7 +4,6 @@ import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -12,9 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * IndividualResourceAvailability manages availability of a single, indivisible resource.
- * Examples: laptop, projector, bike, parking spot.
- * Competition model: winner takes all - first one to lock wins, others fail.
+ * IndividualResourceAvailability manages availability of a single, indivisible resource. Examples:
+ * laptop, projector, bike, parking spot. Competition model: winner takes all - first one to lock
+ * wins, others fail.
  */
 class IndividualResourceAvailability implements ResourceAvailability {
 
@@ -24,22 +23,35 @@ class IndividualResourceAvailability implements ResourceAvailability {
     private Optional<IndividualBlockade> currentBlockade;
     private final Version version;
 
-    public IndividualResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId, Clock clock,
-                                          Optional<IndividualBlockade> currentBlockade, Version version) {
+    public IndividualResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            Clock clock,
+            Optional<IndividualBlockade> currentBlockade,
+            Version version) {
         this.id = Objects.requireNonNull(id, "ResourceAvailabilityId cannot be null");
         this.resourceId = Objects.requireNonNull(resourceId, "ResourceId cannot be null");
         this.clock = Objects.requireNonNull(clock, "Clock cannot be null");
-        this.currentBlockade = Objects.requireNonNull(currentBlockade, "currentBlockade cannot be null");
+        this.currentBlockade =
+                Objects.requireNonNull(currentBlockade, "currentBlockade cannot be null");
         this.version = version;
     }
 
-    public IndividualResourceAvailability(ResourceAvailabilityId id, ResourceId resourceId,
-                                          Optional<IndividualBlockade> currentBlockade, Version version) {
+    public IndividualResourceAvailability(
+            ResourceAvailabilityId id,
+            ResourceId resourceId,
+            Optional<IndividualBlockade> currentBlockade,
+            Version version) {
         this(id, resourceId, Clock.systemUTC(), currentBlockade, version);
     }
 
     public static IndividualResourceAvailability create(ResourceId resourceId, Clock clock) {
-        return new IndividualResourceAvailability(ResourceAvailabilityId.random(), resourceId, clock, Optional.empty(), Version.initial());
+        return new IndividualResourceAvailability(
+                ResourceAvailabilityId.random(),
+                resourceId,
+                clock,
+                Optional.empty(),
+                Version.initial());
     }
 
     public static IndividualResourceAvailability create(ResourceId resourceId) {
@@ -59,24 +71,30 @@ class IndividualResourceAvailability implements ResourceAvailability {
     @Override
     public Result<String, BlockadeId> lock(LockRequest request) {
         if (!(request instanceof IndividualLockRequest individualRequest)) {
-            return Result.failure("Invalid request type. Expected IndividualLockRequest but got: " + request.getClass().getSimpleName());
+            return Result.failure(
+                    "Invalid request type. Expected IndividualLockRequest but got: "
+                            + request.getClass().getSimpleName());
         }
 
         if (!individualRequest.resourceId().equals(resourceId)) {
-            return Result.failure("Resource ID mismatch. Expected: " + resourceId + ", got: " + individualRequest.resourceId());
+            return Result.failure(
+                    "Resource ID mismatch. Expected: "
+                            + resourceId
+                            + ", got: "
+                            + individualRequest.resourceId());
         }
 
         Instant now = Instant.now(clock);
 
         if (!isAvailableFor(individualRequest.owner(), now)) {
-            return Result.failure("Resource is not available - already blocked by: " + currentBlockade.map(b -> b.owner().toString()).orElse("unknown"));
+            return Result.failure(
+                    "Resource is not available - already blocked by: "
+                            + currentBlockade.map(b -> b.owner().toString()).orElse("unknown"));
         }
 
-        IndividualBlockade blockade = IndividualBlockade.create(
-                individualRequest.owner(),
-                individualRequest.duration(),
-                clock
-        );
+        IndividualBlockade blockade =
+                IndividualBlockade.create(
+                        individualRequest.owner(), individualRequest.duration(), clock);
         currentBlockade = Optional.of(blockade);
 
         return Result.success(blockade.id());

@@ -1,12 +1,12 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 class TaxNumberTest {
 
@@ -15,100 +15,106 @@ class TaxNumberTest {
 
     @Test
     void twoTaxNumbersShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
+        // given
         TaxNumber firstNumber = TaxNumber.of(generateValidNIP());
         TaxNumber secondNumber = TaxNumber.of(generateValidNIP());
 
-        //expect
+        // expect
         assertNotEquals(firstNumber, secondNumber);
     }
 
     @Test
     void twoTaxNumbersShouldBeEqualWhenCreatedForTheSameValues() {
-        //given
+        // given
         String value = generateValidNIP();
 
-        //expect
+        // expect
         assertEquals(TaxNumber.of(value), TaxNumber.of(value));
     }
 
     @Test
     void taxNumberShouldBeConvertibleToTheValueItWasCreatedFrom() {
-        //given
+        // given
         String value = generateValidNIP();
         TaxNumber taxNumber = TaxNumber.of(value);
 
-        //expect
+        // expect
         assertEquals(value, taxNumber.asString());
     }
 
     @Test
     void taxNumberShouldReturnCorrectType() {
-        //given
+        // given
         TaxNumber taxNumber = TaxNumber.of(generateValidNIP());
 
-        //expect
+        // expect
         assertEquals("TAX_NUMBER", taxNumber.type());
     }
 
     @Test
     void shouldAcceptValidNIPWithCorrectChecksum() {
-        //given - valid NIP: 1234563218
+        // given - valid NIP: 1234563218
         String validNIP = "1234563218";
 
-        //expect
+        // expect
         TaxNumber taxNumber = TaxNumber.of(validNIP);
         assertEquals(validNIP, taxNumber.asString());
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(null));
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberForValueContainingLetters() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(randomAlphabetic(TAX_NUMBER_VALUE_LENGTH)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TaxNumber.of(randomAlphabetic(TAX_NUMBER_VALUE_LENGTH)));
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberForValueShorterThanRequired() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(randomNumeric(TAX_NUMBER_VALUE_LENGTH - 1)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TaxNumber.of(randomNumeric(TAX_NUMBER_VALUE_LENGTH - 1)));
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberForValueLongerThanRequired() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(randomNumeric(TAX_NUMBER_VALUE_LENGTH + 1)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> TaxNumber.of(randomNumeric(TAX_NUMBER_VALUE_LENGTH + 1)));
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberWithInvalidChecksum() {
-        //given - invalid checksum (last digit should be 8, not 9)
+        // given - invalid checksum (last digit should be 8, not 9)
         String invalidNIP = "1234563219";
 
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(invalidNIP));
     }
 
     @Test
     void shouldNotAllowToCreateTaxNumberWhenChecksumEquals10() {
-        //given - NIP where modulo 11 would equal 10 (invalid case)
+        // given - NIP where modulo 11 would equal 10 (invalid case)
         // "003000000X" where X can be any digit
         // sum = 0*6 + 0*5 + 3*7 + 0*2 + 0*3 + 0*4 + 0*5 + 0*6 + 0*7 = 21
         // 21 % 11 = 10 (invalid NIP - no valid checksum digit exists)
-        String invalidNIP = "0030000000"; // Trying with 0 as last digit, but checksum should be 10 which is invalid
+        String invalidNIP =
+                "0030000000"; // Trying with 0 as last digit, but checksum should be 10 which is
+        // invalid
 
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> TaxNumber.of(invalidNIP));
     }
 
-    /**
-     * Generates a valid NIP with correct checksum for testing purposes.
-     */
+    /** Generates a valid NIP with correct checksum for testing purposes. */
     private String generateValidNIP() {
         String withoutChecksum;
         int checksum;

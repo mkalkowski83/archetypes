@@ -3,16 +3,15 @@ package com.softwarearchetypes.inventory.reservation;
 import com.softwarearchetypes.common.Version;
 import com.softwarearchetypes.inventory.availability.BlockadeId;
 import com.softwarearchetypes.inventory.availability.OwnerId;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * Reservation is the published language layer on top of resource availability.
- * It represents a customer's claim on one or more resources for a specific purpose.
+ * Reservation is the published language layer on top of resource availability. It represents a
+ * customer's claim on one or more resources for a specific purpose.
  *
- * A single reservation can block multiple resources (e.g., hotel room for 4 nights).
+ * <p>A single reservation can block multiple resources (e.g., hotel room for 4 nights).
  */
 class Reservation {
 
@@ -24,20 +23,29 @@ class Reservation {
     private ReservationStatus status;
     private final Version version;
 
-    Reservation(ReservationId id, OwnerId owner, ReservationPurpose purpose,
-                List<BlockadeId> blockadeIds, Instant createdAt,
-                ReservationStatus status, Version version) {
+    Reservation(
+            ReservationId id,
+            OwnerId owner,
+            ReservationPurpose purpose,
+            List<BlockadeId> blockadeIds,
+            Instant createdAt,
+            ReservationStatus status,
+            Version version) {
         this.id = Objects.requireNonNull(id, "ReservationId cannot be null");
         this.owner = Objects.requireNonNull(owner, "OwnerId cannot be null");
         this.purpose = Objects.requireNonNull(purpose, "purpose cannot be null");
-        this.blockadeIds = List.copyOf(Objects.requireNonNull(blockadeIds, "blockadeIds cannot be null"));
+        this.blockadeIds =
+                List.copyOf(Objects.requireNonNull(blockadeIds, "blockadeIds cannot be null"));
         this.createdAt = Objects.requireNonNull(createdAt, "createdAt cannot be null");
         this.status = Objects.requireNonNull(status, "status cannot be null");
         this.version = version;
     }
 
-    static Reservation create(OwnerId owner, ReservationPurpose purpose,
-                               List<BlockadeId> blockadeIds, Instant createdAt) {
+    static Reservation create(
+            OwnerId owner,
+            ReservationPurpose purpose,
+            List<BlockadeId> blockadeIds,
+            Instant createdAt) {
         return new Reservation(
                 ReservationId.random(),
                 owner,
@@ -45,8 +53,7 @@ class Reservation {
                 blockadeIds,
                 createdAt,
                 ReservationStatus.CONFIRMED,
-                Version.initial()
-        );
+                Version.initial());
     }
 
     ReservationId id() {

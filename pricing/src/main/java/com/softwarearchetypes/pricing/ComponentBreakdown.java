@@ -1,12 +1,11 @@
 package com.softwarearchetypes.pricing;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.util.List;
 
-import com.softwarearchetypes.quantity.money.Money;
-
 /**
- * Breakdown showing individual component contributions to total price.
- * Forms a tree structure mirroring the component hierarchy.
+ * Breakdown showing individual component contributions to total price. Forms a tree structure
+ * mirroring the component hierarchy.
  */
 record ComponentBreakdown(String name, Money contribution, List<ComponentBreakdown> children) {
 
@@ -19,17 +18,14 @@ record ComponentBreakdown(String name, Money contribution, List<ComponentBreakdo
     }
 
     /**
-     * Returns the total amount for this breakdown.
-     * This is the contribution of this component (which for composite components
-     * is already the sum of all children).
+     * Returns the total amount for this breakdown. This is the contribution of this component
+     * (which for composite components is already the sum of all children).
      */
     public Money total() {
         return contribution;
     }
 
-    /**
-     * Format breakdown as indented text for display.
-     */
+    /** Format breakdown as indented text for display. */
     public String format() {
         return formatWithIndent(0);
     }

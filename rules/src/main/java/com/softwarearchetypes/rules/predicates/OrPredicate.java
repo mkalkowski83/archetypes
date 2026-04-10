@@ -5,7 +5,8 @@ public final class OrPredicate<T> extends BinaryLogicalPredicate<T> {
         super(left, right);
     }
 
-    @Override public boolean test(T t) {
+    @Override
+    public boolean test(T t) {
         return left().test(t) || right().test(t);
     }
 }

@@ -1,5 +1,6 @@
 package com.softwarearchetypes.rules.discounting;
 
+import com.softwarearchetypes.quantity.money.Percentage;
 import com.softwarearchetypes.rules.discounting.client.ClientContext;
 import com.softwarearchetypes.rules.discounting.client.ClientContextRepository;
 import com.softwarearchetypes.rules.discounting.client.ClientStatus;
@@ -7,8 +8,6 @@ import com.softwarearchetypes.rules.discounting.config.ConfigProvider;
 import com.softwarearchetypes.rules.discounting.offer.modifiers.ChainOfferItemModifier;
 import com.softwarearchetypes.rules.discounting.offer.modifiers.EmptyModifier;
 import com.softwarearchetypes.rules.discounting.offer.modifiers.simple.PercentageOfferItemModifier;
-import com.softwarearchetypes.quantity.money.Percentage;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -18,8 +17,8 @@ public class OfferItemModifierFactory {
     private final ClientContextRepository clientContextRepository;
     private final ConfigProvider configProvider;
 
-
-    public OfferItemModifierFactory(ClientContextRepository clientContextRepository, ConfigProvider configProvider) {
+    public OfferItemModifierFactory(
+            ClientContextRepository clientContextRepository, ConfigProvider configProvider) {
         this.clientContextRepository = clientContextRepository;
         this.configProvider = configProvider;
     }
@@ -42,7 +41,8 @@ public class OfferItemModifierFactory {
     }
 
     public OfferItemModifier createDiscountModifier3(UUID clientId) {
-        Map<OfferItemModifier, Predicate<ClientContext>> configuration = configProvider.loadConfig();
+        Map<OfferItemModifier, Predicate<ClientContext>> configuration =
+                configProvider.loadConfig();
         ClientContext clientContext = clientContextRepository.loadClientContext(clientId);
         ChainOfferItemModifier modifier = new ChainOfferItemModifier();
 

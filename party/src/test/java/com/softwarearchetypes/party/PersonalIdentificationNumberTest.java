@@ -1,12 +1,12 @@
 package com.softwarearchetypes.party;
 
-import org.junit.jupiter.api.Test;
-
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 class PersonalIdentificationNumberTest {
 
@@ -15,88 +15,97 @@ class PersonalIdentificationNumberTest {
 
     @Test
     void twoPersonalIdentificationNumbersShouldNotBeEqualWhenCreatedForDifferentValues() {
-        //given
-        PersonalIdentificationNumber firstNumber = PersonalIdentificationNumber.of(generateValidPESEL());
-        PersonalIdentificationNumber secondNumber = PersonalIdentificationNumber.of(generateValidPESEL());
+        // given
+        PersonalIdentificationNumber firstNumber =
+                PersonalIdentificationNumber.of(generateValidPESEL());
+        PersonalIdentificationNumber secondNumber =
+                PersonalIdentificationNumber.of(generateValidPESEL());
 
-        //expect
+        // expect
         assertNotEquals(firstNumber, secondNumber);
     }
 
     @Test
     void twoPersonalIdentificationNumbersShouldBeEqualWhenCreatedForTheSameValues() {
-        //given
+        // given
         String value = generateValidPESEL();
 
-        //expect
-        assertEquals(PersonalIdentificationNumber.of(value), PersonalIdentificationNumber.of(value));
+        // expect
+        assertEquals(
+                PersonalIdentificationNumber.of(value), PersonalIdentificationNumber.of(value));
     }
 
     @Test
     void personalIdentificationNumberShouldBeConvertibleToTheValueItWasCreatedFrom() {
-        //given
+        // given
         String value = generateValidPESEL();
         PersonalIdentificationNumber number = PersonalIdentificationNumber.of(value);
 
-        //expect
+        // expect
         assertEquals(value, number.asString());
     }
 
     @Test
     void personalIdentificationNumberShouldReturnCorrectType() {
-        //given
+        // given
         PersonalIdentificationNumber number = PersonalIdentificationNumber.of(generateValidPESEL());
 
-        //expect
+        // expect
         assertEquals("PERSONAL_IDENTIFICATION_NUMBER", number.type());
     }
 
     @Test
     void shouldAcceptValidPESELWithCorrectChecksum() {
-        //given - valid PESEL: 44051401458 (born 1944-05-14)
+        // given - valid PESEL: 44051401458 (born 1944-05-14)
         String validPESEL = "44051401458";
 
-        //expect
+        // expect
         PersonalIdentificationNumber number = PersonalIdentificationNumber.of(validPESEL);
         assertEquals(validPESEL, number.asString());
     }
 
     @Test
     void shouldNotAllowToCreatePersonalIdentificationNumberForNullValue() {
-        //expect
+        // expect
         assertThrows(IllegalArgumentException.class, () -> PersonalIdentificationNumber.of(null));
     }
 
     @Test
     void shouldNotAllowToCreatePersonalIdentificationNumberForValueContainingLetters() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> PersonalIdentificationNumber.of(randomAlphabetic(PERSONAL_ID_VALUE_LENGTH)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PersonalIdentificationNumber.of(randomAlphabetic(PERSONAL_ID_VALUE_LENGTH)));
     }
 
     @Test
     void shouldNotAllowToCreatePersonalIdentificationNumberForValueShorterThanRequired() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> PersonalIdentificationNumber.of(randomNumeric(PERSONAL_ID_VALUE_LENGTH - 1)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PersonalIdentificationNumber.of(randomNumeric(PERSONAL_ID_VALUE_LENGTH - 1)));
     }
 
     @Test
     void shouldNotAllowToCreatePersonalIdentificationNumberForValueLongerThanRequired() {
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> PersonalIdentificationNumber.of(randomNumeric(PERSONAL_ID_VALUE_LENGTH + 1)));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PersonalIdentificationNumber.of(randomNumeric(PERSONAL_ID_VALUE_LENGTH + 1)));
     }
 
     @Test
     void shouldNotAllowToCreatePersonalIdentificationNumberWithInvalidChecksum() {
-        //given - invalid checksum (last digit should be 8, not 9)
+        // given - invalid checksum (last digit should be 8, not 9)
         String invalidPESEL = "44051401459";
 
-        //expect
-        assertThrows(IllegalArgumentException.class, () -> PersonalIdentificationNumber.of(invalidPESEL));
+        // expect
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> PersonalIdentificationNumber.of(invalidPESEL));
     }
 
-    /**
-     * Generates a valid PESEL with correct checksum for testing purposes.
-     */
+    /** Generates a valid PESEL with correct checksum for testing purposes. */
     private String generateValidPESEL() {
         String withoutChecksum = randomNumeric(10);
         int checksum = calculateChecksum(withoutChecksum);

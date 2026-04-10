@@ -1,16 +1,15 @@
 package com.softwarearchetypes.accounting;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import com.softwarearchetypes.quantity.money.Money;
-
 import static com.softwarearchetypes.accounting.EntryFilter.ENTRY_OF_ACCOUNT;
 import static com.softwarearchetypes.accounting.EntryFilter.ENTRY_OF_AMOUNT;
 import static com.softwarearchetypes.accounting.EntryFilter.ENTRY_OF_DATE;
 import static com.softwarearchetypes.accounting.EntryFilter.ENTRY_OF_METADATA;
+
+import com.softwarearchetypes.quantity.money.Money;
+import java.time.Instant;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 
 public class AccountEntryFilter {
 
@@ -20,8 +19,7 @@ public class AccountEntryFilter {
     private Predicate<Money> amountPredicate = amount -> true;
     private Predicate<Map<String, String>> metadataPredicate = metaData -> true;
 
-    private AccountEntryFilter() {
-    }
+    private AccountEntryFilter() {}
 
     public static AccountEntryFilter filtering() {
         return new AccountEntryFilter();
@@ -48,7 +46,9 @@ public class AccountEntryFilter {
     }
 
     public AccountEntryFilter havingMetadata(String key, String value) {
-        this.metadataPredicate = metadataPredicate.and(metadata -> metadata.containsKey(key) && metadata.get(key).equals(value));
+        this.metadataPredicate =
+                metadataPredicate.and(
+                        metadata -> metadata.containsKey(key) && metadata.get(key).equals(value));
         return this;
     }
 
@@ -62,23 +62,23 @@ public class AccountEntryFilter {
     }
 
     public AccountEntryFilter onAccountDescriptionContaining(String desc) {
-        this.accountDescPredicate = accountDescPredicate.and(accountDesc -> accountDesc.contains(desc));
+        this.accountDescPredicate =
+                accountDescPredicate.and(accountDesc -> accountDesc.contains(desc));
         return this;
     }
 
-    //koniecznie niepubliczna
+    // koniecznie niepubliczna
     Filter toFilter() {
-        //to sql
-        Predicate<Entry> entryFilter = ENTRY_OF_ACCOUNT(accountIdPredicate)
-                .and(ENTRY_OF_METADATA(metadataPredicate))
-                .and(ENTRY_OF_DATE(occuredAtPredicate))
-                .and(ENTRY_OF_AMOUNT(amountPredicate));
+        // to sql
+        Predicate<Entry> entryFilter =
+                ENTRY_OF_ACCOUNT(accountIdPredicate)
+                        .and(ENTRY_OF_METADATA(metadataPredicate))
+                        .and(ENTRY_OF_DATE(occuredAtPredicate))
+                        .and(ENTRY_OF_AMOUNT(amountPredicate));
         Predicate<Account> accountFilter = account -> accountDescPredicate.test(account.name());
 
         return new Filter(entryFilter, accountFilter);
     }
-
-
 }
 
 class EntryFilter {
@@ -87,7 +87,8 @@ class EntryFilter {
         return metadata -> metadata.containsKey(key) && metadata.get(key).equals(value);
     }
 
-    static Predicate<Entry> ENTRY_HAVING_METADATA(Predicate<Map<String, String>> metadataPredicate) {
+    static Predicate<Entry> ENTRY_HAVING_METADATA(
+            Predicate<Map<String, String>> metadataPredicate) {
         return entry -> metadataPredicate.test(entry.metadata().metadata());
     }
 

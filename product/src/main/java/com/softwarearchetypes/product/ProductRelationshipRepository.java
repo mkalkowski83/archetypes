@@ -9,7 +9,8 @@ public interface ProductRelationshipRepository {
 
     List<ProductRelationship> findAllRelationsFrom(ProductIdentifier productIdentifier);
 
-    List<ProductRelationship> findAllRelationsFrom(ProductIdentifier productIdentifier, ProductRelationshipType type);
+    List<ProductRelationship> findAllRelationsFrom(
+            ProductIdentifier productIdentifier, ProductRelationshipType type);
 
     Optional<ProductRelationship> findBy(ProductRelationshipId relationshipId);
 
@@ -22,17 +23,17 @@ public interface ProductRelationshipRepository {
 
 class InMemoryProductRelationshipRepository implements ProductRelationshipRepository {
 
-    private final ConcurrentHashMap<ProductRelationshipId, ProductRelationship> map = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<ProductRelationshipId, ProductRelationship> map =
+            new ConcurrentHashMap<>();
 
     @Override
     public List<ProductRelationship> findAllRelationsFrom(ProductIdentifier productIdentifier) {
-        return map.values().stream()
-                .filter(rel -> rel.from().equals(productIdentifier))
-                .toList();
+        return map.values().stream().filter(rel -> rel.from().equals(productIdentifier)).toList();
     }
 
     @Override
-    public List<ProductRelationship> findAllRelationsFrom(ProductIdentifier productIdentifier, ProductRelationshipType type) {
+    public List<ProductRelationship> findAllRelationsFrom(
+            ProductIdentifier productIdentifier, ProductRelationshipType type) {
         return map.values().stream()
                 .filter(rel -> rel.from().equals(productIdentifier) && rel.type().equals(type))
                 .toList();
@@ -56,8 +57,6 @@ class InMemoryProductRelationshipRepository implements ProductRelationshipReposi
 
     @Override
     public List<ProductRelationship> findMatching(Predicate<ProductRelationship> predicate) {
-        return map.values().stream()
-                .filter(predicate)
-                .toList();
+        return map.values().stream().filter(predicate).toList();
     }
 }

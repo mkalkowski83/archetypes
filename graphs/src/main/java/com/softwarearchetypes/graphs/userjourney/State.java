@@ -20,8 +20,6 @@ record State(Set<Product> products) {
     }
 
     boolean contains(Product.ProductType productType) {
-        return products()
-                .stream()
-                .anyMatch(product -> product.type() == productType);
+        return products().stream().anyMatch(product -> product.type() == productType);
     }
 }

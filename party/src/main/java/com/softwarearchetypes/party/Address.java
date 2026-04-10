@@ -5,7 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-sealed abstract class Address implements AddressLifecycle permits GeoAddress, EmailAddress, PhoneAddress, WebAddress {
+abstract sealed class Address implements AddressLifecycle
+        permits GeoAddress, EmailAddress, PhoneAddress, WebAddress {
 
     private final AddressId id;
     private final PartyId partyId;
@@ -16,7 +17,8 @@ sealed abstract class Address implements AddressLifecycle permits GeoAddress, Em
         this(id, partyId, useTypes, Validity.ALWAYS);
     }
 
-    protected Address(AddressId id, PartyId partyId, Set<AddressUseType> useTypes, Validity validity) {
+    protected Address(
+            AddressId id, PartyId partyId, Set<AddressUseType> useTypes, Validity validity) {
         this.id = id;
         this.partyId = partyId;
         this.useTypes = Optional.ofNullable(useTypes).map(HashSet::new).orElse(new HashSet<>());

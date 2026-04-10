@@ -1,3 +1,3 @@
 package com.softwarearchetypes.graphs.influence;
 
-record Laboratory(String name) { }
+record Laboratory(String name) {}

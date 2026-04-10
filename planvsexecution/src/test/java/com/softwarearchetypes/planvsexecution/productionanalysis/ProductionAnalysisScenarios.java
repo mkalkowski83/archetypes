@@ -1,13 +1,12 @@
 package com.softwarearchetypes.planvsexecution.productionanalysis;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.softwarearchetypes.planvsexecution.productionanalysis.delta.DeltaResult;
 import com.softwarearchetypes.planvsexecution.productionanalysis.tolerance.ToleranceBuilder;
 import com.softwarearchetypes.planvsexecution.productionanalysis.tolerance.ToleranceStrategy;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class ProductionAnalysisScenarios {
 
@@ -16,17 +15,18 @@ class ProductionAnalysisScenarios {
     @Test
     void exact_matching_detects_quantity_deviations() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 100),
-                PlannedProduction.of("WIDGET-B", 200),
-                PlannedProduction.of("WIDGET-C", 150)
-        ));
+        ProductionPlan planned =
+                ProductionPlan.of(
+                        List.of(
+                                PlannedProduction.of("WIDGET-A", 100),
+                                PlannedProduction.of("WIDGET-B", 200),
+                                PlannedProduction.of("WIDGET-C", 150)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 98),
-                ActualProduction.of("WIDGET-B", 205),
-                ActualProduction.of("WIDGET-C", 150)
-        );
+        List<ActualProduction> actual =
+                List.of(
+                        ActualProduction.of("WIDGET-A", 98),
+                        ActualProduction.of("WIDGET-B", 205),
+                        ActualProduction.of("WIDGET-C", 150));
 
         // when
         ToleranceStrategy exactMatch = ToleranceBuilder.exact();
@@ -41,17 +41,18 @@ class ProductionAnalysisScenarios {
     @Test
     void tolerance_strategy_allows_acceptable_deviations() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 100),
-                PlannedProduction.of("WIDGET-B", 200),
-                PlannedProduction.of("WIDGET-C", 150)
-        ));
+        ProductionPlan planned =
+                ProductionPlan.of(
+                        List.of(
+                                PlannedProduction.of("WIDGET-A", 100),
+                                PlannedProduction.of("WIDGET-B", 200),
+                                PlannedProduction.of("WIDGET-C", 150)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 98),
-                ActualProduction.of("WIDGET-B", 205),
-                ActualProduction.of("WIDGET-C", 148)
-        );
+        List<ActualProduction> actual =
+                List.of(
+                        ActualProduction.of("WIDGET-A", 98),
+                        ActualProduction.of("WIDGET-B", 205),
+                        ActualProduction.of("WIDGET-C", 148));
 
         // when
         ToleranceStrategy lenient = ToleranceBuilder.quantityTolerance(5.0, 10);
@@ -66,15 +67,13 @@ class ProductionAnalysisScenarios {
     @Test
     void split_production_aggregates_partial_batches() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 500)
-        ));
+        ProductionPlan planned = ProductionPlan.of(List.of(PlannedProduction.of("WIDGET-A", 500)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 180),
-                ActualProduction.of("WIDGET-A", 170),
-                ActualProduction.of("WIDGET-A", 155)
-        );
+        List<ActualProduction> actual =
+                List.of(
+                        ActualProduction.of("WIDGET-A", 180),
+                        ActualProduction.of("WIDGET-A", 170),
+                        ActualProduction.of("WIDGET-A", 155));
 
         // when
         ToleranceStrategy tolerance = ToleranceBuilder.quantityTolerance(5.0, 10);
@@ -90,14 +89,13 @@ class ProductionAnalysisScenarios {
     @Test
     void under_production_identifies_missing_output() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 100),
-                PlannedProduction.of("WIDGET-B", 200)
-        ));
+        ProductionPlan planned =
+                ProductionPlan.of(
+                        List.of(
+                                PlannedProduction.of("WIDGET-A", 100),
+                                PlannedProduction.of("WIDGET-B", 200)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 100)
-        );
+        List<ActualProduction> actual = List.of(ActualProduction.of("WIDGET-A", 100));
 
         // when
         ToleranceStrategy tolerance = ToleranceBuilder.exact();
@@ -113,19 +111,20 @@ class ProductionAnalysisScenarios {
     @Test
     void match_rate_tracks_execution_completeness() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 100),
-                PlannedProduction.of("WIDGET-B", 200),
-                PlannedProduction.of("WIDGET-C", 150),
-                PlannedProduction.of("WIDGET-D", 180),
-                PlannedProduction.of("WIDGET-E", 120)
-        ));
+        ProductionPlan planned =
+                ProductionPlan.of(
+                        List.of(
+                                PlannedProduction.of("WIDGET-A", 100),
+                                PlannedProduction.of("WIDGET-B", 200),
+                                PlannedProduction.of("WIDGET-C", 150),
+                                PlannedProduction.of("WIDGET-D", 180),
+                                PlannedProduction.of("WIDGET-E", 120)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 100),
-                ActualProduction.of("WIDGET-B", 200),
-                ActualProduction.of("WIDGET-C", 150)
-        );
+        List<ActualProduction> actual =
+                List.of(
+                        ActualProduction.of("WIDGET-A", 100),
+                        ActualProduction.of("WIDGET-B", 200),
+                        ActualProduction.of("WIDGET-C", 150));
 
         // when
         ToleranceStrategy tolerance = ToleranceBuilder.exact();
@@ -141,13 +140,9 @@ class ProductionAnalysisScenarios {
     @Test
     void over_production_detected() {
         // given
-        ProductionPlan planned = ProductionPlan.of(List.of(
-                PlannedProduction.of("WIDGET-A", 100)
-        ));
+        ProductionPlan planned = ProductionPlan.of(List.of(PlannedProduction.of("WIDGET-A", 100)));
 
-        List<ActualProduction> actual = List.of(
-                ActualProduction.of("WIDGET-A", 150)
-        );
+        List<ActualProduction> actual = List.of(ActualProduction.of("WIDGET-A", 150));
 
         // when
         ToleranceStrategy tolerance = ToleranceBuilder.exact();
@@ -159,4 +154,3 @@ class ProductionAnalysisScenarios {
         assertThat(result.statistics().netQuantityDifference()).isEqualTo(50);
     }
 }
-

@@ -5,19 +5,19 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Constraint that can be evaluated against ApplicabilityContext.
- * Supports full composition via AndConstraint, OrConstraint, NotConstraint.
+ * Constraint that can be evaluated against ApplicabilityContext. Supports full composition via
+ * AndConstraint, OrConstraint, NotConstraint.
  */
-public sealed interface ApplicabilityConstraint permits
-        EqualsConstraint,
-        InConstraint,
-        GreaterThanConstraint,
-        LessThanConstraint,
-        BetweenConstraint,
-        AndConstraint,
-        OrConstraint,
-        NotConstraint,
-        AlwaysTrueConstraint {
+public sealed interface ApplicabilityConstraint
+        permits EqualsConstraint,
+                InConstraint,
+                GreaterThanConstraint,
+                LessThanConstraint,
+                BetweenConstraint,
+                AndConstraint,
+                OrConstraint,
+                NotConstraint,
+                AlwaysTrueConstraint {
 
     boolean isSatisfiedBy(ApplicabilityContext context);
 
@@ -63,35 +63,35 @@ public sealed interface ApplicabilityConstraint permits
     }
 }
 
-record EqualsConstraint(String parameterName, String expectedValue) implements ApplicabilityConstraint {
+record EqualsConstraint(String parameterName, String expectedValue)
+        implements ApplicabilityConstraint {
     @Override
     public boolean isSatisfiedBy(ApplicabilityContext context) {
-        return context.get(parameterName)
-                .map(value -> value.equals(expectedValue))
-                .orElse(false);
+        return context.get(parameterName).map(value -> value.equals(expectedValue)).orElse(false);
     }
 }
 
-record InConstraint(String parameterName, Set<String> allowedValues) implements ApplicabilityConstraint {
+record InConstraint(String parameterName, Set<String> allowedValues)
+        implements ApplicabilityConstraint {
     @Override
     public boolean isSatisfiedBy(ApplicabilityContext context) {
-        return context.get(parameterName)
-                .map(allowedValues::contains)
-                .orElse(false);
+        return context.get(parameterName).map(allowedValues::contains).orElse(false);
     }
 }
 
-record GreaterThanConstraint(String parameterName, int threshold) implements ApplicabilityConstraint {
+record GreaterThanConstraint(String parameterName, int threshold)
+        implements ApplicabilityConstraint {
     @Override
     public boolean isSatisfiedBy(ApplicabilityContext context) {
         return context.get(parameterName)
-                .map(value -> {
-                    try {
-                        return Integer.parseInt(value) > threshold;
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                })
+                .map(
+                        value -> {
+                            try {
+                                return Integer.parseInt(value) > threshold;
+                            } catch (NumberFormatException e) {
+                                return false;
+                            }
+                        })
                 .orElse(false);
     }
 }
@@ -100,29 +100,32 @@ record LessThanConstraint(String parameterName, int threshold) implements Applic
     @Override
     public boolean isSatisfiedBy(ApplicabilityContext context) {
         return context.get(parameterName)
-                .map(value -> {
-                    try {
-                        return Integer.parseInt(value) < threshold;
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                })
+                .map(
+                        value -> {
+                            try {
+                                return Integer.parseInt(value) < threshold;
+                            } catch (NumberFormatException e) {
+                                return false;
+                            }
+                        })
                 .orElse(false);
     }
 }
 
-record BetweenConstraint(String parameterName, int min, int max) implements ApplicabilityConstraint {
+record BetweenConstraint(String parameterName, int min, int max)
+        implements ApplicabilityConstraint {
     @Override
     public boolean isSatisfiedBy(ApplicabilityContext context) {
         return context.get(parameterName)
-                .map(value -> {
-                    try {
-                        int numValue = Integer.parseInt(value);
-                        return numValue >= min && numValue <= max;
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                })
+                .map(
+                        value -> {
+                            try {
+                                int numValue = Integer.parseInt(value);
+                                return numValue >= min && numValue <= max;
+                            } catch (NumberFormatException e) {
+                                return false;
+                            }
+                        })
                 .orElse(false);
     }
 }

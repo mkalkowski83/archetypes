@@ -1,15 +1,14 @@
 package com.softwarearchetypes.party;
 
+import static com.softwarearchetypes.common.RandomFixture.randomElementOf;
+import static com.softwarearchetypes.common.RandomFixture.randomStringWithPrefixOf;
+import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
+
+import com.softwarearchetypes.party.commands.GeoAddressDTO;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import com.softwarearchetypes.party.commands.GeoAddressDTO;
-
-import static com.softwarearchetypes.common.RandomFixture.randomElementOf;
-import static com.softwarearchetypes.common.RandomFixture.randomStringWithPrefixOf;
-import static org.apache.commons.lang3.RandomStringUtils.randomNumeric;
 
 class GeoAddressFixture {
 
@@ -18,7 +17,18 @@ class GeoAddressFixture {
     }
 
     static GeoAddress someGeoAddressFor(PartyId partyId, String city) {
-        return new GeoAddress(AddressId.random(), partyId, GeoAddress.GeoAddressDetails.from(someName(), someStreet(), someBuilding(), someFlat(), city, someZipCode(), someLocale()), someUseTypes());
+        return new GeoAddress(
+                AddressId.random(),
+                partyId,
+                GeoAddress.GeoAddressDetails.from(
+                        someName(),
+                        someStreet(),
+                        someBuilding(),
+                        someFlat(),
+                        city,
+                        someZipCode(),
+                        someLocale()),
+                someUseTypes());
     }
 
     static GeoAddress someGeoAddressWith(AddressId addressId, PartyId partyId) {
@@ -26,7 +36,14 @@ class GeoAddressFixture {
     }
 
     static GeoAddress.GeoAddressDetails someGeoAddressDetails() {
-        return GeoAddress.GeoAddressDetails.from(someName(), someStreet(), someBuilding(), someFlat(), someCity(), someZipCode(), someLocale());
+        return GeoAddress.GeoAddressDetails.from(
+                someName(),
+                someStreet(),
+                someBuilding(),
+                someFlat(),
+                someCity(),
+                someZipCode(),
+                someLocale());
     }
 
     static String someName() {
@@ -94,11 +111,11 @@ class GeoAddressFixture {
                 someCity(),
                 someZipCode().asString(),
                 someLocale(),
-                Set.of(useType.name())
-        );
+                Set.of(useType.name()));
     }
 
-    static GeoAddressDTO someGeoAddressDTOFor(PartyId partyId, String name, AddressUseType useType) {
+    static GeoAddressDTO someGeoAddressDTOFor(
+            PartyId partyId, String name, AddressUseType useType) {
         return new GeoAddressDTO(
                 AddressId.random(),
                 partyId,
@@ -109,11 +126,11 @@ class GeoAddressFixture {
                 someCity(),
                 someZipCode().asString(),
                 someLocale(),
-                Set.of(useType.name())
-        );
+                Set.of(useType.name()));
     }
 
-    static GeoAddressDTO someGeoAddressDTOWithId(AddressId addressId, PartyId partyId, AddressUseType useType) {
+    static GeoAddressDTO someGeoAddressDTOWithId(
+            AddressId addressId, PartyId partyId, AddressUseType useType) {
         return new GeoAddressDTO(
                 addressId,
                 partyId,
@@ -124,11 +141,11 @@ class GeoAddressFixture {
                 someCity(),
                 someZipCode().asString(),
                 someLocale(),
-                Set.of(useType.name())
-        );
+                Set.of(useType.name()));
     }
 
-    static GeoAddressDTO geoAddressDTOWith(PartyId partyId, String name, String city, AddressUseType... useTypes) {
+    static GeoAddressDTO geoAddressDTOWith(
+            PartyId partyId, String name, String city, AddressUseType... useTypes) {
         Set<String> useTypeStrings = new HashSet<>();
         for (AddressUseType ut : useTypes) {
             useTypeStrings.add(ut.name());
@@ -143,11 +160,11 @@ class GeoAddressFixture {
                 city,
                 someZipCode().asString(),
                 someLocale(),
-                useTypeStrings
-        );
+                useTypeStrings);
     }
 
-    static GeoAddressDTO geoAddressDTOWithLocale(PartyId partyId, String name, String city, Locale locale, AddressUseType... useTypes) {
+    static GeoAddressDTO geoAddressDTOWithLocale(
+            PartyId partyId, String name, String city, Locale locale, AddressUseType... useTypes) {
         Set<String> useTypeStrings = new HashSet<>();
         for (AddressUseType ut : useTypes) {
             useTypeStrings.add(ut.name());
@@ -162,8 +179,6 @@ class GeoAddressFixture {
                 city,
                 someZipCode().asString(),
                 locale,
-                useTypeStrings
-        );
+                useTypeStrings);
     }
-
 }

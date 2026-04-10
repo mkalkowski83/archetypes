@@ -1,14 +1,14 @@
 package com.softwarearchetypes.product;
 
-import java.time.LocalDate;
-
 import static com.softwarearchetypes.common.Preconditions.checkArgument;
 
+import java.time.LocalDate;
+
 /**
- * Restricts date values to a date range [from, to].
- * Example: expiry date between 2024-01-01 and 2024-12-31
+ * Restricts date values to a date range [from, to]. Example: expiry date between 2024-01-01 and
+ * 2024-12-31
  *
- * Persistence config example: {"from": "2024-01-01", "to": "2024-12-31"}
+ * <p>Persistence config example: {"from": "2024-01-01", "to": "2024-12-31"}
  */
 class DateRangeConstraint implements FeatureValueConstraint {
 

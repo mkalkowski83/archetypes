@@ -1,7 +1,6 @@
 package com.softwarearchetypes.inventory.reservation;
 
 import com.softwarearchetypes.inventory.availability.OwnerId;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,16 +22,12 @@ class InMemoryReservationRepository implements ReservationRepository {
 
     @Override
     public List<Reservation> findByOwner(OwnerId owner) {
-        return storage.values().stream()
-                .filter(r -> r.owner().equals(owner))
-                .toList();
+        return storage.values().stream().filter(r -> r.owner().equals(owner)).toList();
     }
 
     @Override
     public List<Reservation> findActive() {
-        return storage.values().stream()
-                .filter(Reservation::isActive)
-                .toList();
+        return storage.values().stream().filter(Reservation::isActive).toList();
     }
 
     @Override

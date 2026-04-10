@@ -1,11 +1,11 @@
 package com.softwarearchetypes.party;
 
+import com.softwarearchetypes.common.Version;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.softwarearchetypes.common.Version;
-
-sealed abstract class PartyAbstractTestDataBuilder<T extends Party> permits CompanyTestDataBuilder, OrganizationUnitTestDataBuilder, PersonTestDataBuilder {
+abstract sealed class PartyAbstractTestDataBuilder<T extends Party>
+        permits CompanyTestDataBuilder, OrganizationUnitTestDataBuilder, PersonTestDataBuilder {
 
     PartyId partyId;
     Set<Role> roles = new HashSet<>();
@@ -32,7 +32,8 @@ sealed abstract class PartyAbstractTestDataBuilder<T extends Party> permits Comp
         return this;
     }
 
-    PartyAbstractTestDataBuilder<T> withRegisteredIdentifierSetOf(Set<RegisteredIdentifier> identifierSet) {
+    PartyAbstractTestDataBuilder<T> withRegisteredIdentifierSetOf(
+            Set<RegisteredIdentifier> identifierSet) {
         registeredIdentifiers.addAll(identifierSet);
         return this;
     }

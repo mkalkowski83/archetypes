@@ -1,9 +1,7 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance;
 
-
 import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.quantity.money.Percentage;
-
 import java.math.BigDecimal;
 
 public class ToleranceBuilder {
@@ -11,8 +9,7 @@ public class ToleranceBuilder {
     private ToleranceStrategy moneyStrategy;
     private ToleranceStrategy dateStrategy;
 
-    private ToleranceBuilder() {
-    }
+    private ToleranceBuilder() {}
 
     public static ToleranceBuilder tolerance() {
         return new ToleranceBuilder();
@@ -70,10 +67,7 @@ public class ToleranceBuilder {
     }
 
     public static ToleranceStrategy lenient() {
-        return tolerance()
-                .money(Money.pln(0.05))
-                .days(3)
-                .build();
+        return tolerance().money(Money.pln(0.05)).days(3).build();
     }
 
     public static ToleranceStrategy partialPayments(Money tolerance, java.time.Instant deadline) {

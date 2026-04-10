@@ -4,6 +4,4 @@ import com.softwarearchetypes.party.PartyId;
 import com.softwarearchetypes.party.RegisteredIdentifier;
 
 public record RemoveRegisteredIdentifierCommand(
-        PartyId partyId,
-        RegisteredIdentifier registeredIdentifier) {
-}
+        PartyId partyId, RegisteredIdentifier registeredIdentifier) {}

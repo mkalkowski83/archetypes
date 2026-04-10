@@ -1,7 +1,6 @@
 package com.softwarearchetypes.product;
 
 import com.softwarearchetypes.quantity.Unit;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,11 +10,13 @@ import java.util.Set;
 
 /**
  * Builder for creating both ProductType and PackageType with fluent API.
- * <p>
- * Common attributes (id, name, description, metadata, applicability) are set in the main builder.
- * Type-specific attributes are set in specialized inner builders returned by asProductType() or asPackage().
- * <p>
- * Usage:
+ *
+ * <p>Common attributes (id, name, description, metadata, applicability) are set in the main
+ * builder. Type-specific attributes are set in specialized inner builders returned by
+ * asProductType() or asPackage().
+ *
+ * <p>Usage:
+ *
  * <pre>
  * ProductType laptop = new ProductBuilder(id, name, description)
  *     .withMetadata("category", "electronics")
@@ -49,50 +50,43 @@ class ProductBuilder {
         this.description = description;
     }
 
-    /**
-     * Sets metadata for the product/package.
-     */
+    /** Sets metadata for the product/package. */
     public ProductBuilder withMetadata(ProductMetadata metadata) {
         this.metadata = metadata;
         return this;
     }
 
-    /**
-     * Adds a single metadata entry.
-     */
+    /** Adds a single metadata entry. */
     public ProductBuilder withMetadata(String key, String value) {
         this.metadata = this.metadata.with(key, value);
         return this;
     }
 
-    /**
-     * Sets applicability constraint for the product/package.
-     */
+    /** Sets applicability constraint for the product/package. */
     public ProductBuilder withApplicabilityConstraint(ApplicabilityConstraint constraint) {
         this.applicabilityConstraint = constraint;
         return this;
     }
 
     /**
-     * Starts building a ProductType (regular product).
-     * Returns specialized builder for ProductType-specific attributes.
+     * Starts building a ProductType (regular product). Returns specialized builder for
+     * ProductType-specific attributes.
      */
-    public ProductTypeBuilder asProductType(Unit preferredUnit,
-            ProductTrackingStrategy trackingStrategy) {
+    public ProductTypeBuilder asProductType(
+            Unit preferredUnit, ProductTrackingStrategy trackingStrategy) {
         return new ProductTypeBuilder(preferredUnit, trackingStrategy);
     }
 
     /**
-     * Starts building a PackageType (package of products).
-     * Returns specialized builder with fluent API for defining package structure.
+     * Starts building a PackageType (package of products). Returns specialized builder with fluent
+     * API for defining package structure.
      */
     public PackageTypeBuilder asPackageType() {
         return new PackageTypeBuilder();
     }
 
     /**
-     * Specialized builder for ProductType.
-     * Has access to common fields from outer ProductBuilder.
+     * Specialized builder for ProductType. Has access to common fields from outer ProductBuilder.
      */
     public class ProductTypeBuilder {
 
@@ -137,23 +131,30 @@ class ProductBuilder {
 
         public ProductType build() {
             ProductFeatureTypes features = new ProductFeatureTypes(featureDefinitions);
-            return new ProductType(id, name, description, preferredUnit, trackingStrategy,
-                    features, metadata, applicabilityConstraint);
+            return new ProductType(
+                    id,
+                    name,
+                    description,
+                    preferredUnit,
+                    trackingStrategy,
+                    features,
+                    metadata,
+                    applicabilityConstraint);
         }
     }
 
     /**
-     * Specialized builder for PackageType with fluent API for defining package structure.
-     * Has access to common fields from outer ProductBuilder.
+     * Specialized builder for PackageType with fluent API for defining package structure. Has
+     * access to common fields from outer ProductBuilder.
      */
     public class PackageTypeBuilder {
 
         private final Map<String, ProductSet> productSets = new HashMap<>();
         private final List<SelectionRule> selectionRules = new ArrayList<>();
-        private ProductTrackingStrategy trackingStrategy = ProductTrackingStrategy.INDIVIDUALLY_TRACKED;
+        private ProductTrackingStrategy trackingStrategy =
+                ProductTrackingStrategy.INDIVIDUALLY_TRACKED;
 
-        PackageTypeBuilder() {
-        }
+        PackageTypeBuilder() {}
 
         public PackageTypeBuilder withTrackingStrategy(ProductTrackingStrategy trackingStrategy) {
             this.trackingStrategy = trackingStrategy;
@@ -161,34 +162,38 @@ class ProductBuilder {
         }
 
         /**
-         * Adds a product set with "select exactly one" rule.
-         * Example: customer must choose exactly 1 memory option from the set.
+         * Adds a product set with "select exactly one" rule. Example: customer must choose exactly
+         * 1 memory option from the set.
          */
-        public PackageTypeBuilder withSingleChoice(String setName, ProductIdentifier... productIds) {
+        public PackageTypeBuilder withSingleChoice(
+                String setName, ProductIdentifier... productIds) {
             return withChoice(setName, 1, 1, productIds);
         }
 
         /**
-         * Adds a product set with "select zero or one" rule.
-         * Example: customer may optionally choose 1 accessory from the set.
+         * Adds a product set with "select zero or one" rule. Example: customer may optionally
+         * choose 1 accessory from the set.
          */
-        public PackageTypeBuilder withOptionalChoice(String setName, ProductIdentifier... productIds) {
+        public PackageTypeBuilder withOptionalChoice(
+                String setName, ProductIdentifier... productIds) {
             return withChoice(setName, 0, 1, productIds);
         }
 
         /**
-         * Adds a product set with "select at least one" rule.
-         * Example: customer must choose at least 1 item from the set (can choose more).
+         * Adds a product set with "select at least one" rule. Example: customer must choose at
+         * least 1 item from the set (can choose more).
          */
-        public PackageTypeBuilder withRequiredChoice(String setName, ProductIdentifier... productIds) {
+        public PackageTypeBuilder withRequiredChoice(
+                String setName, ProductIdentifier... productIds) {
             return withChoice(setName, 1, Integer.MAX_VALUE, productIds);
         }
 
         /**
-         * Adds a product set with custom min/max selection rule.
-         * Example: customer must choose 2-4 items from the set.
+         * Adds a product set with custom min/max selection rule. Example: customer must choose 2-4
+         * items from the set.
          */
-        public PackageTypeBuilder withChoice(String setName, int min, int max, ProductIdentifier... productIds) {
+        public PackageTypeBuilder withChoice(
+                String setName, int min, int max, ProductIdentifier... productIds) {
             ProductSet set = new ProductSet(setName, Set.of(productIds));
             productSets.put(setName, set);
             selectionRules.add(SelectionRule.isSubsetOf(set, min, max));
@@ -219,8 +224,8 @@ class ProductBuilder {
         }
 
         /**
-         * Returns the current ProductSet by name for use in conditional rules.
-         * Example:
+         * Returns the current ProductSet by name for use in conditional rules. Example:
+         *
          * <pre>
          * builder.withSingleChoice("Laptops", gaming, business)
          *        .withConditional()
@@ -249,8 +254,14 @@ class ProductBuilder {
 
         public PackageType build() {
             PackageStructure structure = new PackageStructure(productSets, selectionRules);
-            return new PackageType(id, name, description, trackingStrategy,
-                    metadata, applicabilityConstraint, structure);
+            return new PackageType(
+                    id,
+                    name,
+                    description,
+                    trackingStrategy,
+                    metadata,
+                    applicabilityConstraint,
+                    structure);
         }
     }
 }

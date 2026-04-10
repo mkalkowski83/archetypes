@@ -1,7 +1,6 @@
 package com.softwarearchetypes.ordering.commands;
 
 import com.softwarearchetypes.ordering.OrderId;
-
 import java.util.Map;
 
 public record AddOrderLineCommand(
@@ -9,5 +8,4 @@ public record AddOrderLineCommand(
         String productId,
         double quantity,
         String unit,
-        Map<String, String> specification
-) {}
+        Map<String, String> specification) {}

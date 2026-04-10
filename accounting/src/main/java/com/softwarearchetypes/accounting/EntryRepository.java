@@ -58,9 +58,7 @@ class InMemoryEntryRepository implements EntryRepository {
 
     @Override
     public List<Entry> findEntriesReferencing(Entry entry) {
-        return findAllMatching(
-                e -> e.appliedTo().map(id -> id.equals(entry.id())).orElse(false)
-        );
+        return findAllMatching(e -> e.appliedTo().map(id -> id.equals(entry.id())).orElse(false));
     }
 
     @Override

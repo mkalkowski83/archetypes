@@ -4,7 +4,6 @@ import com.softwarearchetypes.rules.discounting.OfferItemModifier;
 import com.softwarearchetypes.rules.discounting.client.ClientContext;
 import com.softwarearchetypes.rules.discounting.config.ConfigProvider;
 import com.softwarearchetypes.rules.discounting.config.DiscountRepository;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,15 +23,16 @@ public class ReflectionDynamicConfig implements ConfigProvider {
         Map<OfferItemModifier, Predicate<ClientContext>> config = new HashMap<>();
 
         for (Discount discount : repository.findAllDiscounts()) {
-            List<DiscountParam> paramsList =
-                    repository.findParamsByDiscountId(discount.id());
+            List<DiscountParam> paramsList = repository.findParamsByDiscountId(discount.id());
             Map<String, String> params = toParamMap(paramsList);
 
             ReflectionBeanReader beanReader = new ReflectionBeanReader(params);
 
-            OfferItemModifier modifier = beanReader.readBean(Config.MODIFIER_PREFIX, OfferItemModifier.class);
+            OfferItemModifier modifier =
+                    beanReader.readBean(Config.MODIFIER_PREFIX, OfferItemModifier.class);
 
-            Predicate<ClientContext> clientPredicate = beanReader.readBean(Config.CLIENT_PREDICATE_PREFIX, Predicate.class);
+            Predicate<ClientContext> clientPredicate =
+                    beanReader.readBean(Config.CLIENT_PREDICATE_PREFIX, Predicate.class);
 
             config.put(modifier, clientPredicate);
         }
@@ -41,9 +41,7 @@ public class ReflectionDynamicConfig implements ConfigProvider {
     }
 
     private Map<String, String> toParamMap(List<DiscountParam> paramsList) {
-        return paramsList.stream().collect(Collectors.toMap(
-                DiscountParam::paramName,
-                DiscountParam::paramValue
-        ));
+        return paramsList.stream()
+                .collect(Collectors.toMap(DiscountParam::paramName, DiscountParam::paramValue));
     }
 }

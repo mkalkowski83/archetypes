@@ -1,14 +1,12 @@
 package com.softwarearchetypes.graphs.cycles;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static com.softwarearchetypes.graphs.cycles.BatchReservationResult.Status.FAILURE;
 import static com.softwarearchetypes.graphs.cycles.BatchReservationResult.Status.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.List;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 class BatchReservationEligibilityUseCaseTest {
 
@@ -32,10 +30,12 @@ class BatchReservationEligibilityUseCaseTest {
         eligibility.markTransferEligible(userY, userX);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userX),
-                new ReservationChangeRequest(slotB, slotA, userY)
-        ), eligibility);
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(slotA, slotB, userX),
+                                new ReservationChangeRequest(slotB, slotA, userY)),
+                        eligibility);
 
         // then
         assertEquals(SUCCESS, result.status());
@@ -62,10 +62,12 @@ class BatchReservationEligibilityUseCaseTest {
         eligibility.markTransferEligible(userX, userY);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userX),
-                new ReservationChangeRequest(slotB, slotA, userY)
-        ), eligibility);
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(slotA, slotB, userX),
+                                new ReservationChangeRequest(slotB, slotA, userY)),
+                        eligibility);
 
         // then
         assertEquals(FAILURE, result.status());
@@ -106,13 +108,15 @@ class BatchReservationEligibilityUseCaseTest {
         eligibility.markTransferEligible(userEve, userAlice);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userAlice),
-                new ReservationChangeRequest(slotB, slotC, userBob),
-                new ReservationChangeRequest(slotC, slotD, userCharlie),
-                new ReservationChangeRequest(slotD, slotE, userDiana),
-                new ReservationChangeRequest(slotE, slotA, userEve)
-        ), eligibility);
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(slotA, slotB, userAlice),
+                                new ReservationChangeRequest(slotB, slotC, userBob),
+                                new ReservationChangeRequest(slotC, slotD, userCharlie),
+                                new ReservationChangeRequest(slotD, slotE, userDiana),
+                                new ReservationChangeRequest(slotE, slotA, userEve)),
+                        eligibility);
 
         // then
         assertEquals(SUCCESS, result.status());
@@ -147,11 +151,13 @@ class BatchReservationEligibilityUseCaseTest {
         eligibility.markTransferEligible(userBob, userCharlie);
 
         // when
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userAlice),
-                new ReservationChangeRequest(slotB, slotC, userBob),
-                new ReservationChangeRequest(slotC, slotA, userCharlie)
-        ), eligibility);
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(slotA, slotB, userAlice),
+                                new ReservationChangeRequest(slotB, slotC, userBob),
+                                new ReservationChangeRequest(slotC, slotA, userCharlie)),
+                        eligibility);
 
         // then
         assertEquals(FAILURE, result.status());
@@ -164,7 +170,8 @@ class BatchReservationEligibilityUseCaseTest {
     }
 
     @Test
-    @DisplayName("można oznaczyć transfer jako niemożliwy po wcześniejszym zaznaczeniu jako możliwy")
+    @DisplayName(
+            "można oznaczyć transfer jako niemożliwy po wcześniejszym zaznaczeniu jako możliwy")
     void canRevokeEligibility() {
         // given
         SlotId slotA = SlotId.of("SlotA");
@@ -182,10 +189,12 @@ class BatchReservationEligibilityUseCaseTest {
         // when
         eligibility.markTransferIneligible(userY, userX);
 
-        BatchReservationResult result = batchReservationUseCase.execute(List.of(
-                new ReservationChangeRequest(slotA, slotB, userX),
-                new ReservationChangeRequest(slotB, slotA, userY)
-        ), eligibility);
+        BatchReservationResult result =
+                batchReservationUseCase.execute(
+                        List.of(
+                                new ReservationChangeRequest(slotA, slotB, userX),
+                                new ReservationChangeRequest(slotB, slotA, userY)),
+                        eligibility);
 
         // then
         assertEquals(FAILURE, result.status());

@@ -1,32 +1,30 @@
 package com.softwarearchetypes.accounting;
 
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.softwarearchetypes.quantity.money.Money;
-
 /**
- * Command for executing a new transaction with credit and debit entries.
- * This is the primary way to create and execute transactions through AccountingFacade.
+ * Command for executing a new transaction with credit and debit entries. This is the primary way to
+ * create and execute transactions through AccountingFacade.
  */
 public record ExecuteTransactionCommand(
         Instant occurredAt,
         Instant appliesAt,
         String transactionType,
-        Map<String, String> metadata,  // nullable
-        List<Entry> entries
-) {
+        Map<String, String> metadata, // nullable
+        List<Entry> entries) {
 
     public record Entry(
             EntryType entryType,
             UUID accountId,
             Money amount,
-            Instant validFrom,         // nullable - no start limit if null
-            Instant validTo,           // nullable - no expiration if null
-            UUID appliedToEntryId      // nullable - no allocation if null
-    ) {
+            Instant validFrom, // nullable - no start limit if null
+            Instant validTo, // nullable - no expiration if null
+            UUID appliedToEntryId // nullable - no allocation if null
+            ) {
         public static Entry credit(UUID accountId, Money amount) {
             return new Entry(EntryType.CREDIT, accountId, amount, null, null, null);
         }
@@ -37,6 +35,7 @@ public record ExecuteTransactionCommand(
     }
 
     public enum EntryType {
-        CREDIT, DEBIT
+        CREDIT,
+        DEBIT
     }
 }

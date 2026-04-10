@@ -1,5 +1,7 @@
 package com.softwarearchetypes.inventory.reservation;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.softwarearchetypes.common.Result;
 import com.softwarearchetypes.inventory.CreateInventoryEntry;
 import com.softwarearchetypes.inventory.InstanceId;
@@ -14,15 +16,12 @@ import com.softwarearchetypes.inventory.availability.OwnerId;
 import com.softwarearchetypes.inventory.availability.ResourceId;
 import com.softwarearchetypes.quantity.Quantity;
 import com.softwarearchetypes.quantity.Unit;
-import org.junit.jupiter.api.Test;
-
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.Test;
 
 class ReservationFacadeTest {
 
@@ -30,13 +29,16 @@ class ReservationFacadeTest {
     private static final OwnerId GUEST_BOB = OwnerId.random();
 
     private Clock clock = Clock.fixed(Instant.parse("2024-01-15T10:00:00Z"), ZoneId.of("UTC"));
-    private AvailabilityConfiguration availabilityConfig = AvailabilityConfiguration.inMemory(clock);
-    private InventoryConfiguration inventoryConfig = InventoryConfiguration.inMemory(availabilityConfig);
-    private ReservationConfiguration reservationConfig = ReservationConfiguration.inMemory(
-            inventoryConfig, availabilityConfig, clock);
+    private AvailabilityConfiguration availabilityConfig =
+            AvailabilityConfiguration.inMemory(clock);
+    private InventoryConfiguration inventoryConfig =
+            InventoryConfiguration.inMemory(availabilityConfig);
+    private ReservationConfiguration reservationConfig =
+            ReservationConfiguration.inMemory(inventoryConfig, availabilityConfig, clock);
     private ReservationFacade reservationFacade = reservationConfig.facade();
     private InventoryFacade inventoryFacade = inventoryConfig.facade();
-    private AvailabilityFixture availabilityFixture = new AvailabilityFixture(availabilityConfig.facade(), clock);
+    private AvailabilityFixture availabilityFixture =
+            new AvailabilityFixture(availabilityConfig.facade(), clock);
 
     @Test
     void createsReservationWhenResourceAvailable() {
@@ -45,12 +47,14 @@ class ReservationFacadeTest {
         InstanceId instanceId = setupProductWithResource(productId, "Laptop");
 
         // when
-        ReserveRequest request = ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build();
+        ReserveRequest request =
+                ReserveRequest.forProduct(productId)
+                        .quantity(Quantity.of(1, Unit.pieces()))
+                        .owner(GUEST_ALICE)
+                        .purpose(ReservationPurpose.BOOKING)
+                        .resourceSpecification(
+                                ResourceSpecification.IndividualSpecification.of(instanceId))
+                        .build();
 
         Result<String, ReservationId> result = reservationFacade.handle(request);
 
@@ -71,20 +75,26 @@ class ReservationFacadeTest {
         InstanceId instanceId = setupProductWithResource(productId, "Laptop");
 
         // Alice reserves first
-        reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        reservationFacade.handle(
+                ReserveRequest.forProduct(productId)
+                        .quantity(Quantity.of(1, Unit.pieces()))
+                        .owner(GUEST_ALICE)
+                        .purpose(ReservationPurpose.BOOKING)
+                        .resourceSpecification(
+                                ResourceSpecification.IndividualSpecification.of(instanceId))
+                        .build());
 
         // when - Bob tries to reserve same resource
-        Result<String, ReservationId> result = reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_BOB)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        Result<String, ReservationId> result =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_BOB)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId))
+                                .build());
 
         // then
         assertThat(result.failure()).isTrue();
@@ -96,16 +106,21 @@ class ReservationFacadeTest {
         ProductIdentifier productId = ProductIdentifier.random();
         InstanceId instanceId = setupProductWithResource(productId, "Laptop");
 
-        Result<String, ReservationId> reserveResult = reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        Result<String, ReservationId> reserveResult =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_ALICE)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId))
+                                .build());
         ReservationId reservationId = reserveResult.getSuccess();
 
         // when
-        Result<String, ReservationId> cancelResult = reservationFacade.cancel(reservationId, GUEST_ALICE);
+        Result<String, ReservationId> cancelResult =
+                reservationFacade.cancel(reservationId, GUEST_ALICE);
 
         // then
         assertThat(cancelResult.success()).isTrue();
@@ -120,24 +135,32 @@ class ReservationFacadeTest {
         ProductIdentifier productId = ProductIdentifier.random();
         InstanceId instanceId = setupProductWithResource(productId, "Laptop");
 
-        Result<String, ReservationId> reserveResult = reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        Result<String, ReservationId> reserveResult =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_ALICE)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId))
+                                .build());
         ReservationId reservationId = reserveResult.getSuccess();
 
         // when
         reservationFacade.cancel(reservationId, GUEST_ALICE);
 
         // then - Bob can now reserve
-        Result<String, ReservationId> bobResult = reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_BOB)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        Result<String, ReservationId> bobResult =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_BOB)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId))
+                                .build());
         assertThat(bobResult.success()).isTrue();
     }
 
@@ -147,16 +170,21 @@ class ReservationFacadeTest {
         ProductIdentifier productId = ProductIdentifier.random();
         InstanceId instanceId = setupProductWithResource(productId, "Laptop");
 
-        Result<String, ReservationId> reserveResult = reservationFacade.handle(ReserveRequest.forProduct(productId)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId))
-                .build());
+        Result<String, ReservationId> reserveResult =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_ALICE)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId))
+                                .build());
         ReservationId reservationId = reserveResult.getSuccess();
 
         // when - Bob tries to cancel Alice's reservation
-        Result<String, ReservationId> cancelResult = reservationFacade.cancel(reservationId, GUEST_BOB);
+        Result<String, ReservationId> cancelResult =
+                reservationFacade.cancel(reservationId, GUEST_BOB);
 
         // then
         assertThat(cancelResult.failure()).isTrue();
@@ -171,18 +199,22 @@ class ReservationFacadeTest {
         InstanceId instanceId1 = setupProductWithResource(productId1, "Laptop 1");
         InstanceId instanceId2 = setupProductWithResource(productId2, "Laptop 2");
 
-        reservationFacade.handle(ReserveRequest.forProduct(productId1)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId1))
-                .build());
-        reservationFacade.handle(ReserveRequest.forProduct(productId2)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId2))
-                .build());
+        reservationFacade.handle(
+                ReserveRequest.forProduct(productId1)
+                        .quantity(Quantity.of(1, Unit.pieces()))
+                        .owner(GUEST_ALICE)
+                        .purpose(ReservationPurpose.BOOKING)
+                        .resourceSpecification(
+                                ResourceSpecification.IndividualSpecification.of(instanceId1))
+                        .build());
+        reservationFacade.handle(
+                ReserveRequest.forProduct(productId2)
+                        .quantity(Quantity.of(1, Unit.pieces()))
+                        .owner(GUEST_ALICE)
+                        .purpose(ReservationPurpose.BOOKING)
+                        .resourceSpecification(
+                                ResourceSpecification.IndividualSpecification.of(instanceId2))
+                        .build());
 
         // when
         List<ReservationView> aliceReservations = reservationFacade.findByOwner(GUEST_ALICE);
@@ -200,18 +232,24 @@ class ReservationFacadeTest {
         InstanceId instanceId1 = setupProductWithResource(productId1, "Laptop 1");
         InstanceId instanceId2 = setupProductWithResource(productId2, "Laptop 2");
 
-        Result<String, ReservationId> res1 = reservationFacade.handle(ReserveRequest.forProduct(productId1)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_ALICE)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId1))
-                .build());
-        reservationFacade.handle(ReserveRequest.forProduct(productId2)
-                .quantity(Quantity.of(1, Unit.pieces()))
-                .owner(GUEST_BOB)
-                .purpose(ReservationPurpose.BOOKING)
-                .resourceSpecification(ResourceSpecification.IndividualSpecification.of(instanceId2))
-                .build());
+        Result<String, ReservationId> res1 =
+                reservationFacade.handle(
+                        ReserveRequest.forProduct(productId1)
+                                .quantity(Quantity.of(1, Unit.pieces()))
+                                .owner(GUEST_ALICE)
+                                .purpose(ReservationPurpose.BOOKING)
+                                .resourceSpecification(
+                                        ResourceSpecification.IndividualSpecification.of(
+                                                instanceId1))
+                                .build());
+        reservationFacade.handle(
+                ReserveRequest.forProduct(productId2)
+                        .quantity(Quantity.of(1, Unit.pieces()))
+                        .owner(GUEST_BOB)
+                        .purpose(ReservationPurpose.BOOKING)
+                        .resourceSpecification(
+                                ResourceSpecification.IndividualSpecification.of(instanceId2))
+                        .build());
 
         // Alice cancels her reservation
         reservationFacade.cancel(res1.getSuccess(), GUEST_ALICE);

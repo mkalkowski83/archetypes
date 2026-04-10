@@ -1,5 +1,10 @@
 package com.softwarearchetypes.pricing;
 
+import static com.softwarearchetypes.pricing.CalculatorType.COMPOSITE;
+import static java.math.BigDecimal.valueOf;
+import static java.time.temporal.ChronoUnit.DAYS;
+
+import com.softwarearchetypes.quantity.money.Money;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -11,12 +16,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.softwarearchetypes.quantity.money.Money;
-
-import static com.softwarearchetypes.pricing.CalculatorType.COMPOSITE;
-import static java.math.BigDecimal.valueOf;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 interface Calculator {
 
@@ -33,9 +32,7 @@ interface Calculator {
     /**
      * Simulates calculation for multiple points in parameter space.
      *
-     * @param points
-     *         list of parameter sets to evaluate
-     *
+     * @param points list of parameter sets to evaluate
      * @return map from each parameter set to its calculated price
      */
     default Map<Parameters, Money> simulate(List<Parameters> points) {
@@ -53,7 +50,9 @@ interface Calculator {
     String name();
 }
 
-record SimpleFixedCalculator(CalculatorId id, String name, Money amount, Interpretation interpretation) implements Calculator {
+record SimpleFixedCalculator(
+        CalculatorId id, String name, Money amount, Interpretation interpretation)
+        implements Calculator {
 
     public SimpleFixedCalculator(String name, Money amount) {
         this(CalculatorId.generate(), name, amount, Interpretation.TOTAL);
@@ -94,7 +93,8 @@ record SimpleFixedCalculator(CalculatorId id, String name, Money amount, Interpr
     }
 }
 
-record SimpleInterestCalculator(CalculatorId id, String name, BigDecimal annualRate) implements Calculator {
+record SimpleInterestCalculator(CalculatorId id, String name, BigDecimal annualRate)
+        implements Calculator {
 
     private static final int SCALE = 10;
 
@@ -105,7 +105,9 @@ record SimpleInterestCalculator(CalculatorId id, String name, BigDecimal annualR
     @Override
     public Money calculate(Parameters parameters) {
         if (!parameters.containsAll(getType().requiredCalculationFields())) {
-            throw new IllegalArgumentException("SimpleInterestCalculator requiredPreviousKeys %s parameters".formatted(getType().requiredCalculationFields()));
+            throw new IllegalArgumentException(
+                    "SimpleInterestCalculator requiredPreviousKeys %s parameters"
+                            .formatted(getType().requiredCalculationFields()));
         }
 
         Money base = (Money) parameters.get("base");
@@ -125,7 +127,8 @@ record SimpleInterestCalculator(CalculatorId id, String name, BigDecimal annualR
 
     @Override
     public String formula() {
-        return "f(base, unit) = base × (rate/100) × (1/unitsPerYear(unit))\nwhere rate = %s%%".formatted(annualRate);
+        return "f(base, unit) = base × (rate/100) × (1/unitsPerYear(unit))\nwhere rate = %s%%"
+                .formatted(annualRate);
     }
 
     @Override
@@ -144,21 +147,27 @@ record SimpleInterestCalculator(CalculatorId id, String name, BigDecimal annualR
             case WEEKS -> valueOf(52);
             case MONTHS -> valueOf(12);
             case YEARS -> valueOf(1);
-            default -> throw new IllegalArgumentException("Unsupported unit for annual calculation: " + unit);
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported unit for annual calculation: " + unit);
         };
     }
 }
 
 /**
- * Step function calculator - increases price by fixed increment every N units.
- * Example: base price 100 PLN, step size 10, step increment 5 PLN
- * - EXCLUSIVE (default): 0-9 units: 100 PLN, 10-19 units: 105 PLN
- * - INCLUSIVE: 0-10 units: 100 PLN, 11-20 units: 105 PLN
+ * Step function calculator - increases price by fixed increment every N units. Example: base price
+ * 100 PLN, step size 10, step increment 5 PLN - EXCLUSIVE (default): 0-9 units: 100 PLN, 10-19
+ * units: 105 PLN - INCLUSIVE: 0-10 units: 100 PLN, 11-20 units: 105 PLN
  */
-record StepFunctionCalculator(CalculatorId id, String name, Money basePrice,
-                              BigDecimal stepSize, BigDecimal stepIncrement,
-                              Interpretation interpretation,
-                              StepBoundary stepBoundary) implements Calculator {
+record StepFunctionCalculator(
+        CalculatorId id,
+        String name,
+        Money basePrice,
+        BigDecimal stepSize,
+        BigDecimal stepIncrement,
+        Interpretation interpretation,
+        StepBoundary stepBoundary)
+        implements Calculator {
 
     // Canonical constructor with null handling
     public StepFunctionCalculator {
@@ -172,24 +181,57 @@ record StepFunctionCalculator(CalculatorId id, String name, Money basePrice,
         }
     }
 
-    public StepFunctionCalculator(String name, Money basePrice, BigDecimal stepSize, BigDecimal stepIncrement) {
-        this(CalculatorId.generate(), name, basePrice, stepSize, stepIncrement, Interpretation.TOTAL, null);
+    public StepFunctionCalculator(
+            String name, Money basePrice, BigDecimal stepSize, BigDecimal stepIncrement) {
+        this(
+                CalculatorId.generate(),
+                name,
+                basePrice,
+                stepSize,
+                stepIncrement,
+                Interpretation.TOTAL,
+                null);
     }
 
-    public StepFunctionCalculator(String name, Money basePrice, BigDecimal stepSize, BigDecimal stepIncrement,
+    public StepFunctionCalculator(
+            String name,
+            Money basePrice,
+            BigDecimal stepSize,
+            BigDecimal stepIncrement,
             Interpretation interpretation) {
-        this(CalculatorId.generate(), name, basePrice, stepSize, stepIncrement, interpretation, null);
+        this(
+                CalculatorId.generate(),
+                name,
+                basePrice,
+                stepSize,
+                stepIncrement,
+                interpretation,
+                null);
     }
 
-    public StepFunctionCalculator(String name, Money basePrice, BigDecimal stepSize, BigDecimal stepIncrement,
-            Interpretation interpretation, StepBoundary stepBoundary) {
-        this(CalculatorId.generate(), name, basePrice, stepSize, stepIncrement, interpretation, stepBoundary);
+    public StepFunctionCalculator(
+            String name,
+            Money basePrice,
+            BigDecimal stepSize,
+            BigDecimal stepIncrement,
+            Interpretation interpretation,
+            StepBoundary stepBoundary) {
+        this(
+                CalculatorId.generate(),
+                name,
+                basePrice,
+                stepSize,
+                stepIncrement,
+                interpretation,
+                stepBoundary);
     }
 
     @Override
     public Money calculate(Parameters parameters) {
         if (!parameters.containsAll(getType().requiredCalculationFields())) {
-            throw new IllegalArgumentException("StepFunctionCalculator requires %s parameters".formatted(getType().requiredCalculationFields()));
+            throw new IllegalArgumentException(
+                    "StepFunctionCalculator requires %s parameters"
+                            .formatted(getType().requiredCalculationFields()));
         }
 
         BigDecimal quantity = parameters.getBigDecimal("quantity");
@@ -205,9 +247,11 @@ record StepFunctionCalculator(CalculatorId id, String name, Money basePrice,
         }
 
         // Calculate total increment value and round to avoid precision issues
-        BigDecimal totalIncrementValue = stepIncrement.multiply(steps)
-                .setScale(10, RoundingMode.HALF_UP)
-                .stripTrailingZeros();
+        BigDecimal totalIncrementValue =
+                stepIncrement
+                        .multiply(steps)
+                        .setScale(10, RoundingMode.HALF_UP)
+                        .stripTrailingZeros();
 
         // Create increment Money in the same currency as basePrice
         Money incrementTotal = Money.of(totalIncrementValue, basePrice.currency());
@@ -217,14 +261,16 @@ record StepFunctionCalculator(CalculatorId id, String name, Money basePrice,
 
     @Override
     public String describe() {
-        return String.format("Step function calculator - base price %s + increments every %s units",
+        return String.format(
+                "Step function calculator - base price %s + increments every %s units",
                 basePrice, stepSize);
     }
 
     @Override
     public String formula() {
         return "f(quantity) = basePrice + ⌊quantity/%s⌋ × %s\nwhere basePrice = %s"
-                .formatted(stepSize.stripTrailingZeros().toPlainString(),
+                .formatted(
+                        stepSize.stripTrailingZeros().toPlainString(),
                         stepIncrement.stripTrailingZeros().toPlainString(),
                         basePrice);
     }
@@ -246,29 +292,30 @@ record StepFunctionCalculator(CalculatorId id, String name, Money basePrice,
 }
 
 /**
- * Discrete points calculator - price lookup from predefined quantity-price pairs.
- * Throws exception if quantity is not in the predefined set.
- * Example: {5 → 100 PLN, 10 → 180 PLN, 20 → 350 PLN}
- * - quantity 5 → returns 100 PLN
- * - quantity 10 → returns 180 PLN
- * - quantity 7 → throws exception (not defined)
+ * Discrete points calculator - price lookup from predefined quantity-price pairs. Throws exception
+ * if quantity is not in the predefined set. Example: {5 → 100 PLN, 10 → 180 PLN, 20 → 350 PLN} -
+ * quantity 5 → returns 100 PLN - quantity 10 → returns 180 PLN - quantity 7 → throws exception (not
+ * defined)
  */
-record DiscretePointsCalculator(CalculatorId id, String name,
-                                Map<BigDecimal, Money> points,
-                                Interpretation interpretation) implements Calculator {
+record DiscretePointsCalculator(
+        CalculatorId id, String name, Map<BigDecimal, Money> points, Interpretation interpretation)
+        implements Calculator {
 
     public DiscretePointsCalculator(String name, Map<BigDecimal, Money> points) {
         this(CalculatorId.generate(), name, new HashMap<>(points), Interpretation.TOTAL);
     }
 
-    public DiscretePointsCalculator(String name, Map<BigDecimal, Money> points, Interpretation interpretation) {
+    public DiscretePointsCalculator(
+            String name, Map<BigDecimal, Money> points, Interpretation interpretation) {
         this(CalculatorId.generate(), name, new HashMap<>(points), interpretation);
     }
 
     @Override
     public Money calculate(Parameters parameters) {
         if (!parameters.containsAll(getType().requiredCalculationFields())) {
-            throw new IllegalArgumentException("DiscretePointsCalculator requires %s parameters".formatted(getType().requiredCalculationFields()));
+            throw new IllegalArgumentException(
+                    "DiscretePointsCalculator requires %s parameters"
+                            .formatted(getType().requiredCalculationFields()));
         }
 
         BigDecimal quantity = parameters.getBigDecimal("quantity");
@@ -278,8 +325,7 @@ record DiscretePointsCalculator(CalculatorId id, String name,
         if (price == null) {
             throw new IllegalArgumentException(
                     "Quantity %s is not defined in the price points. Available quantities: %s"
-                            .formatted(quantity, points.keySet())
-            );
+                            .formatted(quantity, points.keySet()));
         }
 
         return price;
@@ -287,17 +333,24 @@ record DiscretePointsCalculator(CalculatorId id, String name,
 
     @Override
     public String describe() {
-        return String.format("Discrete points calculator with %d price points: %s",
-                points.size(), points);
+        return String.format(
+                "Discrete points calculator with %d price points: %s", points.size(), points);
     }
 
     @Override
     public String formula() {
         StringBuilder sb = new StringBuilder("f(quantity) = lookup(quantity)\nDefined points:\n");
         points.entrySet().stream()
-              .sorted(Map.Entry.comparingByKey())
-              .forEach(e -> sb.append("  quantity = %s → %s\n"
-                      .formatted(e.getKey().stripTrailingZeros().toPlainString(), e.getValue())));
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(
+                        e ->
+                                sb.append(
+                                        "  quantity = %s → %s\n"
+                                                .formatted(
+                                                        e.getKey()
+                                                                .stripTrailingZeros()
+                                                                .toPlainString(),
+                                                        e.getValue())));
         return sb.toString().trim();
     }
 
@@ -318,24 +371,36 @@ record DiscretePointsCalculator(CalculatorId id, String name,
 }
 
 /**
- * Daily increment calculator - price grows by fixed amount each day (discrete).
- * Example: Pre-sale pricing that increases by 100 PLN per day over 14 days
- * - Day 0 (start): 1999 PLN
- * - Day 1: 2099 PLN
- * - Day 7: 2699 PLN
- * - Day 14: 3399 PLN
- * NOTE: Operates on full days - same price throughout each day (discrete, not continuous).
+ * Daily increment calculator - price grows by fixed amount each day (discrete). Example: Pre-sale
+ * pricing that increases by 100 PLN per day over 14 days - Day 0 (start): 1999 PLN - Day 1: 2099
+ * PLN - Day 7: 2699 PLN - Day 14: 3399 PLN NOTE: Operates on full days - same price throughout each
+ * day (discrete, not continuous).
  */
-record DailyIncrementCalculator(CalculatorId id, String name,
-                                LocalDate startDate, Money startPrice,
-                                Money dailyIncrement,
-                                Interpretation interpretation) implements Calculator {
+record DailyIncrementCalculator(
+        CalculatorId id,
+        String name,
+        LocalDate startDate,
+        Money startPrice,
+        Money dailyIncrement,
+        Interpretation interpretation)
+        implements Calculator {
 
-    public DailyIncrementCalculator(String name, LocalDate startDate, Money startPrice, Money dailyIncrement) {
-        this(CalculatorId.generate(), name, startDate, startPrice, dailyIncrement, Interpretation.TOTAL);
+    public DailyIncrementCalculator(
+            String name, LocalDate startDate, Money startPrice, Money dailyIncrement) {
+        this(
+                CalculatorId.generate(),
+                name,
+                startDate,
+                startPrice,
+                dailyIncrement,
+                Interpretation.TOTAL);
     }
 
-    public DailyIncrementCalculator(String name, LocalDate startDate, Money startPrice, Money dailyIncrement,
+    public DailyIncrementCalculator(
+            String name,
+            LocalDate startDate,
+            Money startPrice,
+            Money dailyIncrement,
             Interpretation interpretation) {
         this(CalculatorId.generate(), name, startDate, startPrice, dailyIncrement, interpretation);
     }
@@ -343,7 +408,9 @@ record DailyIncrementCalculator(CalculatorId id, String name,
     @Override
     public Money calculate(Parameters parameters) {
         if (!parameters.containsAll(getType().requiredCalculationFields())) {
-            throw new IllegalArgumentException("DailyIncrementCalculator requires %s parameters".formatted(getType().requiredCalculationFields()));
+            throw new IllegalArgumentException(
+                    "DailyIncrementCalculator requires %s parameters"
+                            .formatted(getType().requiredCalculationFields()));
         }
 
         LocalDate date = (LocalDate) parameters.get("date");
@@ -360,7 +427,8 @@ record DailyIncrementCalculator(CalculatorId id, String name,
 
     @Override
     public String describe() {
-        return String.format("Daily increment calculator - starts at %s on %s, grows by %s per day",
+        return String.format(
+                "Daily increment calculator - starts at %s on %s, grows by %s per day",
                 startPrice, startDate, dailyIncrement);
     }
 
@@ -387,36 +455,61 @@ record DailyIncrementCalculator(CalculatorId id, String name,
 }
 
 /**
- * Continuous linear time calculator - price changes continuously based on precise time.
- * Uses linear interpolation between start and end points.
- * Example: Auction where price increases from 1999 PLN to 3399 PLN over 14 days
- * - Day 0, 00:00 → 1999.00 PLN
- * - Day 0, 12:00 → 2049.00 PLN (interpolated)
- * - Day 7, 00:00 → 2699.00 PLN
- * - Day 7, 06:00 → 2724.00 PLN (interpolated)
- * - Day 14, 00:00 → 3399.00 PLN
- * NOTE: Continuous - price changes every second, not just daily.
+ * Continuous linear time calculator - price changes continuously based on precise time. Uses linear
+ * interpolation between start and end points. Example: Auction where price increases from 1999 PLN
+ * to 3399 PLN over 14 days - Day 0, 00:00 → 1999.00 PLN - Day 0, 12:00 → 2049.00 PLN (interpolated)
+ * - Day 7, 00:00 → 2699.00 PLN - Day 7, 06:00 → 2724.00 PLN (interpolated) - Day 14, 00:00 →
+ * 3399.00 PLN NOTE: Continuous - price changes every second, not just daily.
  */
-record ContinuousLinearTimeCalculator(CalculatorId id, String name,
-                                      LocalDateTime startTime, Money startPrice,
-                                      LocalDateTime endTime, Money endPrice,
-                                      Interpretation interpretation) implements Calculator {
+record ContinuousLinearTimeCalculator(
+        CalculatorId id,
+        String name,
+        LocalDateTime startTime,
+        Money startPrice,
+        LocalDateTime endTime,
+        Money endPrice,
+        Interpretation interpretation)
+        implements Calculator {
 
-    public ContinuousLinearTimeCalculator(String name, LocalDateTime startTime, Money startPrice,
-            LocalDateTime endTime, Money endPrice) {
-        this(CalculatorId.generate(), name, startTime, startPrice, endTime, endPrice, Interpretation.TOTAL);
+    public ContinuousLinearTimeCalculator(
+            String name,
+            LocalDateTime startTime,
+            Money startPrice,
+            LocalDateTime endTime,
+            Money endPrice) {
+        this(
+                CalculatorId.generate(),
+                name,
+                startTime,
+                startPrice,
+                endTime,
+                endPrice,
+                Interpretation.TOTAL);
     }
 
-    public ContinuousLinearTimeCalculator(String name, LocalDateTime startTime, Money startPrice,
-            LocalDateTime endTime, Money endPrice,
+    public ContinuousLinearTimeCalculator(
+            String name,
+            LocalDateTime startTime,
+            Money startPrice,
+            LocalDateTime endTime,
+            Money endPrice,
             Interpretation interpretation) {
-        this(CalculatorId.generate(), name, startTime, startPrice, endTime, endPrice, interpretation);
+        this(
+                CalculatorId.generate(),
+                name,
+                startTime,
+                startPrice,
+                endTime,
+                endPrice,
+                interpretation);
     }
 
     @Override
     public Money calculate(Parameters parameters) {
         if (!parameters.containsAll(getType().requiredCalculationFields())) {
-            throw new IllegalArgumentException("ContinuousLinearTimeCalculator requires %s parameters".formatted(getType().requiredCalculationFields()));
+            throw new IllegalArgumentException(
+                    "ContinuousLinearTimeCalculator requires %s parameters"
+                            .formatted(getType().requiredCalculationFields()));
         }
 
         LocalDateTime queryTime = parameters.getTime("time");
@@ -424,13 +517,11 @@ record ContinuousLinearTimeCalculator(CalculatorId id, String name,
         // Handle edge cases
         if (queryTime.isBefore(startTime)) {
             throw new IllegalArgumentException(
-                    "Query time %s is before start time %s".formatted(queryTime, startTime)
-            );
+                    "Query time %s is before start time %s".formatted(queryTime, startTime));
         }
         if (queryTime.isAfter(endTime)) {
             throw new IllegalArgumentException(
-                    "Query time %s is after end time %s".formatted(queryTime, endTime)
-            );
+                    "Query time %s is after end time %s".formatted(queryTime, endTime));
         }
 
         // Calculate total duration and elapsed duration in seconds
@@ -438,8 +529,9 @@ record ContinuousLinearTimeCalculator(CalculatorId id, String name,
         long elapsedSeconds = Duration.between(startTime, queryTime).getSeconds();
 
         // Linear interpolation: progress from 0.0 to 1.0
-        BigDecimal progress = BigDecimal.valueOf(elapsedSeconds)
-                                        .divide(BigDecimal.valueOf(totalSeconds), 10, RoundingMode.HALF_UP);
+        BigDecimal progress =
+                BigDecimal.valueOf(elapsedSeconds)
+                        .divide(BigDecimal.valueOf(totalSeconds), 10, RoundingMode.HALF_UP);
 
         // Calculate price: startPrice + (progress * priceRange)
         Money priceRange = endPrice.subtract(startPrice);
@@ -450,7 +542,8 @@ record ContinuousLinearTimeCalculator(CalculatorId id, String name,
 
     @Override
     public String describe() {
-        return String.format("Continuous linear time calculator - from %s to %s between %s and %s",
+        return String.format(
+                "Continuous linear time calculator - from %s to %s between %s and %s",
                 startPrice, endPrice, startTime, endTime);
     }
 
@@ -478,23 +571,19 @@ record ContinuousLinearTimeCalculator(CalculatorId id, String name,
 
 /**
  * Composite function calculator - delegates to different calculators based on parameter ranges.
- * Supports different parameter types: numeric (quantity, weight), time (LocalTime), date (LocalDate).
- * <p>
- * Examples:
- * - Numeric ranges for quantity: [0, 10) → "small", [10, 50) → "medium", [50, ∞) → "large"
- * - Time ranges for pricing: [8:00, 18:00) → "day-rate", [18:00, 8:00) → "night-rate"
- * - Date ranges for seasons: [2024-06-01, 2024-09-01) → "summer", [2024-09-01, 2024-12-01) → "fall"
+ * Supports different parameter types: numeric (quantity, weight), time (LocalTime), date
+ * (LocalDate).
+ *
+ * <p>Examples: - Numeric ranges for quantity: [0, 10) → "small", [10, 50) → "medium", [50, ∞) →
+ * "large" - Time ranges for pricing: [8:00, 18:00) → "day-rate", [18:00, 8:00) → "night-rate" -
+ * Date ranges for seasons: [2024-06-01, 2024-09-01) → "summer", [2024-09-01, 2024-12-01) → "fall"
  */
 record CompositeFunctionCalculator(
-        CalculatorId id,
-        String name,
-        Ranges ranges,
-        CalculatorRepository repository) implements Calculator {
+        CalculatorId id, String name, Ranges ranges, CalculatorRepository repository)
+        implements Calculator {
 
     public CompositeFunctionCalculator(
-            String name,
-            Ranges ranges,
-            CalculatorRepository repository) {
+            String name, Ranges ranges, CalculatorRepository repository) {
         this(CalculatorId.generate(), name, ranges, repository);
     }
 
@@ -503,10 +592,12 @@ record CompositeFunctionCalculator(
         validateUniformInterpretation(ranges, repository);
     }
 
-    private static void validateUniformInterpretation(Ranges ranges, CalculatorRepository repository) {
-        var calculatorIds = ranges.toList().stream()
-                                  .map(CalculatorRange::calculatorId)
-                                  .collect(Collectors.toSet());
+    private static void validateUniformInterpretation(
+            Ranges ranges, CalculatorRepository repository) {
+        var calculatorIds =
+                ranges.toList().stream()
+                        .map(CalculatorRange::calculatorId)
+                        .collect(Collectors.toSet());
 
         if (calculatorIds.isEmpty()) {
             throw new IllegalArgumentException("Composite calculator must have at least one range");
@@ -518,26 +609,22 @@ record CompositeFunctionCalculator(
         // Verify all were found
         if (calculators.size() != calculatorIds.size()) {
             var foundIds = calculators.stream().map(Calculator::getId).toList();
-            var missingIds = calculatorIds.stream()
-                                          .filter(id -> !foundIds.contains(id))
-                                          .toList();
+            var missingIds = calculatorIds.stream().filter(id -> !foundIds.contains(id)).toList();
             throw new IllegalArgumentException(
                     "Calculators not found in repository: %s".formatted(missingIds));
         }
 
         // Check that all have the same interpretation
-        var interpretations = calculators.stream()
-                                         .map(Calculator::interpretation)
-                                         .distinct()
-                                         .toList();
+        var interpretations =
+                calculators.stream().map(Calculator::interpretation).distinct().toList();
 
         if (interpretations.size() > 1) {
             throw new IllegalArgumentException(
                     "All component calculators in composite must have the same interpretation. Found: %s"
-                            .formatted(calculators.stream()
-                                                  .map(calc -> calc.name() + ":" + calc.interpretation())
-                                                  .toList())
-            );
+                            .formatted(
+                                    calculators.stream()
+                                            .map(calc -> calc.name() + ":" + calc.interpretation())
+                                            .toList()));
         }
     }
 
@@ -545,28 +632,32 @@ record CompositeFunctionCalculator(
     public Interpretation interpretation() {
         // All component calculators have the same interpretation (validated in constructor)
         return ranges.toList().stream()
-                     .findFirst()
-                     .map(CalculatorRange::calculatorId)
-                     .flatMap(repository::findById)
-                     .map(Calculator::interpretation)
-                     .orElse(Interpretation.TOTAL);  // fallback (should never happen due to validation)
+                .findFirst()
+                .map(CalculatorRange::calculatorId)
+                .flatMap(repository::findById)
+                .map(Calculator::interpretation)
+                .orElse(Interpretation.TOTAL); // fallback (should never happen due to validation)
     }
 
     @Override
     public Money calculate(Parameters parameters) {
         // Ranges knows which parameter to check and finds the matching range
-        CalculatorRange matchingRange = ranges
-                .findMatching(parameters)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "No matching range found in %s".formatted(ranges)
-                ));
+        CalculatorRange matchingRange =
+                ranges.findMatching(parameters)
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "No matching range found in %s".formatted(ranges)));
 
         // Find the calculator for this range
-        Calculator calculator = repository
-                .findById(matchingRange.calculatorId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Calculator '%s' not found in repository".formatted(matchingRange.calculatorId())
-                ));
+        Calculator calculator =
+                repository
+                        .findById(matchingRange.calculatorId())
+                        .orElseThrow(
+                                () ->
+                                        new IllegalArgumentException(
+                                                "Calculator '%s' not found in repository"
+                                                        .formatted(matchingRange.calculatorId())));
 
         // Delegate calculation to the matched calculator
         return calculator.calculate(parameters);
@@ -580,16 +671,26 @@ record CompositeFunctionCalculator(
     @Override
     public String formula() {
         StringBuilder sb = new StringBuilder("f(x) = piecewise function:\n");
-        ranges.toList().forEach(range -> {
-            Calculator calc = repository.findById(range.calculatorId())
-                                        .orElseThrow(() -> new IllegalArgumentException(
-                                                "Calculator '%s' not found".formatted(range.calculatorId())));
-            sb.append("  %s → %s: %s\n".formatted(
-                    range.describe(),
-                    calc.name(),
-                    calc.formula().replace("\n", " ")
-            ));
-        });
+        ranges.toList()
+                .forEach(
+                        range -> {
+                            Calculator calc =
+                                    repository
+                                            .findById(range.calculatorId())
+                                            .orElseThrow(
+                                                    () ->
+                                                            new IllegalArgumentException(
+                                                                    "Calculator '%s' not found"
+                                                                            .formatted(
+                                                                                    range
+                                                                                            .calculatorId())));
+                            sb.append(
+                                    "  %s → %s: %s\n"
+                                            .formatted(
+                                                    range.describe(),
+                                                    calc.name(),
+                                                    calc.formula().replace("\n", " ")));
+                        });
         return sb.toString().trim();
     }
 
@@ -608,22 +709,15 @@ record CompositeFunctionCalculator(
 // PRICE ADAPTERS - Convert between price interpretations
 // ============================================================================
 
-/**
- * Adapter: Unit Price → Total Price
- * Formula: Total = UnitPrice × quantity
- */
-record UnitToTotalAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+/** Adapter: Unit Price → Total Price Formula: Total = UnitPrice × quantity */
+record UnitToTotalAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static UnitToTotalAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.UNIT) {
             throw new IllegalArgumentException(
-                    "UnitToTotalAdapter requires UNIT calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "UnitToTotalAdapter requires UNIT calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new UnitToTotalAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -662,22 +756,17 @@ record UnitToTotalAdapter(
 }
 
 /**
- * Adapter: Unit Price → Marginal Price
- * Formula: Marginal(n) = Total(n) - Total(n-1) where Total(n) = UnitPrice(n) × n
- * NOTE: Works correctly for both constant and variable unit prices
+ * Adapter: Unit Price → Marginal Price Formula: Marginal(n) = Total(n) - Total(n-1) where Total(n)
+ * = UnitPrice(n) × n NOTE: Works correctly for both constant and variable unit prices
  */
-record UnitToMarginalAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+record UnitToMarginalAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static UnitToMarginalAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.UNIT) {
             throw new IllegalArgumentException(
-                    "UnitToMarginalAdapter requires UNIT calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "UnitToMarginalAdapter requires UNIT calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new UnitToMarginalAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -716,7 +805,8 @@ record UnitToMarginalAdapter(
 
     @Override
     public String formula() {
-        return "marginal(n) = (unit(n) × n) - (unit(n-1) × (n-1)) where unit = " + sourceCalculator.formula();
+        return "marginal(n) = (unit(n) × n) - (unit(n-1) × (n-1)) where unit = "
+                + sourceCalculator.formula();
     }
 
     @Override
@@ -735,22 +825,15 @@ record UnitToMarginalAdapter(
     }
 }
 
-/**
- * Adapter: Total Price → Unit Price (Average)
- * Formula: UnitPrice = Total / quantity
- */
-record TotalToUnitAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+/** Adapter: Total Price → Unit Price (Average) Formula: UnitPrice = Total / quantity */
+record TotalToUnitAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static TotalToUnitAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.TOTAL) {
             throw new IllegalArgumentException(
-                    "TotalToUnitAdapter requires TOTAL calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "TotalToUnitAdapter requires TOTAL calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new TotalToUnitAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -789,22 +872,17 @@ record TotalToUnitAdapter(
 }
 
 /**
- * Adapter: Total Price → Marginal Price
- * Formula: Marginal(n) = Total(n) - Total(n-1)
- * NOTE: Requires calling sourceCalculator TWICE (for n and n-1)
+ * Adapter: Total Price → Marginal Price Formula: Marginal(n) = Total(n) - Total(n-1) NOTE: Requires
+ * calling sourceCalculator TWICE (for n and n-1)
  */
-record TotalToMarginalAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+record TotalToMarginalAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static TotalToMarginalAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.TOTAL) {
             throw new IllegalArgumentException(
-                    "TotalToMarginalAdapter requires TOTAL calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "TotalToMarginalAdapter requires TOTAL calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new TotalToMarginalAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -861,22 +939,17 @@ record TotalToMarginalAdapter(
 }
 
 /**
- * Adapter: Marginal Price → Total Price
- * Formula: Total(q) = Σ[i=1→q] Marginal(i)
- * NOTE: Requires q calls to sourceCalculator - can be expensive!
+ * Adapter: Marginal Price → Total Price Formula: Total(q) = Σ[i=1→q] Marginal(i) NOTE: Requires q
+ * calls to sourceCalculator - can be expensive!
  */
-record MarginalToTotalAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+record MarginalToTotalAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static MarginalToTotalAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.MARGINAL) {
             throw new IllegalArgumentException(
-                    "MarginalToTotalAdapter requires MARGINAL calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "MarginalToTotalAdapter requires MARGINAL calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new MarginalToTotalAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -925,22 +998,17 @@ record MarginalToTotalAdapter(
 }
 
 /**
- * Adapter: Marginal Price → Unit Price (Average)
- * Formula: UnitPrice(q) = (Σ[i=1→q] Marginal(i)) / q
+ * Adapter: Marginal Price → Unit Price (Average) Formula: UnitPrice(q) = (Σ[i=1→q] Marginal(i)) / q
  * Implementation: Marginal → Total → Unit (two-step conversion)
  */
-record MarginalToUnitAdapter(
-        CalculatorId id,
-        String name,
-        Calculator sourceCalculator
-) implements Calculator {
+record MarginalToUnitAdapter(CalculatorId id, String name, Calculator sourceCalculator)
+        implements Calculator {
 
     public static MarginalToUnitAdapter wrap(String name, Calculator sourceCalculator) {
         if (sourceCalculator.interpretation() != Interpretation.MARGINAL) {
             throw new IllegalArgumentException(
-                    "MarginalToUnitAdapter requires MARGINAL calculator, got: " +
-                            sourceCalculator.interpretation()
-            );
+                    "MarginalToUnitAdapter requires MARGINAL calculator, got: "
+                            + sourceCalculator.interpretation());
         }
         return new MarginalToUnitAdapter(CalculatorId.generate(), name, sourceCalculator);
     }
@@ -990,16 +1058,13 @@ record MarginalToUnitAdapter(
 }
 
 /**
- * Percentage Calculator - calculates percentage of a base amount.
- * Requires "baseAmount" parameter (Money) and applies the configured percentage rate.
+ * Percentage Calculator - calculates percentage of a base amount. Requires "baseAmount" parameter
+ * (Money) and applies the configured percentage rate.
  *
- * Example: PercentageCalculator(10%) with baseAmount=100 PLN → 10 PLN
+ * <p>Example: PercentageCalculator(10%) with baseAmount=100 PLN → 10 PLN
  */
-record PercentageCalculator(
-        CalculatorId id,
-        String name,
-        BigDecimal percentageRate
-) implements Calculator {
+record PercentageCalculator(CalculatorId id, String name, BigDecimal percentageRate)
+        implements Calculator {
 
     public PercentageCalculator(String name, BigDecimal percentageRate) {
         this(CalculatorId.generate(), name, percentageRate);

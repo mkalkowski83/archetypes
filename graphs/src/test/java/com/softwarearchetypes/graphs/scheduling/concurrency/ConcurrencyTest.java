@@ -1,9 +1,9 @@
 package com.softwarearchetypes.graphs.scheduling.concurrency;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.softwarearchetypes.graphs.scheduling.ProcessStep;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ConcurrencyTest {
 
@@ -15,13 +15,14 @@ class ConcurrencyTest {
     @Test
     void laboratoryStepsRequireMinimal3Environments() {
         // when
-        ExecutionEnvironments environments = Concurrency.builder()
-                .addConflict(MEASUREMENT, CALIBRATION)
-                .addConflict(MEASUREMENT, VALIDATION)
-                .addConflict(FINAL_TEST, MEASUREMENT)
-                .addConflict(FINAL_TEST, CALIBRATION)
-                .addConflict(FINAL_TEST, VALIDATION)
-                .build();
+        ExecutionEnvironments environments =
+                Concurrency.builder()
+                        .addConflict(MEASUREMENT, CALIBRATION)
+                        .addConflict(MEASUREMENT, VALIDATION)
+                        .addConflict(FINAL_TEST, MEASUREMENT)
+                        .addConflict(FINAL_TEST, CALIBRATION)
+                        .addConflict(FINAL_TEST, VALIDATION)
+                        .build();
 
         // then
         assertEquals(3, environments.environmentCount());
@@ -41,11 +42,8 @@ class ConcurrencyTest {
         ProcessStep step3 = new ProcessStep("Step 3");
 
         // when
-        ExecutionEnvironments environments = Concurrency.builder()
-                .addStep(step1)
-                .addStep(step2)
-                .addStep(step3)
-                .build();
+        ExecutionEnvironments environments =
+                Concurrency.builder().addStep(step1).addStep(step2).addStep(step3).build();
 
         // then
         assertEquals(1, environments.environmentCount());
@@ -62,11 +60,12 @@ class ConcurrencyTest {
         ProcessStep step3 = new ProcessStep("Step 3");
 
         // when
-        ExecutionEnvironments environments = Concurrency.builder()
-                .addConflict(step1, step2)
-                .addConflict(step1, step3)
-                .addConflict(step2, step3)
-                .build();
+        ExecutionEnvironments environments =
+                Concurrency.builder()
+                        .addConflict(step1, step2)
+                        .addConflict(step1, step3)
+                        .addConflict(step2, step3)
+                        .build();
 
         // then
         assertEquals(3, environments.environmentCount());
@@ -83,10 +82,8 @@ class ConcurrencyTest {
         ProcessStep stepC = new ProcessStep("Step C");
 
         // when
-        ExecutionEnvironments environments = Concurrency.builder()
-                .addConflict(stepA, stepB)
-                .addConflict(stepB, stepC)
-                .build();
+        ExecutionEnvironments environments =
+                Concurrency.builder().addConflict(stepA, stepB).addConflict(stepB, stepC).build();
 
         // then
         assertEquals(2, environments.environmentCount());
@@ -94,5 +91,4 @@ class ConcurrencyTest {
         assertFalse(environments.canRunConcurrently(stepB, stepC));
         assertTrue(environments.canRunConcurrently(stepA, stepC));
     }
-
 }

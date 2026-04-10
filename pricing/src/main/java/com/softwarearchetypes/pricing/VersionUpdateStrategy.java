@@ -3,22 +3,21 @@ package com.softwarearchetypes.pricing;
 import java.util.List;
 
 /**
- * Strategy for validating version updates when adding new component versions.
- * Different strategies allow different levels of strictness for validity period overlaps.
+ * Strategy for validating version updates when adding new component versions. Different strategies
+ * allow different levels of strictness for validity period overlaps.
  */
 public enum VersionUpdateStrategy {
 
     /**
-     * Reject if identical validity period exists.
-     * Allows overlapping periods - resolution uses youngest validFrom (latest wins).
+     * Reject if identical validity period exists. Allows overlapping periods - resolution uses
+     * youngest validFrom (latest wins).
      *
-     * Example: OK to have [2024-01-01, ∞) and [2024-02-01, 2024-03-01)
-     *          NOT OK to have two versions with [2024-01-01, ∞)
+     * <p>Example: OK to have [2024-01-01, ∞) and [2024-02-01, 2024-03-01) NOT OK to have two
+     * versions with [2024-01-01, ∞)
      *
-     * This is the recommended default strategy for temporal pricing:
-     * - Base tariff valid from January forever: [2024-01-01, ∞)
-     * - Temporary discount in February: [2024-02-01, 2024-03-01)
-     * - After March 1st, automatically reverts to base tariff
+     * <p>This is the recommended default strategy for temporal pricing: - Base tariff valid from
+     * January forever: [2024-01-01, ∞) - Temporary discount in February: [2024-02-01, 2024-03-01) -
+     * After March 1st, automatically reverts to base tariff
      */
     REJECT_IDENTICAL {
         @Override
@@ -26,24 +25,22 @@ public enum VersionUpdateStrategy {
             for (ComponentVersion version : existingVersions) {
                 if (version.validity().equals(newValidity)) {
                     throw new IllegalArgumentException(
-                        "Version with identical validity period already exists: %s. " +
-                        "Use different validFrom/validTo to create temporal overlaps."
-                            .formatted(newValidity)
-                    );
+                            "Version with identical validity period already exists: %s. "
+                                    + "Use different validFrom/validTo to create temporal overlaps."
+                                            .formatted(newValidity));
                 }
             }
         }
     },
 
     /**
-     * Reject if any overlap with existing periods.
-     * Requires clean, non-overlapping time windows.
+     * Reject if any overlap with existing periods. Requires clean, non-overlapping time windows.
      *
-     * Example: OK to have [2024-01-01, 2024-02-01) and [2024-02-01, ∞)
-     *          NOT OK to have [2024-01-01, ∞) and [2024-02-01, 2024-03-01)
+     * <p>Example: OK to have [2024-01-01, 2024-02-01) and [2024-02-01, ∞) NOT OK to have
+     * [2024-01-01, ∞) and [2024-02-01, 2024-03-01)
      *
-     * Use when you need strict temporal partitioning with no ambiguity.
-     * Less flexible but provides deterministic version selection.
+     * <p>Use when you need strict temporal partitioning with no ambiguity. Less flexible but
+     * provides deterministic version selection.
      */
     REJECT_OVERLAPPING {
         @Override
@@ -51,10 +48,9 @@ public enum VersionUpdateStrategy {
             for (ComponentVersion version : existingVersions) {
                 if (version.validity().overlaps(newValidity)) {
                     throw new IllegalArgumentException(
-                        "New validity period %s overlaps with existing period %s. " +
-                        "Use REJECT_IDENTICAL strategy if overlaps are intentional."
-                            .formatted(newValidity, version.validity())
-                    );
+                            "New validity period %s overlaps with existing period %s. "
+                                    + "Use REJECT_IDENTICAL strategy if overlaps are intentional."
+                                            .formatted(newValidity, version.validity()));
                 }
             }
         }
@@ -63,13 +59,12 @@ public enum VersionUpdateStrategy {
     /**
      * No validation - allows duplicates and overlaps.
      *
-     * Use with caution - when multiple versions match a point in time,
-     * resolution uses youngest validFrom (latest added wins).
+     * <p>Use with caution - when multiple versions match a point in time, resolution uses youngest
+     * validFrom (latest added wins).
      *
-     * Useful for advanced scenarios like:
-     * - A/B testing with multiple concurrent pricing strategies
-     * - Gradual rollouts where latest version takes precedence
-     * - Import/migration scenarios where cleanup happens later
+     * <p>Useful for advanced scenarios like: - A/B testing with multiple concurrent pricing
+     * strategies - Gradual rollouts where latest version takes precedence - Import/migration
+     * scenarios where cleanup happens later
      */
     ALLOW_ALL {
         @Override

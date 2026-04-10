@@ -3,8 +3,8 @@ package com.softwarearchetypes.accounting;
 import java.time.Instant;
 
 /**
- * Represents a validity period for accounting entries.
- * validFrom is inclusive, validTo is exclusive [validFrom, validTo)
+ * Represents a validity period for accounting entries. validFrom is inclusive, validTo is exclusive
+ * [validFrom, validTo)
  */
 public record Validity(Instant validFrom, Instant validTo) {
 

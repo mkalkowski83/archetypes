@@ -1,9 +1,9 @@
 package com.softwarearchetypes.accounting;
 
-import java.util.Collection;
-
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
+
+import java.util.Collection;
 
 public class RandomFixture {
 

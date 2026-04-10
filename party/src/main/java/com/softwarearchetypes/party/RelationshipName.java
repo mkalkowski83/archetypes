@@ -16,5 +16,4 @@ record RelationshipName(String value) {
     public String asString() {
         return value;
     }
-
 }

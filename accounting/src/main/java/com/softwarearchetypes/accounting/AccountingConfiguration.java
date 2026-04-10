@@ -1,9 +1,8 @@
 package com.softwarearchetypes.accounting;
 
-import java.time.Clock;
-
 import com.softwarearchetypes.common.events.EventPublisher;
 import com.softwarearchetypes.common.events.InMemoryEventsPublisher;
+import java.time.Clock;
 
 public class AccountingConfiguration {
 
@@ -14,7 +13,13 @@ public class AccountingConfiguration {
     private final EventPublisher eventPublisher;
     private final AccountingFacade accountingFacade;
 
-    AccountingConfiguration(Clock clock, AccountRepository accountRepository, TransactionRepository transactionRepository, TransactionBuilderFactory transactionBuilderFactory, EventPublisher eventPublisher, AccountingFacade accountingFacade) {
+    AccountingConfiguration(
+            Clock clock,
+            AccountRepository accountRepository,
+            TransactionRepository transactionRepository,
+            TransactionBuilderFactory transactionBuilderFactory,
+            EventPublisher eventPublisher,
+            AccountingFacade accountingFacade) {
         this.clock = clock;
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
@@ -28,11 +33,31 @@ public class AccountingConfiguration {
         EntryAllocations entryAllocations = new EntryAllocations(entryRepository);
         AccountRepository accountRepository = new InMemoryAccountRepo(entryRepository);
         TransactionRepository transactionRepository = new InMemoryTransactionRepo();
-        TransactionBuilderFactory transactionBuilderFactory = new TransactionBuilderFactory(accountRepository, transactionRepository, entryAllocations, entryRepository, clock);
+        TransactionBuilderFactory transactionBuilderFactory =
+                new TransactionBuilderFactory(
+                        accountRepository,
+                        transactionRepository,
+                        entryAllocations,
+                        entryRepository,
+                        clock);
         EventPublisher eventPublisher = new InMemoryEventsPublisher();
-        AccountViewQueries accountViewQueries = new AccountViewQueries(accountRepository, entryRepository);
-        AccountingFacade accountingFacade = new AccountingFacade(clock, accountRepository, accountViewQueries, transactionRepository, transactionBuilderFactory, eventPublisher);
-        return new AccountingConfiguration(clock, accountRepository, transactionRepository, transactionBuilderFactory, eventPublisher, accountingFacade);
+        AccountViewQueries accountViewQueries =
+                new AccountViewQueries(accountRepository, entryRepository);
+        AccountingFacade accountingFacade =
+                new AccountingFacade(
+                        clock,
+                        accountRepository,
+                        accountViewQueries,
+                        transactionRepository,
+                        transactionBuilderFactory,
+                        eventPublisher);
+        return new AccountingConfiguration(
+                clock,
+                accountRepository,
+                transactionRepository,
+                transactionBuilderFactory,
+                eventPublisher,
+                accountingFacade);
     }
 
     public AccountingFacade facade() {

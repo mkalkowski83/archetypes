@@ -1,8 +1,8 @@
 package com.softwarearchetypes.planvsexecution.badimplementation.deliveryscheduling;
 
 /**
- * Warehouse entity with capacity information.
- * Part of the problem: delivery plan is reconstructed from multiple entities like this one.
+ * Warehouse entity with capacity information. Part of the problem: delivery plan is reconstructed
+ * from multiple entities like this one.
  */
 public class Warehouse {
     private Long id;

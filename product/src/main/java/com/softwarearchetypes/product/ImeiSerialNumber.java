@@ -5,23 +5,18 @@ import static com.softwarearchetypes.common.Preconditions.checkArgument;
 /**
  * IMEI (International Mobile Equipment Identity) - standard serial number for mobile devices.
  *
- * Format: 15 digits
- * Structure:
- * - TAC (Type Allocation Code): 8 digits (identifies manufacturer and model)
- * - SNR (Serial Number): 6 digits
- * - CD (Check Digit): 1 digit (Luhn algorithm)
+ * <p>Format: 15 digits Structure: - TAC (Type Allocation Code): 8 digits (identifies manufacturer
+ * and model) - SNR (Serial Number): 6 digits - CD (Check Digit): 1 digit (Luhn algorithm)
  *
- * Examples: "123456789012345", "490154203237518"
+ * <p>Examples: "123456789012345", "490154203237518"
  */
 record ImeiSerialNumber(String value) implements SerialNumber {
 
     ImeiSerialNumber {
         checkArgument(value != null && !value.isBlank(), "IMEI cannot be null or blank");
         String normalized = value.replaceAll("[\\s-]", "");
-        checkArgument(normalized.matches("\\d{15}"),
-                "IMEI must be exactly 15 digits");
-        checkArgument(isValidLuhnChecksum(normalized),
-                "Invalid IMEI check digit (Luhn algorithm)");
+        checkArgument(normalized.matches("\\d{15}"), "IMEI must be exactly 15 digits");
+        checkArgument(isValidLuhnChecksum(normalized), "Invalid IMEI check digit (Luhn algorithm)");
     }
 
     static ImeiSerialNumber of(String value) {

@@ -1,8 +1,7 @@
 package com.softwarearchetypes.planvsexecution.repaymentanalysis.tolerance;
 
-import com.softwarearchetypes.quantity.money.Money;
 import com.softwarearchetypes.planvsexecution.repaymentanalysis.Payment;
-
+import com.softwarearchetypes.quantity.money.Money;
 import java.time.Instant;
 import java.util.List;
 
@@ -21,33 +20,44 @@ class PartialPaymentsStrategy implements ToleranceStrategy {
 
     @Override
     public MatchResult matches(Payment planned, List<Payment> actual) {
-        Money totalActual = actual.stream()
-                .filter(p -> !p.when().isAfter(deadline))
-                .map(Payment::amount)
-                .reduce(Money.zeroPln(), Money::add);
+        Money totalActual =
+                actual.stream()
+                        .filter(p -> !p.when().isAfter(deadline))
+                        .map(Payment::amount)
+                        .reduce(Money.zeroPln(), Money::add);
 
         Money difference = planned.amount().subtract(totalActual).abs();
 
         if (difference.isGreaterThan(tolerance)) {
             return MatchResult.notMatched(
-                    "Partial payments sum " + totalActual + " differs from planned " + planned.amount() +
-                            " by " + difference + " which exceeds tolerance " + tolerance
-            );
+                    "Partial payments sum "
+                            + totalActual
+                            + " differs from planned "
+                            + planned.amount()
+                            + " by "
+                            + difference
+                            + " which exceeds tolerance "
+                            + tolerance);
         }
 
-        int paymentsAfterDeadline = (int) actual.stream()
-                .filter(p -> p.when().isAfter(deadline))
-                .count();
+        int paymentsAfterDeadline =
+                (int) actual.stream().filter(p -> p.when().isAfter(deadline)).count();
 
         if (paymentsAfterDeadline > 0) {
             return MatchResult.matched(
-                    "Partial payments within tolerance: " + actual.size() + " payments totaling " + totalActual +
-                            " (" + paymentsAfterDeadline + " after deadline excluded)"
-            );
+                    "Partial payments within tolerance: "
+                            + actual.size()
+                            + " payments totaling "
+                            + totalActual
+                            + " ("
+                            + paymentsAfterDeadline
+                            + " after deadline excluded)");
         }
 
         return MatchResult.matched(
-                "Partial payments within tolerance: " + actual.size() + " payments totaling " + totalActual
-        );
+                "Partial payments within tolerance: "
+                        + actual.size()
+                        + " payments totaling "
+                        + totalActual);
     }
 }
