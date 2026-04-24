@@ -10,6 +10,8 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -33,18 +35,85 @@ import org.junit.jupiter.api.Test;
  * "time-window" │ ├── cod-component — 2% od cod-value │ └── insurance-component — 0.15% od
  * insured-value └── vat-component — 23% od netto
  */
-@Disabled // TODO enable when finished
 class HomeworkTest {
 
     static final Instant NOW =
             LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
 
-    private PricingFacade facade = PricingConfiguration.inMemory(clock).pricingFacade();
+    private PricingFacade facade;
 
     @BeforeEach
     void setUp() {
-        // TODO: do uzupełnienia
+        facade = PricingConfiguration.inMemory(clock).pricingFacade();
+
+        // Cena bazowa: stawka PLN / kg w zależności od wagi, całkowita = stawka × waga (parametr quantity = kg)
+        // Przedziały (jak [min, max) w NumericRange): 1–4 kg, 5–29 kg, 30–69 kg
+        Calculator tier1to4 =
+            facade.addCalculator(
+                "base-price-kg-1-4",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                "amount", Money.pln(new BigDecimal("7.90")),
+                "interpretation", Interpretation.UNIT
+                )
+            );
+        Calculator tier5to29 =
+            facade.addCalculator(
+                "base-price-kg-5-29",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                "amount", Money.pln(new BigDecimal("6.10")),
+                "interpretation", Interpretation.UNIT
+                )
+            );
+        Calculator tier30to69 =
+            facade.addCalculator(
+                "base-price-kg-30-69",
+                CalculatorType.SIMPLE_FIXED,
+                Parameters.of(
+                "amount", Money.pln(new BigDecimal("5.20")),
+                "interpretation", Interpretation.UNIT)
+            );
+
+        List<CalculatorRange> weightTiers =
+            List.of(
+                CalculatorRange.numeric(
+                    new BigDecimal("1"), new BigDecimal("5"), tier1to4.getId()
+                ),
+                CalculatorRange.numeric(
+                    new BigDecimal("5"), new BigDecimal("30"), tier5to29.getId()
+                ),
+                CalculatorRange.numeric(
+                    new BigDecimal("30"), new BigDecimal("70"), tier30to69.getId()
+                )
+            );
+
+        facade.addCalculator(
+            "base-price",
+            CalculatorType.COMPOSITE,
+            Parameters.of("ranges", weightTiers, "rangeSelector", "quantity")
+        );
+
+        // Cennik per kg (UNIT) wybierany po "weight", potem UnitToTotalAdapter: stawka × waga
+        facade.addCalculator(
+            "base-unit-by-weight",
+            CalculatorType.COMPOSITE,
+            Parameters.of("ranges", weightTiers, "rangeSelector", "weight")
+        );
+
+        facade.createSimpleComponent("base-component", "base-price", Map.of("weight", "quantity"));
+        facade.createCompositeComponent("total-cost", "base-component");
+    }
+
+    @Test void shouldCalculateBasePrice() {
+        Parameters params =
+            Parameters.of(
+                "weight", BigDecimal.valueOf(3)
+            );
+
+        Money result = facade.calculateComponent("total-cost", params);
+        assertEquals(Money.pln(BigDecimal.valueOf(23.7)), result);
     }
 
     // ============================================================
@@ -52,6 +121,7 @@ class HomeworkTest {
     // ============================================================
 
     @Test
+    @Disabled
     void shouldCalculateStandardShipmentWithFuelSurchargeAndVAT() {
         // 3 kg, towar standardowy, dostawa standardowa, bez COD, bez ubezpieczenia
         Parameters params =
@@ -110,6 +180,7 @@ class HomeworkTest {
     // ============================================================
 
     @Test
+    @Disabled
     void shouldCalculateHazmatShipmentWithCODAndInsurance() {
         // 12 kg, materiały niebezpieczne, COD 800 PLN, ubezpieczenie 1500 PLN
         Parameters params =
@@ -175,6 +246,7 @@ class HomeworkTest {
     // ============================================================
 
     @Test
+    @Disabled
     void shouldCalculateOversizedShipmentWithTimeWindowDelivery() {
         // 45 kg, towar standardowy, dostawa w oknie czasowym
         Parameters params =
@@ -236,6 +308,7 @@ class HomeworkTest {
     // ============================================================
 
     @Test
+    @Disabled
     void shouldApplyFuelRateChangeTemporallyFrom1April() {
         // Ta sama przesyłka 3 kg, ale obliczona w różnych terminach.
         // Timestamp decyduje, która wersja fuel-component jest aktywna.
