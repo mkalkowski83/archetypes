@@ -5,6 +5,7 @@ import static java.time.Clock.fixed;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.softwarearchetypes.quantity.money.Money;
+
 import java.math.BigDecimal;
 import java.time.Clock;
 import java.time.Instant;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,7 @@ import org.junit.jupiter.api.Test;
 class HomeworkTest {
 
     static final Instant NOW =
-            LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
+        LocalDateTime.of(2025, 1, 15, 12, 50).atZone(ZoneId.systemDefault()).toInstant();
     static final Clock clock = fixed(NOW, ZoneId.systemDefault());
 
     private PricingFacade facade;
@@ -54,8 +56,8 @@ class HomeworkTest {
                 "base-price-kg-1-4",
                 CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                "amount", Money.pln(new BigDecimal("7.90")),
-                "interpretation", Interpretation.UNIT
+                    "amount", Money.pln(new BigDecimal("7.90")),
+                    "interpretation", Interpretation.UNIT
                 )
             );
         Calculator tier5to29 =
@@ -63,8 +65,8 @@ class HomeworkTest {
                 "base-price-kg-5-29",
                 CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                "amount", Money.pln(new BigDecimal("6.10")),
-                "interpretation", Interpretation.UNIT
+                    "amount", Money.pln(new BigDecimal("6.10")),
+                    "interpretation", Interpretation.UNIT
                 )
             );
         Calculator tier30to69 =
@@ -72,9 +74,17 @@ class HomeworkTest {
                 "base-price-kg-30-69",
                 CalculatorType.SIMPLE_FIXED,
                 Parameters.of(
-                "amount", Money.pln(new BigDecimal("5.20")),
-                "interpretation", Interpretation.UNIT)
+                    "amount", Money.pln(new BigDecimal("5.20")),
+                    "interpretation", Interpretation.UNIT
+                )
             );
+
+        // VAT calculator - Percentage
+        facade.addCalculator(
+            "vat-23",
+            CalculatorType.PERCENTAGE,
+            Parameters.of("percentageRate", BigDecimal.valueOf(23))
+        );
 
         List<CalculatorRange> weightTiers =
             List.of(
@@ -103,17 +113,38 @@ class HomeworkTest {
         );
 
         facade.createSimpleComponent("base-component", "base-price", Map.of("weight", "quantity"));
-        facade.createCompositeComponent("total-cost", "base-component");
+
+        facade.createSimpleComponent("vat-component", "vat-23");
+
+        facade.createCompositeComponent("netto", "base-component");
+
+        facade.createCompositeComponent(
+            "total-cost",
+            Map.of("vat-component", Map.of("baseAmount", new ValueOf("netto"))),
+            "netto", "vat-component"
+        );
     }
 
-    @Test void shouldCalculateBasePrice() {
+    @Test
+    void shouldCalculateBasePrice() {
         Parameters params =
             Parameters.of(
                 "weight", BigDecimal.valueOf(3)
             );
 
         Money result = facade.calculateComponent("total-cost", params);
-        assertEquals(Money.pln(BigDecimal.valueOf(23.7)), result);
+        assertEquals(Money.pln(new BigDecimal("29.15")), result);
+
+        ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-cost", params);
+
+        assertThat(breakdown)
+            .child("netto")
+            .child("base-component")
+            .hasTotal(Money.pln(new BigDecimal("23.70")));
+
+        assertThat(breakdown)
+            .child("vat-component")
+            .hasTotal(Money.pln(new BigDecimal("5.45")));
     }
 
     // ============================================================
@@ -125,13 +156,14 @@ class HomeworkTest {
     void shouldCalculateStandardShipmentWithFuelSurchargeAndVAT() {
         // 3 kg, towar standardowy, dostawa standardowa, bez COD, bez ubezpieczenia
         Parameters params =
-                Parameters.of(
-                                "weight", BigDecimal.valueOf(3),
-                                "cargo-type", "standard",
-                                "delivery-type", "standard",
-                                "cod-value", Money.pln(BigDecimal.ZERO),
-                                "insured-value", Money.pln(BigDecimal.ZERO))
-                        .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
+            Parameters.of(
+                    "weight", BigDecimal.valueOf(3),
+                    "cargo-type", "standard",
+                    "delivery-type", "standard",
+                    "cod-value", Money.pln(BigDecimal.ZERO),
+                    "insured-value", Money.pln(BigDecimal.ZERO)
+                )
+                .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
 
         Money result = facade.calculateComponent("total-cost", params);
 
@@ -149,30 +181,30 @@ class HomeworkTest {
 
         ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-cost", params);
         assertThat(breakdown)
-                .hasName("total-cost")
-                .hasTotal(Money.pln(new BigDecimal("30.47")))
-                .hasChildrenCount(2);
+            .hasName("total-cost")
+            .hasTotal(Money.pln(new BigDecimal("30.47")))
+            .hasChildrenCount(2);
 
         assertThat(breakdown)
-                .child("netto")
-                .hasTotal(Money.pln(new BigDecimal("24.77")))
-                .hasChildrenCount(7);
+            .child("netto")
+            .hasTotal(Money.pln(new BigDecimal("24.77")))
+            .hasChildrenCount(7);
 
         assertThat(breakdown)
-                .child("netto")
-                .child("base-component")
-                .hasTotal(Money.pln(new BigDecimal("23.70")))
-                .hasNoChildren();
+            .child("netto")
+            .child("base-component")
+            .hasTotal(Money.pln(new BigDecimal("23.70")))
+            .hasNoChildren();
         assertThat(breakdown)
-                .child("netto")
-                .child("fuel-component")
-                .hasTotal(Money.pln(new BigDecimal("1.07")))
-                .hasNoChildren();
+            .child("netto")
+            .child("fuel-component")
+            .hasTotal(Money.pln(new BigDecimal("1.07")))
+            .hasNoChildren();
 
         assertThat(breakdown)
-                .child("vat-component")
-                .hasTotal(Money.pln(new BigDecimal("5.70")))
-                .hasNoChildren();
+            .child("vat-component")
+            .hasTotal(Money.pln(new BigDecimal("5.70")))
+            .hasNoChildren();
     }
 
     // ============================================================
@@ -184,13 +216,14 @@ class HomeworkTest {
     void shouldCalculateHazmatShipmentWithCODAndInsurance() {
         // 12 kg, materiały niebezpieczne, COD 800 PLN, ubezpieczenie 1500 PLN
         Parameters params =
-                Parameters.of(
-                                "weight", BigDecimal.valueOf(12),
-                                "cargo-type", "hazmat",
-                                "delivery-type", "standard",
-                                "cod-value", Money.pln(BigDecimal.valueOf(800)),
-                                "insured-value", Money.pln(BigDecimal.valueOf(1500)))
-                        .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
+            Parameters.of(
+                    "weight", BigDecimal.valueOf(12),
+                    "cargo-type", "hazmat",
+                    "delivery-type", "standard",
+                    "cod-value", Money.pln(BigDecimal.valueOf(800)),
+                    "insured-value", Money.pln(BigDecimal.valueOf(1500))
+                )
+                .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
 
         Money result = facade.calculateComponent("total-cost", params);
 
@@ -208,35 +241,35 @@ class HomeworkTest {
 
         ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-cost", params);
         assertThat(breakdown)
-                .hasName("total-cost")
-                .hasTotal(Money.pln(new BigDecimal("161.55")))
-                .hasChildrenCount(2);
+            .hasName("total-cost")
+            .hasTotal(Money.pln(new BigDecimal("161.55")))
+            .hasChildrenCount(2);
 
         assertThat(breakdown)
-                .child("netto")
-                .hasTotal(Money.pln(new BigDecimal("131.34")))
-                .hasChildrenCount(7);
+            .child("netto")
+            .hasTotal(Money.pln(new BigDecimal("131.34")))
+            .hasChildrenCount(7);
 
         assertThat(breakdown)
-                .child("netto")
-                .child("base-component")
-                .hasTotal(Money.pln(new BigDecimal("73.20")));
+            .child("netto")
+            .child("base-component")
+            .hasTotal(Money.pln(new BigDecimal("73.20")));
         assertThat(breakdown)
-                .child("netto")
-                .child("fuel-component")
-                .hasTotal(Money.pln(new BigDecimal("3.29")));
+            .child("netto")
+            .child("fuel-component")
+            .hasTotal(Money.pln(new BigDecimal("3.29")));
         assertThat(breakdown)
-                .child("netto")
-                .child("adr-component")
-                .hasTotal(Money.pln(new BigDecimal("36.60")));
+            .child("netto")
+            .child("adr-component")
+            .hasTotal(Money.pln(new BigDecimal("36.60")));
         assertThat(breakdown)
-                .child("netto")
-                .child("cod-component")
-                .hasTotal(Money.pln(new BigDecimal("16.00")));
+            .child("netto")
+            .child("cod-component")
+            .hasTotal(Money.pln(new BigDecimal("16.00")));
         assertThat(breakdown)
-                .child("netto")
-                .child("insurance-component")
-                .hasTotal(Money.pln(new BigDecimal("2.25")));
+            .child("netto")
+            .child("insurance-component")
+            .hasTotal(Money.pln(new BigDecimal("2.25")));
 
         assertThat(breakdown).child("vat-component").hasTotal(Money.pln(new BigDecimal("30.21")));
     }
@@ -250,13 +283,14 @@ class HomeworkTest {
     void shouldCalculateOversizedShipmentWithTimeWindowDelivery() {
         // 45 kg, towar standardowy, dostawa w oknie czasowym
         Parameters params =
-                Parameters.of(
-                                "weight", BigDecimal.valueOf(45),
-                                "cargo-type", "standard",
-                                "delivery-type", "time-window",
-                                "cod-value", Money.pln(BigDecimal.ZERO),
-                                "insured-value", Money.pln(BigDecimal.ZERO))
-                        .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
+            Parameters.of(
+                    "weight", BigDecimal.valueOf(45),
+                    "cargo-type", "standard",
+                    "delivery-type", "time-window",
+                    "cod-value", Money.pln(BigDecimal.ZERO),
+                    "insured-value", Money.pln(BigDecimal.ZERO)
+                )
+                .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
 
         Money result = facade.calculateComponent("total-cost", params);
 
@@ -274,31 +308,31 @@ class HomeworkTest {
 
         ComponentBreakdown breakdown = facade.calculateComponentBreakdown("total-cost", params);
         assertThat(breakdown)
-                .hasName("total-cost")
-                .hasTotal(Money.pln(new BigDecimal("473.46")))
-                .hasChildrenCount(2);
+            .hasName("total-cost")
+            .hasTotal(Money.pln(new BigDecimal("473.46")))
+            .hasChildrenCount(2);
 
         assertThat(breakdown)
-                .child("netto")
-                .hasTotal(Money.pln(new BigDecimal("384.93")))
-                .hasChildrenCount(7);
+            .child("netto")
+            .hasTotal(Money.pln(new BigDecimal("384.93")))
+            .hasChildrenCount(7);
 
         assertThat(breakdown)
-                .child("netto")
-                .child("base-component")
-                .hasTotal(Money.pln(new BigDecimal("234.00")));
+            .child("netto")
+            .child("base-component")
+            .hasTotal(Money.pln(new BigDecimal("234.00")));
         assertThat(breakdown)
-                .child("netto")
-                .child("fuel-component")
-                .hasTotal(Money.pln(new BigDecimal("10.53")));
+            .child("netto")
+            .child("fuel-component")
+            .hasTotal(Money.pln(new BigDecimal("10.53")));
         assertThat(breakdown)
-                .child("netto")
-                .child("oversized-component")
-                .hasTotal(Money.pln(new BigDecimal("81.90")));
+            .child("netto")
+            .child("oversized-component")
+            .hasTotal(Money.pln(new BigDecimal("81.90")));
         assertThat(breakdown)
-                .child("netto")
-                .child("time-window-component")
-                .hasTotal(Money.pln(new BigDecimal("58.50")));
+            .child("netto")
+            .child("time-window-component")
+            .hasTotal(Money.pln(new BigDecimal("58.50")));
 
         assertThat(breakdown).child("vat-component").hasTotal(Money.pln(new BigDecimal("88.53")));
     }
@@ -314,35 +348,37 @@ class HomeworkTest {
         // Timestamp decyduje, która wersja fuel-component jest aktywna.
 
         Parameters jan =
-                Parameters.of(
-                                "weight", BigDecimal.valueOf(3),
-                                "cargo-type", "standard",
-                                "delivery-type", "standard",
-                                "cod-value", Money.pln(BigDecimal.ZERO),
-                                "insured-value", Money.pln(BigDecimal.ZERO))
-                        .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
+            Parameters.of(
+                    "weight", BigDecimal.valueOf(3),
+                    "cargo-type", "standard",
+                    "delivery-type", "standard",
+                    "cod-value", Money.pln(BigDecimal.ZERO),
+                    "insured-value", Money.pln(BigDecimal.ZERO)
+                )
+                .with("timestamp", LocalDateTime.of(2025, 1, 20, 10, 0));
 
         Parameters apr =
-                Parameters.of(
-                                "weight", BigDecimal.valueOf(3),
-                                "cargo-type", "standard",
-                                "delivery-type", "standard",
-                                "cod-value", Money.pln(BigDecimal.ZERO),
-                                "insured-value", Money.pln(BigDecimal.ZERO))
-                        .with("timestamp", LocalDateTime.of(2025, 4, 15, 10, 0));
+            Parameters.of(
+                    "weight", BigDecimal.valueOf(3),
+                    "cargo-type", "standard",
+                    "delivery-type", "standard",
+                    "cod-value", Money.pln(BigDecimal.ZERO),
+                    "insured-value", Money.pln(BigDecimal.ZERO)
+                )
+                .with("timestamp", LocalDateTime.of(2025, 4, 15, 10, 0));
 
         // styczeń: stawka paliwowa 4.5%
         //   cena bazowa  = 3 × 7.90 = 23.70 PLN
         //   dopłata 4.5% = 1.07 PLN
         //   netto        = 24.77 PLN  |  VAT = 5.70 PLN  |  razem = 30.47 PLN
         assertEquals(
-                Money.pln(new BigDecimal("30.47")), facade.calculateComponent("total-cost", jan));
+            Money.pln(new BigDecimal("30.47")), facade.calculateComponent("total-cost", jan));
 
         // kwiecień: stawka paliwowa 5.0%
         //   cena bazowa  = 3 × 7.90 = 23.70 PLN
         //   dopłata 5.0% = 1.19 PLN
         //   netto        = 24.89 PLN  |  VAT = 5.72 PLN  |  razem = 30.61 PLN
         assertEquals(
-                Money.pln(new BigDecimal("30.61")), facade.calculateComponent("total-cost", apr));
+            Money.pln(new BigDecimal("30.61")), facade.calculateComponent("total-cost", apr));
     }
 }
